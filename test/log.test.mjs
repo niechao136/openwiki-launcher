@@ -36,4 +36,12 @@ describe("createLogger", () => {
 
     expect(lines).toEqual(["[launcher] z\n"]);
   });
+
+  it("marks warning lines so they stand out from errors", () => {
+    const { logger, lines } = collect(false);
+
+    logger.warn("drifted");
+
+    expect(lines).toEqual(["[launcher] warn: drifted\n"]);
+  });
 });

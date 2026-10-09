@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 // Controllable stand-in for the openwiki MCP server.
 //
 // It exists so broker behaviour (queueing, restart, passthrough) can be tested
@@ -47,6 +47,9 @@ function handle(message) {
   }
 
   if (message.method === "tools/call") {
+    // Stall mode: accept the call and never answer, so a crash can be observed
+    // with a request genuinely in flight.
+    if (process.env.FAKE_STALL_CALL === "1") return;
     send({
       jsonrpc: "2.0",
       id: message.id,

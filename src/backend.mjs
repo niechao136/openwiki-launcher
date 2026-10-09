@@ -1,4 +1,4 @@
-﻿import { spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createLineParser, formatMessage } from "./jsonrpc.mjs";
 
 const STDERR_TAIL_LIMIT = 8192;
@@ -135,7 +135,7 @@ export function createBackendSession({
     forceKillTimer.unref?.();
   };
 
-  return { ready, exited, request, notify, stop, stderrTail: () => stderrTail };
+  return { ready, exited, request, notify, stop, stderrTail: () => stderrTail, isRunning: () => !hasExited };
 }
 
 /**

@@ -23,6 +23,9 @@ export function createLogger({ debug = false, sink = process.stderr } = {}) {
     debug(message) {
       if (debug) write(`[launcher] debug: ${message}\n`);
     },
+    warn(message) {
+      write(`[launcher] warn: ${message}\n`);
+    },
     error(message) {
       write(`[launcher] ${message}\n`);
     },
