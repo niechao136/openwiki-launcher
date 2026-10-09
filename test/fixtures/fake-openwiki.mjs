@@ -8,6 +8,7 @@ const serverName = process.env.FAKE_SERVER_NAME ?? "fake-openwiki";
 const exitAfterMs = Number(process.env.FAKE_EXIT_AFTER_MS ?? 0);
 const exitCode = Number(process.env.FAKE_EXIT_CODE ?? 0);
 const noise = process.env.FAKE_STDOUT_NOISE ?? "";
+const stderrText = process.env.FAKE_STDERR ?? "";
 
 function send(message) {
   if (noise) process.stdout.write(noise + "\n");
@@ -83,6 +84,14 @@ process.stdin.on("data", (chunk) => {
     }
   }
 });
+
+if (stderrText) process.stderr.write(stderrText + "\n");
+
+// Refuse to serve: die before reading stdin, like a backend whose imports
+// fail fatally (missing native module, unsupported Node version).
+if (process.env.FAKE_REFUSE === "1") {
+  process.exit(Number(exitCode || 1));
+}
 
 if (exitAfterMs > 0) {
   setTimeout(() => process.exit(exitCode), exitAfterMs).unref();

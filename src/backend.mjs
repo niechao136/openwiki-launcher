@@ -135,5 +135,134 @@ export function createBackendSession({
     forceKillTimer.unref?.();
   };
 
-  return { ready, exited, request, notify, stop };
+  return { ready, exited, request, notify, stop, stderrTail: () => stderrTail };
+}
+
+/**
+ * Raised when the openwiki backend cannot be started.
+ *
+ * `stderrTail` carries what the failed process printed, because the most common
+ * cause (a native module that did not build, a Node version mismatch) explains
+ * itself only there.
+ */
+export class BackendUnavailableError extends Error {
+  constructor(message, { stderrTail = "" } = {}) {
+    super(message);
+    this.name = "BackendUnavailableError";
+    this.stderrTail = stderrTail;
+  }
+}
+
+/**
+ * Owns the lifecycle of the openwiki backend process.
+ *
+ * Startup is attempted at most `maxSpawnAttempts` times with a fixed delay: a
+ * host that cannot get an answer retries the connection anyway, and unbounded
+ * retries would turn a broken install into an apparently hung agent.
+ *
+ * @param {{
+ *   spawnFn?: Function,
+ *   cliJs: string,
+ *   hostId: string,
+ *   logger: { debug(message: string): void },
+ *   env?: Record<string, string>,
+ *   retryDelayMs?: number,
+ *   maxSpawnAttempts?: number,
+ *   sleep?: (ms: number) => Promise<void>,
+ * }} options
+ * @returns {{
+ *   ensureReady(): Promise<object>,
+ *   current(): object | null,
+ *   onSessionExit(listener: (info: object) => void): void,
+ *   stop(): void,
+ * }}
+ */
+export function createBackendSupervisor({
+  spawnFn = spawn,
+  cliJs,
+  hostId,
+  logger,
+  env = {},
+  retryDelayMs = 1000,
+  maxSpawnAttempts = 2,
+  sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+}) {
+  let session = null;
+  let starting = null;
+  const exitListeners = new Set();
+
+  async function startSession() {
+    let lastError = null;
+    let stderrTail = "";
+
+    for (let attempt = 1; attempt <= maxSpawnAttempts; attempt += 1) {
+      let candidate = null;
+      try {
+        candidate = createBackendSession({ spawnFn, cliJs, hostId, logger, env });
+      } catch (error) {
+        lastError = error;
+      }
+
+      if (candidate) {
+        try {
+          await candidate.ready;
+          return candidate;
+        } catch (error) {
+          // A process that dies before the handshake answers is a startup
+          // failure, not a runtime crash: it counts against the attempts.
+          lastError = error;
+          stderrTail = candidate.stderrTail();
+          candidate.stop();
+        }
+      }
+
+      if (attempt < maxSpawnAttempts) {
+        logger.debug(
+          `后端启动失败，${retryDelayMs}ms 后重试 (${attempt}/${maxSpawnAttempts}): ${lastError && lastError.message}`,
+        );
+        await sleep(retryDelayMs);
+      }
+    }
+
+    throw new BackendUnavailableError(
+      `无法启动 openwiki 后端: ${cliJs}${lastError ? ` (${lastError.message})` : ""}`,
+      { stderrTail },
+    );
+  }
+
+  function ensureReady() {
+    if (session) return Promise.resolve(session);
+    if (starting) return starting;
+
+    starting = startSession()
+      .then((created) => {
+        starting = null;
+        session = created;
+        created.exited.then((info) => {
+          if (session === created) session = null;
+          for (const listener of exitListeners) listener(info);
+        });
+        return created;
+      })
+      .catch((error) => {
+        starting = null;
+        throw error;
+      });
+
+    return starting;
+  }
+
+  return {
+    ensureReady,
+    current: () => session,
+    onSessionExit(listener) {
+      exitListeners.add(listener);
+    },
+    stop() {
+      if (session) {
+        session.stop();
+        session = null;
+      }
+    },
+  };
 }
