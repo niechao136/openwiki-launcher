@@ -8,8 +8,27 @@
   "files": ["bin", "src", "manifest", "scripts"],
   "scripts": {
     "test": "vitest run",
+    "test:smoke": "node scripts/run-smoke.mjs",
     "manifest": "node scripts/gen-manifest.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openwiki-launcher/openwiki-launcher.git"
+  },
+  "homepage": "https://github.com/openwiki-launcher/openwiki-launcher#readme",
+  "bugs": {
+    "url": "https://github.com/openwiki-launcher/openwiki-launcher/issues"
+  },
+  "keywords": [
+    "openwiki",
+    "mcp",
+    "mcp-proxy",
+    "model-context-protocol",
+    "codebuddy",
+    "claude-code",
+    "cursor",
+    "codex"
+  ],
   "dependencies": {
     "openwiki": "0.6.0"
   },
