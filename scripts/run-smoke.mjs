@@ -12,7 +12,15 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
  */
 const child = spawn(
   process.execPath,
-  ["node_modules/vitest/vitest.mjs", "run", "test/real-openwiki.test.mjs"],
+  [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    // The snapshot guard compares the committed manifest against a live
+    // openwiki handshake; without it in this list, upstream drift would only
+    // be caught by hand.
+    "test/real-openwiki.test.mjs",
+    "test/manifest.test.mjs",
+  ],
   {
     cwd: ROOT,
     stdio: "inherit",

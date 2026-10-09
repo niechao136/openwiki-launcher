@@ -3,12 +3,25 @@
 //
 // It exists so broker behaviour (queueing, restart, passthrough) can be tested
 // without paying openwiki real 10-60s import cost on every run.
+import { writeFileSync } from "node:fs";
+
 const delay = Number(process.env.FAKE_STARTUP_DELAY_MS ?? 0);
 const serverName = process.env.FAKE_SERVER_NAME ?? "fake-openwiki";
 const exitAfterMs = Number(process.env.FAKE_EXIT_AFTER_MS ?? 0);
 const exitCode = Number(process.env.FAKE_EXIT_CODE ?? 0);
 const noise = process.env.FAKE_STDOUT_NOISE ?? "";
 const stderrText = process.env.FAKE_STDERR ?? "";
+const pidFile = process.env.FAKE_PID_FILE ?? "";
+const customTools = process.env.FAKE_TOOLS ?? "";
+
+// Record the pid so tests can assert the broker leaves no orphan behind.
+if (pidFile) {
+  try {
+    writeFileSync(pidFile, String(process.pid));
+  } catch {
+    // best effort only
+  }
+}
 
 function send(message) {
   if (noise) process.stdout.write(noise + "\n");
@@ -33,16 +46,13 @@ function handle(message) {
   }
 
   if (message.method === "tools/list") {
-    send({
-      jsonrpc: "2.0",
-      id: message.id,
-      result: {
-        tools: [
+    const tools = customTools
+      ? JSON.parse(customTools)
+      : [
           { name: "echo_a", description: "fake tool a", inputSchema: { type: "object" } },
           { name: "echo_b", description: "fake tool b", inputSchema: { type: "object" } },
-        ],
-      },
-    });
+        ];
+    send({ jsonrpc: "2.0", id: message.id, result: { tools } });
     return;
   }
 

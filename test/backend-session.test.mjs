@@ -14,11 +14,18 @@ function captureLogger() {
   return {
     lines,
     logger: {
-      info() {},
-      debug(message) {
-        lines.push(message);
+      info(message) {
+        lines.push({ level: "info", message });
       },
-      error() {},
+      debug(message) {
+        lines.push({ level: "debug", message });
+      },
+      warn(message) {
+        lines.push({ level: "warn", message });
+      },
+      error(message) {
+        lines.push({ level: "error", message });
+      },
     },
   };
 }
@@ -81,7 +88,11 @@ describe("createBackendSession", () => {
 
     await expect(session.ready).resolves.toBeTruthy();
 
-    expect(lines.some((line) => line.includes("忽略非 JSON"))).toBe(true);
+    // A dirty line means the spawned process may not be openwiki at all, so it
+    // has to be visible without LAUNCHER_DEBUG.
+    expect(
+      lines.some((line) => line.level === "warn" && line.message.includes("不是 JSON")),
+    ).toBe(true);
   });
 
   it("rejects later requests once the backend exited", async () => {

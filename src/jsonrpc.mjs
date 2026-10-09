@@ -16,14 +16,21 @@ function handleLine(rawLine, onMessage) {
   const line = rawLine.replace(/\r$/, "").trim();
   if (!line) return;
 
+  let parsed;
   try {
-    onMessage(JSON.parse(line));
+    parsed = JSON.parse(line);
   } catch {
     // A line that is not JSON cannot be a protocol message. Report it in a
     // shape the caller can log and keep parsing: dropping later messages
     // because of one bad line would silently break the session.
     onMessage({ invalid: line });
+    return;
   }
+
+  // Deliver outside the parse guard: a throwing consumer must not turn a
+  // perfectly valid message into an "invalid line" report, which would make the
+  // broker drop a real request and leave the host waiting.
+  onMessage(parsed);
 }
 
 /**

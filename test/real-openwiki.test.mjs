@@ -78,4 +78,22 @@ describe.skipIf(!process.env.LAUNCHER_REAL_SMOKE)("real openwiki backend", () =>
       host.child.stdin.end();
     }
   }, 60000);
+
+  it("reaches the real backend for a tool call", async () => {
+    const host = startRealHost();
+    try {
+      // The broker has no recorded answer for tools/call, so any response at
+      // all proves the real openwiki process served it.
+      host.request(3, "tools/call", {
+        name: "openwiki_list_workspaces",
+        arguments: { root: ROOT },
+      });
+      const response = await host.waitFor(3, 120000);
+
+      expect(response.id).toBe(3);
+      expect(Array.isArray(response.result.content)).toBe(true);
+    } finally {
+      host.child.stdin.end();
+    }
+  }, 180000);
 });

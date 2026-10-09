@@ -1,4 +1,10 @@
 const DEFAULT_QUEUE_TIMEOUT_MS = 120000;
+const DEFAULT_CALL_DEADLINE_MS = 180000;
+const DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;
+
+const CANCELLED = "host disconnected";
+const QUEUE_TIMEOUT = "queue timeout";
+const CALL_DEADLINE = "call deadline";
 
 /**
  * MCP front end of the launcher.
@@ -23,10 +29,21 @@ export function createBroker({
   logger,
   send,
   queueTimeoutMs = DEFAULT_QUEUE_TIMEOUT_MS,
+  callDeadlineMs = DEFAULT_CALL_DEADLINE_MS,
+  unavailableCooldownMs = DEFAULT_UNAVAILABLE_COOLDOWN_MS,
+  now = () => Date.now(),
 }) {
   const timers = new Set();
+  const inFlight = new Set();
   let unavailable = null;
+  let unavailableAt = 0;
   let mismatchWarned = false;
+
+  // A failed start is remembered only for a cooldown. openwiki's cold import can
+  // outlast any fixed budget on a scanned filesystem, and a permanent latch would
+  // keep every later call failing for a host session that lives for hours.
+  const unavailableActive = () =>
+    unavailable !== null && now() - unavailableAt < unavailableCooldownMs;
 
   const sendResult = (id, result) => send({ jsonrpc: "2.0", id, result });
 
@@ -51,14 +68,14 @@ export function createBroker({
     };
   }
 
-  // Bounds how long a host request may wait for the backend. The timer is
-  // tracked so host disconnect can clear every one of them.
-  function withinQueueBudget(promise) {
+  // Bounds how long a host request may wait. The timer is tracked so host
+  // disconnect can clear every one of them.
+  function withDeadline(promise, ms, reason) {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         timers.delete(timer);
-        reject(new Error("queue timeout"));
-      }, queueTimeoutMs);
+        reject(new Error(reason));
+      }, ms);
       timers.add(timer);
       promise.then(
         (value) => {
@@ -75,10 +92,31 @@ export function createBroker({
     });
   }
 
+  // Lets host disconnect settle requests that are waiting on the backend,
+  // instead of leaving their promises dangling until the process dies.
+  function withCancellation(promise) {
+    let cancel;
+    const cancelled = new Promise((_, reject) => {
+      cancel = () => reject(new Error(CANCELLED));
+    });
+    const record = { cancel };
+    inFlight.add(record);
+    return Promise.race([promise, cancelled]).finally(() => inFlight.delete(record));
+  }
+
   function sameToolList(expected, actual) {
     if (!Array.isArray(expected)) return false;
     if (expected.length !== actual.length) return false;
-    return expected.every((tool, index) => tool.name === actual[index].name);
+    return expected.every((tool, index) => {
+      const other = actual[index];
+      if (!other || tool.name !== other.name) return false;
+      // The broker serves the recorded inputSchema to the host, so a schema
+      // change is drift even when the tool name is unchanged.
+      return (
+        JSON.stringify(tool.inputSchema ?? null) ===
+        JSON.stringify(other.inputSchema ?? null)
+      );
+    });
   }
 
   async function toolsFromBackend(session) {
@@ -93,20 +131,28 @@ export function createBroker({
   }
 
   async function dispatch(entry) {
-    if (unavailable) {
+    if (unavailableActive()) {
       sendToolError(entry.id, unavailableText(unavailable));
       return;
     }
 
     let session;
     try {
-      session = await withinQueueBudget(supervisor.ensureReady());
+      session = await withCancellation(
+        withDeadline(supervisor.ensureReady(), queueTimeoutMs, QUEUE_TIMEOUT),
+      );
     } catch (error) {
-      if (error.message === "queue timeout") {
+      if (error.message === QUEUE_TIMEOUT) {
         sendToolError(entry.id, "openwiki 后端排队超时，请重试");
         return;
       }
+      if (error.message === CANCELLED) {
+        sendToolError(entry.id, "宿主已断开，调用已取消");
+        return;
+      }
       unavailable = error;
+      unavailableAt = now();
+      logger.error(`openwiki 后端不可用：${error.message}`);
       sendToolError(entry.id, unavailableText(error));
       return;
     }
@@ -120,9 +166,23 @@ export function createBroker({
         sendResult(entry.id, { tools: await toolsFromBackend(session) });
         return;
       }
-      const result = await session.request("tools/call", entry.params);
+      const result = await withCancellation(
+        withDeadline(
+          session.request("tools/call", entry.params),
+          callDeadlineMs,
+          CALL_DEADLINE,
+        ),
+      );
       send({ jsonrpc: "2.0", id: entry.id, result });
     } catch (error) {
+      if (error.message === CALL_DEADLINE) {
+        sendToolError(entry.id, "openwiki 后端调用超时，请重试");
+        return;
+      }
+      if (error.message === CANCELLED) {
+        sendToolError(entry.id, "宿主已断开，调用已取消");
+        return;
+      }
       let restarted = false;
       if (typeof session.isRunning === "function") restarted = !session.isRunning();
       sendToolError(
@@ -132,6 +192,20 @@ export function createBroker({
           : `openwiki 后端调用失败：${error.message}`,
       );
     }
+  }
+
+  // `dispatch` is async and fires without await; without this guard an internal
+  // failure would surface as an unhandled rejection, which terminates the
+  // broker process on Node 22 and costs the host its whole MCP session.
+  function dispatchSafely(entry) {
+    dispatch(entry).catch((error) => {
+      logger.error(`处理宿主请求时发生内部错误: ${error && error.message}`);
+      try {
+        sendToolError(entry.id, "openwiki-launcher 内部错误，请查看 stderr");
+      } catch {
+        // The host pipe is already gone; nothing left to report to.
+      }
+    });
   }
 
   return {
@@ -156,7 +230,7 @@ export function createBroker({
           sendResult(message.id, initializeResult(manifest));
           return;
         }
-        void dispatch({ id: message.id, method: "initialize" });
+        dispatchSafely({ id: message.id, method: "initialize" });
         return;
       }
 
@@ -165,12 +239,12 @@ export function createBroker({
           sendResult(message.id, { tools: manifest.tools });
           return;
         }
-        void dispatch({ id: message.id, method: "tools/list" });
+        dispatchSafely({ id: message.id, method: "tools/list" });
         return;
       }
 
       if (message.method === "tools/call") {
-        void dispatch({ id: message.id, method: "tools/call", params: message.params });
+        dispatchSafely({ id: message.id, method: "tools/call", params: message.params });
         return;
       }
 
@@ -180,6 +254,8 @@ export function createBroker({
     handleClientEof() {
       for (const timer of timers) clearTimeout(timer);
       timers.clear();
+      for (const record of inFlight) record.cancel();
+      inFlight.clear();
       supervisor.stop();
     },
   };

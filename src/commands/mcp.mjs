@@ -58,16 +58,29 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", (chunk) => parser.write(chunk));
 
+  // A host that tears the pipe down must not surface as an uncaught exception:
+  // that would kill the process instead of shutting it down cleanly.
+  process.stdin.on("error", (error) => logger.debug(`stdin 结束: ${error.message}`));
+  process.stdout.on("error", (error) => logger.debug(`stdout 结束: ${error.message}`));
+
   await new Promise((resolve) => {
     let closed = false;
     const finish = () => {
       if (closed) return;
       closed = true;
+      // Flush a trailing message that arrived without a newline before tearing
+      // the broker down.
+      parser.end();
       broker.handleClientEof();
       resolve();
     };
     process.stdin.on("end", finish);
     process.stdin.on("close", finish);
+    // Hosts usually end the session by closing stdin, but a signal must not
+    // leave the openwiki backend running as an orphan.
+    process.on("SIGTERM", finish);
+    process.on("SIGINT", finish);
+    process.on("exit", () => supervisor.stop());
   });
 
   return 0;

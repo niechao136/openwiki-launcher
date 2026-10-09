@@ -56,6 +56,25 @@ describe("createLineParser", () => {
 
     expect(seen).toEqual([{ jsonrpc: "2.0", id: 4, result: {} }]);
   });
+
+  it("does not mislabel a valid message when the consumer throws", () => {
+    const seen = [];
+    const parser = createLineParser((message) => {
+      if (message.id === 1) throw new Error("consumer blew up");
+      seen.push(message);
+    });
+
+    expect(() =>
+      parser.write('{"jsonrpc":"2.0","id":1,"result":{}}\n{"jsonrpc":"2.0","id":2,"result":{}}\n'),
+    ).toThrow("consumer blew up");
+
+    parser.write('{"jsonrpc":"2.0","id":3,"result":{}}\n');
+
+    // The valid lines must never be re-reported as dirty input, and messages
+    // after the failure still have to reach the consumer.
+    expect(seen.some((message) => message.invalid !== undefined)).toBe(false);
+    expect(seen.map((message) => message.id)).toEqual([2, 3]);
+  });
 });
 
 describe("formatMessage", () => {

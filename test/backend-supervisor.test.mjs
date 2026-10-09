@@ -1,4 +1,6 @@
 import { spawn } from "node:child_process";
+import { EventEmitter } from "node:events";
+import { PassThrough } from "node:stream";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -10,16 +12,41 @@ const FAKE_BACKEND = path.join(
   "fake-openwiki.mjs",
 );
 
+/**
+ * Builds a child-process stand-in that fails the way Windows reports a missing
+ * executable: asynchronously through an 'error' event, with no 'exit'.
+ */
+function fakeChildThatEmitsError(message) {
+  const child = new EventEmitter();
+  child.stdout = new PassThrough();
+  child.stderr = new PassThrough();
+  child.stdin = new PassThrough();
+  child.kill = () => true;
+  setImmediate(() => {
+    const error = new Error(message);
+    error.code = "ENOENT";
+    child.emit("error", error);
+  });
+  return child;
+}
+
 function captureLogger() {
   const lines = [];
   return {
     lines,
     logger: {
-      info() {},
-      debug(message) {
-        lines.push(message);
+      info(message) {
+        lines.push({ level: "info", message });
       },
-      error() {},
+      debug(message) {
+        lines.push({ level: "debug", message });
+      },
+      warn(message) {
+        lines.push({ level: "warn", message });
+      },
+      error(message) {
+        lines.push({ level: "error", message });
+      },
     },
   };
 }
@@ -132,5 +159,40 @@ describe("createBackendSupervisor", () => {
 
     expect(error).toBeInstanceOf(BackendUnavailableError);
     expect(error.stderrTail).toContain("boom: cannot load native module");
+  });
+
+  it("gives up after two attempts when spawn fails asynchronously", async () => {
+    let attempts = 0;
+    const { supervisor } = makeSupervisor({
+      // child_process.spawn reports a bad executable through an async 'error'
+      // event, never by throwing synchronously; production takes this path.
+      spawnFn: () => {
+        attempts += 1;
+        return fakeChildThatEmitsError("spawn ENOENT");
+      },
+    });
+
+    const error = await supervisor.ensureReady().catch((caught) => caught);
+
+    expect(error).toBeInstanceOf(BackendUnavailableError);
+    expect(attempts).toBe(2);
+    expect(error.message).toContain("ENOENT");
+  });
+
+  it("logs why the backend could not start", async () => {
+    const { logger, lines } = captureLogger();
+    const supervisor = createBackendSupervisor({
+      spawnFn: () => fakeChildThatEmitsError("spawn ENOENT"),
+      cliJs: FAKE_BACKEND,
+      hostId: "test",
+      logger,
+      sleep: async () => {},
+    });
+
+    await supervisor.ensureReady().catch(() => {});
+
+    const errors = lines.filter((line) => line.level === "error");
+    expect(errors.length).toBeGreaterThan(0);
+    expect(errors.map((line) => line.message).join("\n")).toContain("ENOENT");
   });
 });

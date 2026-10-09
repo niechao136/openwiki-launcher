@@ -41,6 +41,7 @@ export function createBackendSession({
   });
 
   let stderrTail = "";
+  let dirtyLineWarned = false;
   let hasExited = false;
   let nextId = 1;
   let forceKillTimer = null;
@@ -58,9 +59,15 @@ export function createBackendSession({
 
   const parser = createLineParser((message) => {
     if (message.invalid !== undefined) {
-      // Not a protocol message. Log it and keep the session usable: one dirty
-      // line must not cost the host its backend.
-      logger.debug(`忽略非 JSON 输出行: ${String(message.invalid).slice(0, 200)}`);
+      // Not a protocol message. A clean server never writes this, so it is a
+      // strong signal that the spawned process is not openwiki; warn once so
+      // the cause is visible without LAUNCHER_DEBUG, then keep the session.
+      if (!dirtyLineWarned) {
+        dirtyLineWarned = true;
+        logger.warn(`后端输出不是 JSON 行，请确认后端可执行文件正确：${String(message.invalid).slice(0, 200)}`);
+      } else {
+        logger.debug(`忽略非 JSON 输出行: ${String(message.invalid).slice(0, 200)}`);
+      }
       return;
     }
     if (message.id === undefined || !pending.has(message.id)) {
@@ -233,6 +240,13 @@ export function createBackendSupervisor({
         await sleep(retryDelayMs);
       }
     }
+
+    // Surface the diagnosis on stderr before giving up: without it a broken
+    // install looks like a silent host, because the only other channel the user
+    // can see is the host's own MCP error text.
+    const detail = lastError ? lastError.message : "unknown error";
+    logger.error(`openwiki 后端启动失败（已尝试 ${maxSpawnAttempts} 次）: ${detail}`);
+    if (stderrTail) logger.error(`后端 stderr: ${stderrTail.slice(-400)}`);
 
     throw new BackendUnavailableError(
       `无法启动 openwiki 后端: ${cliJs}${lastError ? ` (${lastError.message})` : ""}`,
