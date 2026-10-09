@@ -1,3 +1,5 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { main } from "../src/cli.mjs";
 
@@ -33,12 +35,32 @@ describe("main", () => {
     expect(lines.join("\n")).toContain("0.2.0");
   });
 
-  it("points at the next release for warm and doctor until task 7 wires them", async () => {
+  it("runs warm against a fake backend and reports readiness", async () => {
+    const { lines, logger } = createCapture();
+    const fake = path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "fixtures",
+      "fake-openwiki.mjs",
+    );
+
+    const code = await main(["warm"], { logger, env: { LAUNCHER_BACKEND_CLI: fake } });
+
+    expect(code).toBe(0);
+    expect(lines.join("\n")).toContain("后端就绪");
+  }, 30000);
+
+  it("returns 1 from doctor when openwiki cannot be resolved", async () => {
     const { lines, logger } = createCapture();
 
-    expect(await main(["warm"], { logger })).toBe(1);
-    expect(await main(["doctor"], { logger })).toBe(1);
-    expect(lines.join("\n")).toContain("0.2.0");
+    const code = await main(["doctor"], {
+      logger,
+      resolveRuntime: async () => {
+        throw new Error("未找到 openwiki 依赖");
+      },
+    });
+
+    expect(code).toBe(1);
+    expect(lines.join("\n")).toContain("未找到");
   });
 
   it("prints usage for an unknown command", async () => {

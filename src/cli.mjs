@@ -1,9 +1,11 @@
 import { createRequire } from "node:module";
 import { createLogger } from "./log.mjs";
+import { runDoctorCommand } from "./commands/doctor.mjs";
 import { runMcpCommand } from "./commands/mcp.mjs";
+import { runWarmCommand } from "./commands/warm.mjs";
+import { nodeVersionSupported } from "./node-version.mjs";
 
 const HOST_ID = /^[a-z0-9-]{1,64}$/u;
-const MIN_NODE = [22, 22, 0];
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
@@ -16,25 +18,6 @@ const HELP = [
   "  openwiki-launcher help                 显示本帮助",
   "  openwiki-launcher version              显示版本",
 ].join("\n");
-
-/**
- * Compares a Node version against the minimum this package supports.
- *
- * @param {string} version - Version to check, e.g. "24.21.0".
- * @returns {boolean} Whether the version is at least the minimum.
- */
-function nodeVersionSupported(version) {
-  const parts = String(version)
-    .split(".")
-    .map((part) => Number.parseInt(part, 10) || 0);
-
-  for (let index = 0; index < MIN_NODE.length; index += 1) {
-    const actual = parts[index] === undefined ? 0 : parts[index];
-    if (actual > MIN_NODE[index]) return true;
-    if (actual < MIN_NODE[index]) return false;
-  }
-  return true;
-}
 
 /**
  * Parses `--host` for the mcp command.
@@ -99,7 +82,7 @@ export async function main(argv, deps = {}) {
   }
   if (!nodeVersionSupported(nodeVersion)) {
     logger.error(
-      `openwiki-launcher 需要 Node.js >= ${MIN_NODE.join(".")}，当前 ${nodeVersion}`,
+      `openwiki-launcher 需要 Node.js >= 22.22.0，当前 ${nodeVersion}`,
     );
     return 1;
   }
@@ -107,10 +90,28 @@ export async function main(argv, deps = {}) {
   if (command === "mcp") {
     const hostId = readHostId(rest, logger);
     if (hostId === null) return 1;
-    return runMcpCommand({ hostId, logger, env });
+    return runMcpCommand({ hostId, logger, env, spawnFn: deps.spawnFn });
   }
 
-  if (["warm", "doctor", "install", "uninstall"].includes(command)) {
+  if (command === "warm") {
+    return runWarmCommand({
+      logger,
+      resolveRuntime: deps.resolveRuntime,
+      createSupervisor: deps.createSupervisor,
+      env,
+    });
+  }
+
+  if (command === "doctor") {
+    return runDoctorCommand({
+      logger,
+      nodeVersion,
+      resolveRuntime: deps.resolveRuntime,
+      createSupervisor: deps.createSupervisor,
+    });
+  }
+
+  if (["install", "uninstall"].includes(command)) {
     logger.info(`${command} 命令将在 openwiki-launcher 0.2.0 提供`);
     return 1;
   }
