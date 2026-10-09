@@ -189,6 +189,7 @@ export function createBackendSupervisor({
 }) {
   let session = null;
   let starting = null;
+  let stopped = false;
   const exitListeners = new Set();
 
   async function startSession() {
@@ -206,6 +207,13 @@ export function createBackendSupervisor({
       if (candidate) {
         try {
           await candidate.ready;
+          // A host can disconnect while the backend is still importing. Without
+          // this check the freshly started process would outlive the broker as
+          // an orphan and keep the event loop alive.
+          if (stopped) {
+            candidate.stop();
+            throw new BackendUnavailableError("openwiki 后端已停止");
+          }
           return candidate;
         } catch (error) {
           // A process that dies before the handshake answers is a startup
@@ -215,6 +223,8 @@ export function createBackendSupervisor({
           candidate.stop();
         }
       }
+
+      if (stopped) throw new BackendUnavailableError("openwiki 后端已停止");
 
       if (attempt < maxSpawnAttempts) {
         logger.debug(
@@ -231,6 +241,9 @@ export function createBackendSupervisor({
   }
 
   function ensureReady() {
+    if (stopped) {
+      return Promise.reject(new BackendUnavailableError("openwiki 后端已停止"));
+    }
     if (session) return Promise.resolve(session);
     if (starting) return starting;
 
@@ -259,6 +272,8 @@ export function createBackendSupervisor({
       exitListeners.add(listener);
     },
     stop() {
+      stopped = true;
+      starting = null;
       if (session) {
         session.stop();
         session = null;
