@@ -1,0 +1,19 @@
+{
+  "name": "openwiki-launcher",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "openwiki-launcher": "./bin/openwiki-launcher.mjs" },
+  "engines": { "node": ">=22.22.0" },
+  "files": ["bin", "src", "manifest", "scripts"],
+  "scripts": {
+    "test": "vitest run",
+    "manifest": "node scripts/gen-manifest.mjs"
+  },
+  "dependencies": {
+    "openwiki": "0.6.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.11"
+  }
+}
