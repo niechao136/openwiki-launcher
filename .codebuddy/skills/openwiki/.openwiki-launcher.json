@@ -1,0 +1,24 @@
+{
+  "package": "openwiki-launcher",
+  "version": "0.2.0",
+  "target": "codebuddy",
+  "hosts": [
+    "codebuddy"
+  ],
+  "scope": "project",
+  "skillDir": "D:\\hub\\openwiki-launcher\\.codebuddy\\skills\\openwiki",
+  "mcpServerCommand": {
+    "command": "C:\\Users\\nie.chao\\AppData\\Local\\Author Software\\nvm\\installs\\v24.21.0\\node.exe",
+    "args": [
+      "C:\\Users\\nie.chao\\AppData\\Local\\Author Software\\nvm\\installs\\v24.21.0\\node_modules\\openwiki-launcher\\bin\\openwiki-launcher.mjs",
+      "mcp",
+      "--host",
+      "codebuddy"
+    ]
+  },
+  "files": {
+    "SKILL.md": "37bdbb313de37998d85094ffe349e0c05dc05816299b1adf05bbd686c3b698ac",
+    "agents/bob.yaml": "01eeaf2b7f709ae511f444e2b8e34f27a4a38885fc9b34a1ef8b2bb158d41362",
+    "agents/openai.yaml": "01eeaf2b7f709ae511f444e2b8e34f27a4a38885fc9b34a1ef8b2bb158d41362"
+  }
+}
