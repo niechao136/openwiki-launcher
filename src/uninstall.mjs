@@ -63,8 +63,9 @@ export function runUninstall(deps) {
 
   const { scope, baseDir } = resolveScope({ global: isGlobal, cwd, homeDir: deps.homeDir });
 
-  const detectSnapshot = deps.detectSnapshotOverride
-    ?? collectDetectSnapshot(hosts, { scope, baseDir, exists: deps.exists });
+  // deps.exists 是 PATH 探测的 seam，不是文件系统抽象；快照一律用真实的 existsSync。
+const detectSnapshot = deps.detectSnapshotOverride
+    ?? collectDetectSnapshot(hosts, { scope, baseDir });
   const chosen = explicitTargets ?? hosts.filter((h) => detectSnapshot[h.id] === true);
 
   if (chosen.length === 0) {
@@ -72,7 +73,7 @@ export function runUninstall(deps) {
     return { exitCode: 1, report: [], guardedCount: 0, skippedNoHost: true };
   }
 
-  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform, exists: deps.exists });
+  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform });
   const impl = platform === "win32" ? path.win32 : path.posix;
 
   /** @type {Array<{realPath: string, backupPath: string, existed: boolean}>} */

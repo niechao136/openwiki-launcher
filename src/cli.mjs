@@ -1,8 +1,11 @@
 import { createRequire } from "node:module";
+import os from "node:os";
 import { createLogger } from "./log.mjs";
 import { runDoctorCommand } from "./commands/doctor.mjs";
 import { runMcpCommand } from "./commands/mcp.mjs";
 import { runWarmCommand } from "./commands/warm.mjs";
+import { runInstallCommand, parseInstallArgs } from "./commands/install.mjs";
+import { resolveSelfBin } from "./self-path.mjs";
 import { nodeVersionSupported } from "./node-version.mjs";
 
 const HOST_ID = /^[a-z0-9-]{1,64}$/u;
@@ -12,11 +15,18 @@ const pkg = require("../package.json");
 
 const HELP = [
   "用法:",
-  "  openwiki-launcher mcp [--host <id>]   作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
-  "  openwiki-launcher warm                 预热 openwiki 后端后退出",
-  "  openwiki-launcher doctor               检查环境与 manifest 一致性",
-  "  openwiki-launcher help                 显示本帮助",
-  "  openwiki-launcher version              显示版本",
+  "  openwiki-launcher [install]              安装到自动检测到的宿主（项目级）",
+  "  openwiki-launcher --global               用户级安装",
+  "  openwiki-launcher --tool <id>            指定宿主安装",
+  "  openwiki-launcher --uninstall [--global] 卸载",
+  "  openwiki-launcher --force                允许项目级安装落到用户主目录",
+  "  openwiki-launcher --no-takeover          遇到 openwiki 原生安装时跳过而非接管",
+  "  openwiki-launcher --bootstrap            额外写引导文件（0.2.0 未启用，仅提示）",
+  "  openwiki-launcher mcp [--host <id>]      作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
+  "  openwiki-launcher warm                    预热 openwiki 后端后退出",
+  "  openwiki-launcher doctor                  检查环境、manifest 与已写入的 MCP 命令",
+  "  openwiki-launcher help                    显示本帮助",
+  "  openwiki-launcher version                 显示版本",
 ].join("\n");
 
 /**
@@ -111,12 +121,49 @@ export async function main(argv, deps = {}) {
     });
   }
 
-  if (["install", "uninstall"].includes(command)) {
-    logger.info(`${command} 命令将在 openwiki-launcher 0.2.0 提供`);
-    return 1;
+  if (command === "install" || command === "uninstall") {
+    const parsed = parseInstallArgs(command === "uninstall" ? [...rest, "--uninstall"] : rest);
+    if (parsed.error) {
+      logger.error(parsed.error);
+      return 1;
+    }
+    return runInstallCommand(parsed.flags, cliDeps(deps, logger));
+  }
+
+  // 裸用法：`openwiki-launcher` 或 `openwiki-launcher --tool claude` 都走安装
+  if (command === undefined || command.startsWith("-")) {
+    const parsed = parseInstallArgs(argv);
+    if (parsed.error) {
+      logger.error(parsed.error);
+      return 1;
+    }
+    return runInstallCommand(parsed.flags, cliDeps(deps, logger));
   }
 
   logger.info(HELP);
   logger.error(`未知命令: ${command}`);
   return 1;
+}
+
+/**
+ * 把 main 的 deps 组装成 install / uninstall 需要的形状，并补齐缺省值。
+ *
+ * @param {object} deps main 的 deps
+ * @param {object} logger
+ * @returns {object}
+ */
+function cliDeps(deps, logger) {
+  return {
+    logger,
+    cwd: deps.cwd ?? process.cwd(),
+    homeDir: deps.homeDir ?? os.homedir(),
+    env: deps.env ?? process.env,
+    platform: deps.platform ?? process.platform,
+    exists: deps.exists,
+    nodeCommand: deps.nodeCommand,
+    selfBin: deps.selfBin ?? resolveSelfBin(import.meta.url),
+    launcherVersion: pkg.version,
+    bundleDir: deps.bundleDir,
+    now: deps.now,
+  };
 }

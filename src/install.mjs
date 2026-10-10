@@ -77,10 +77,13 @@ export function runInstall(deps) {
   const { scope, baseDir } = resolveScope({ global: isGlobal, cwd, homeDir: deps.homeDir });
 
   // ---- 一次性算完三张快照，之后才允许写 ----
-  const detectSnapshot = deps.detectSnapshotOverride
-    ?? collectDetectSnapshot(hosts, { scope, baseDir, exists: deps.exists });
-  const nativeSnapshot = collectNativeSnapshot(hosts, { scope, baseDir, platform, exists: deps.exists });
-  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform, exists: deps.exists });
+  // 快照一律用真实的 existsSync —— deps.exists 是 PATH 探测的 seam，不是文件系统抽象。
+// 之前把它一并传下去，导致测试里 `exists: () => false` 会让快照永远认为「文件不存在」。
+// 需要控制检测结果时走 detectSnapshotOverride。
+const detectSnapshot = deps.detectSnapshotOverride
+    ?? collectDetectSnapshot(hosts, { scope, baseDir });
+  const nativeSnapshot = collectNativeSnapshot(hosts, { scope, baseDir, platform });
+  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform });
 
   const plan = planInstall({
     hosts, scope, baseDir, homeDir: deps.homeDir,
@@ -107,6 +110,22 @@ export function runInstall(deps) {
     logger.info("没有检测到已安装的宿主。");
     suggestFromPath({ logger, env: deps.env ?? {}, platform, exists: deps.exists });
     return { exitCode: 1, report: [], guardedCount: 0, skippedNoHost: true };
+  }
+
+  // 显式 --tool 指定了不支持该作用域的宿主时必须失败，不能静默什么都不做。
+  // 自动检测时不同：某一家不支持只跳过那一家，其余宿主照常安装。
+  if (explicitTargets) {
+    const unsupported = plan.entries.filter((e) => e.skill.action === "skip");
+    if (unsupported.length > 0) {
+      logger.error("该宿主不支持你选择的安装作用域：");
+      for (const e of unsupported) logger.error(`  ${e.displayName}: ${e.skill.reason}`);
+      return {
+        exitCode: 1,
+        report: plan.entries.map((e) => ({ hostId: e.hostId, wrote: false, skill: e.skill, mcp: e.mcp })),
+        guardedCount: 0,
+        skippedNoHost: false,
+      };
+    }
   }
 
   // ---- 执行 ----
@@ -209,6 +228,8 @@ export function runInstall(deps) {
     }
     if (row.mcp.action === "created" || row.mcp.action === "updated") {
       logger.info(`  MCP -> ${row.mcp.path}`);
+    } else if (row.mcp.action === "unchanged") {
+      logger.info(`  MCP 已是最新，未改动 -> ${row.mcp.path}`);
     }
     if (row.mcp.action === "manual") {
       logger.info("  该宿主的 MCP 配置需要在宿主界面里手动添加，请把下面这段放进它的 MCP 设置：");

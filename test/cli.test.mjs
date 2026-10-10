@@ -26,13 +26,16 @@ describe("main", () => {
     expect(lines.join("\n")).toContain("1-64 lowercase letters, digits, or hyphens");
   });
 
-  it("points at the next release for install, which ships with the installer", async () => {
+  it("no longer defers install to a later release", async () => {
+    // 0.2.0 起 install 已实现（见 docs/specs/2026-10-10-openwiki-launcher-installer-design.md）。
+    // 接线与参数解析的完整覆盖在 test/cli-install.test.mjs，这里只守住「不再打占位文案」。
     const { lines, logger } = createCapture();
 
-    const code = await main(["install", "--tool", "codebuddy"], { logger });
+    const code = await main(["install", "--frobnicate"], { logger });
 
     expect(code).toBe(1);
-    expect(lines.join("\n")).toContain("0.2.0");
+    expect(lines.join("\n")).toContain("无法识别的参数");
+    expect(lines.join("\n")).not.toContain("将在 openwiki-launcher 0.2.0 提供");
   });
 
   it("runs warm against a fake backend and reports readiness", async () => {
