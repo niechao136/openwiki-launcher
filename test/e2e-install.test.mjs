@@ -187,10 +187,41 @@ describe("跨宿主的不变量", () => {
         expect(r.exitCode, `安装 ${host.id}`).toBe(0);
         expect(existsSync(join(proj, host.skill.projectDir, "openwiki", "SKILL.md")), host.id).toBe(true);
       }
+
+      // codex / antigravity / bob 共用 .agents/skills —— 卸载其中一家只移除它的记录，
+      // 目录要等最后一家卸载后才消失（I5）。所以按「目录」分组校验，而不是逐家。
       for (const host of withProject) {
         expect(runUninstall({ ...d, tool: host.id }).exitCode, `卸载 ${host.id}`).toBe(0);
-        expect(existsSync(join(proj, host.skill.projectDir, "openwiki")), host.id).toBe(false);
       }
+      const dirs = [...new Set(withProject.map((h) => join(proj, h.skill.projectDir, "openwiki")))];
+      for (const dir of dirs) {
+        expect(existsSync(dir), `卸载全部宿主后应删除 ${dir}`).toBe(false);
+      }
+    } finally { removeTempDir(proj); }
+  });
+
+  it("共用 .agents/skills 的三家：卸载其中一家不连带删掉另两家（I5）", () => {
+    const proj = makeTempDir("ow-e-share-");
+    try {
+      const logs = collectLogger();
+      const d = baseDeps({ logger: logs.logger, cwd: proj, homeDir: join(proj, "home"), platform: PLATFORM });
+      const sharedDir = join(proj, ".agents/skills/openwiki");
+
+      for (const id of ["codex", "bob", "antigravity"]) {
+        expect(runInstall({ ...d, tool: id }).exitCode, id).toBe(0);
+      }
+      expect(existsSync(join(sharedDir, "SKILL.md"))).toBe(true);
+
+      // 卸载 codex：目录必须还在（bob 与 antigravity 仍在用）
+      expect(runUninstall({ ...d, tool: "codex" }).exitCode).toBe(0);
+      expect(existsSync(sharedDir), "卸载 codex 不应删掉共用目录").toBe(true);
+      expect(existsSync(join(sharedDir, "SKILL.md")), "SKILL.md 应仍在").toBe(true);
+
+      // 剩下两家都卸载后目录才消失
+      expect(runUninstall({ ...d, tool: "bob" }).exitCode).toBe(0);
+      expect(existsSync(sharedDir)).toBe(true);
+      expect(runUninstall({ ...d, tool: "antigravity" }).exitCode).toBe(0);
+      expect(existsSync(sharedDir), "最后一家卸载后目录才消失").toBe(false);
     } finally { removeTempDir(proj); }
   });
 });

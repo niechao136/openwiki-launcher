@@ -100,7 +100,8 @@ function sha256(filePath) {
  * @param {{ bundleDir: string, targetDir: string, hostId: string, scope: string,
  *           mcpCommand: { command: string, args: string[] }, launcherVersion: string,
  *           logger: { info(m: string): void }, takeover?: boolean }} options
- * @returns {{ receiptPath: string, files: Record<string, string>, tookOver: boolean }}
+ * @returns {{ receiptPath: string, files: Record<string, string>, tookOver: boolean,
+ *             preexisting: boolean }}
  */
 export function installSkill(options) {
   const { bundleDir, targetDir, hostId, scope, mcpCommand, launcherVersion, logger } = options;
@@ -109,8 +110,9 @@ export function installSkill(options) {
   // 先把整棵树校验完，一个字都还没写
   const relatives = listBundleFiles(bundleDir);
 
+  const preexisting = existsSync(targetDir);
   let tookOver = false;
-  if (existsSync(targetDir)) {
+  if (preexisting) {
     if (!existsSync(path.join(targetDir, RECEIPT_FILE))) {
       logger.info(
         `已存在同名目录但没有安装收据，将覆盖: ${targetDir}`
@@ -133,19 +135,30 @@ export function installSkill(options) {
     files[rel] = sha256(dest);
   }
 
+  const receiptPath = path.join(targetDir, RECEIPT_FILE);
+  const previous = readReceipt(targetDir);
+  // 多家宿主可能共用同一个 skills 目录（codex / antigravity / bob 都是 .agents/skills），
+  // 收据因此记 hosts 并集而不是单个 target —— 否则后装的会覆盖先装的记录，
+  // 卸载任一家就会把整目录删掉、连带删掉别家的 skill（I5）。
+  const hosts = [...new Set([
+    ...(Array.isArray(previous?.hosts) ? previous.hosts : []),
+    ...(previous?.target ? [previous.target] : []),
+    hostId,
+  ])].sort();
+
   const receipt = {
     package: "openwiki-launcher",
     version: launcherVersion,
     target: hostId,
+    hosts,
     scope,
     skillDir: targetDir,
     mcpServerCommand: mcpCommand,
     files,
   };
-  const receiptPath = path.join(targetDir, RECEIPT_FILE);
   writeFileSync(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`, "utf8");
 
-  return { receiptPath, files, tookOver };
+  return { receiptPath, files, tookOver, preexisting };
 }
 
 /**
@@ -186,13 +199,33 @@ export function verifySkill(targetDir) {
 }
 
 /**
+ * 收据里记录的宿主列表。旧收据只有 target 字段，返回单元素数组。
+ *
+ * @param {string} targetDir
+ * @returns {string[]}
+ */
+export function receiptHosts(targetDir) {
+  const receipt = readReceipt(targetDir);
+  if (!receipt) return [];
+  return [...new Set([
+    ...(Array.isArray(receipt.hosts) ? receipt.hosts : []),
+    ...(receipt.target ? [receipt.target] : []),
+  ])].sort();
+}
+
+/**
  * 删除已安装的 skill 目录，仅当收据存在且逐文件哈希全匹配。
+ *
+ * 多家宿主共用同一个 skills 目录时（codex / antigravity / bob 都是 `.agents/skills`），
+ * 只移除本次这家在收据里的记录，目录保留 —— 否则卸载 codex 会连带删掉 antigravity 的 skill。
+ * 目录里其实只有一份 openwiki skill，宿主是「谁来读它」的关系，不是「谁拥有它」。
  *
  * @param {string} targetDir
  * @param {{ warn(m: string): void }} logger
- * @returns {{ removed: boolean, reason?: "missing" | "modified" }}
+ * @param {{ hostId?: string }} [options] 传入 hostId 时按「移除本宿主」语义处理
+ * @returns {{ removed: boolean, reason?: "missing" | "modified" | "shared" }}
  */
-export function removeSkill(targetDir, logger) {
+export function removeSkill(targetDir, logger, options = {}) {
   const verdict = verifySkill(targetDir);
   if (verdict.missing) return { removed: false, reason: "missing" };
   if (!verdict.ok) {
@@ -202,6 +235,27 @@ export function removeSkill(targetDir, logger) {
     );
     return { removed: false, reason: "modified" };
   }
+
+  const hostId = options.hostId;
+  if (hostId) {
+    const hosts = receiptHosts(targetDir);
+    if (hosts.length > 1) {
+      const remaining = hosts.filter((h) => h !== hostId);
+      const receipt = readReceipt(targetDir);
+      receipt.hosts = remaining;
+      receipt.target = remaining[0];
+      writeFileSync(
+        path.join(targetDir, RECEIPT_FILE),
+        `${JSON.stringify(receipt, null, 2)}\n`,
+        "utf8",
+      );
+      logger.info(
+        `${targetDir} 还被 ${remaining.join(", ")} 共用，本次只移除 ${hostId} 的记录，目录保留`,
+      );
+      return { removed: false, reason: "shared" };
+    }
+  }
+
   rmSync(targetDir, { recursive: true, force: true });
   return { removed: true };
 }

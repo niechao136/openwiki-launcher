@@ -1,9 +1,10 @@
 ﻿import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { HOSTS } from "./registry.mjs";
-import { removeSkill } from "./skill-install.mjs";
+import { removeSkill, readReceipt } from "./skill-install.mjs";
 import { readJsonEntry, spliceJsonEntry, removeTomlBlock, readTomlBlock } from "./mcp-config.mjs";
 import { createBackup, rollbackAll } from "./backup.mjs";
+import { skillsDirFor, isOursEntry } from "./ownership.mjs";
 import {
   resolveScope, resolveTargets, collectDetectSnapshot, collectMcpSnapshot,
 } from "./targets.mjs";
@@ -19,27 +20,6 @@ import {
  */
 
 const ENTRY_KEY = "openwiki";
-
-/**
- * 判断已存在的 MCP 条目是不是本安装器写入的。
- *
- * 配置里 command 指向 node、args[0] 指向 launcher 的 bin —— 两处都要对上，
- * 只看 command 会把 openwiki 原生安装（command 是裸 openwiki）误当成自己的，
- * 也会把用户手写的条目误删。
- *
- * @param {object | null} existing
- * @param {{ command: string, args: string[] }} mine
- * @returns {boolean}
- */
-function isOurs(existing, mine) {
-  if (!existing || typeof existing !== "object") return false;
-  const wantArgs = JSON.stringify(mine.args);
-  if (Array.isArray(existing.command)) {
-    // opencode 把 command 与 args 合成一个数组
-    return JSON.stringify(existing.command) === JSON.stringify([mine.command, ...mine.args]);
-  }
-  return existing.command === mine.command && JSON.stringify(existing.args) === wantArgs;
-}
 
 /**
  * 执行一次卸载。
@@ -64,7 +44,7 @@ export function runUninstall(deps) {
   const { scope, baseDir } = resolveScope({ global: isGlobal, cwd, homeDir: deps.homeDir });
 
   // deps.exists 是 PATH 探测的 seam，不是文件系统抽象；快照一律用真实的 existsSync。
-const detectSnapshot = deps.detectSnapshotOverride
+  const detectSnapshot = deps.detectSnapshotOverride
     ?? collectDetectSnapshot(hosts, { scope, baseDir });
   const chosen = explicitTargets ?? hosts.filter((h) => detectSnapshot[h.id] === true);
 
@@ -73,7 +53,7 @@ const detectSnapshot = deps.detectSnapshotOverride
     return { exitCode: 1, report: [], guardedCount: 0, skippedNoHost: true };
   }
 
-  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform });
+  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform, read: deps.read });
   const impl = platform === "win32" ? path.win32 : path.posix;
 
   /** @type {Array<{realPath: string, backupPath: string, existed: boolean}>} */
@@ -82,7 +62,6 @@ const detectSnapshot = deps.detectSnapshotOverride
   let failed = false;
 
   for (const host of chosen) {
-    const mine = { command: nodeCommand.command, args: [deps.selfBin, "mcp", "--host", host.id] };
     const row = {
       hostId: host.id, displayName: host.displayName,
       skill: { action: "skip", reason: "missing" },
@@ -90,10 +69,12 @@ const detectSnapshot = deps.detectSnapshotOverride
     };
 
     // ---- skill ----
-    const relDir = scope === "user" ? host.skill.globalDir : host.skill.projectDir;
+    const relDir = skillsDirFor(host, { scope, platform });
+    let skillDir = null;
     if (relDir) {
-      const skillDir = impl.join(baseDir, ...relDir.split("/"), "openwiki");
-      const result = removeSkill(skillDir, logger);
+      skillDir = impl.join(baseDir, ...relDir.split("/"), "openwiki");
+      // 传 hostId：多家宿主共用同一个 skills 目录时只移除本家的记录（I5）
+      const result = removeSkill(skillDir, logger, { hostId: host.id });
       row.skill = result.removed
         ? { action: "removed", dir: skillDir }
         : { action: "skip", dir: skillDir, reason: result.reason };
@@ -103,6 +84,14 @@ const detectSnapshot = deps.detectSnapshotOverride
         reason: scope === "user" ? "该宿主没有全局技能目录" : (host.noProjectReason ?? "该宿主不支持项目级"),
       };
     }
+
+    // 归属判断优先用收据里**当时写入**的命令，而不是当前的 node 路径 / bin 路径。
+    // 用户升级 node 或换了全局 npm 前缀之后，当前路径已经变了，拿它比对会把
+    // 「自己写的条目」判成「不是本安装器写入的」，于是 MCP 条目被留在配置里
+    // 而退出码是 0 —— 用户永远删不掉它（I4）。
+    const receipt = skillDir ? readReceipt(skillDir) : null;
+    const mine = receipt?.mcpServerCommand
+      ?? { command: nodeCommand.command, args: [deps.selfBin, "mcp", "--host", host.id] };
 
     // ---- MCP ----
     const mcp = host.mcp;
@@ -129,9 +118,7 @@ const detectSnapshot = deps.detectSnapshotOverride
           allowComments: mcp.kind === "opencode-json",
         });
 
-      const ours = mcp.kind === "codex-toml"
-        ? isOursToml(existing, mine)
-        : isOurs(existing, mine);
+      const ours = isOursEntry(existing, mine);
 
       if (!ours) {
         row.mcp = {
@@ -183,16 +170,4 @@ const detectSnapshot = deps.detectSnapshotOverride
   logger.info("备份文件（形如 *.openwiki-launcher-backup-*）不会自动删除，确认无误后可自行清理。");
 
   return { exitCode: 0, report, guardedCount: 0, skippedNoHost: false };
-}
-
-/**
- * toml 条目的归属判断：块里 command 必须等于我们的 node 路径，且 args 含我们的 bin。
- *
- * @param {{ command: string, args: string } | null} existing
- * @param {{ command: string, args: string[] }} mine
- * @returns {boolean}
- */
-function isOursToml(existing, mine) {
-  if (!existing) return false;
-  return existing.command === mine.command && String(existing.args).includes(mine.args[0]);
 }

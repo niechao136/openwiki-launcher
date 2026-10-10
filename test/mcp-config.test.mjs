@@ -90,6 +90,41 @@ describe("json（mcpServers.openwiki）", () => {
       expect(() => call(bad)).toThrow(/无法解析|括号不配对/u);
     }
   });
+
+  it("单行压缩 JSON：容器不存在时插入后仍是合法 JSON（C1）", () => {
+    for (const input of ['{"otherTop":1}', '{"otherTop":1}\n']) {
+      const r = call(input);
+      const parsed = JSON.parse(r.text);
+      expect(parsed.otherTop).toBe(1);
+      expect(parsed.mcpServers.openwiki).toEqual(cmd);
+    }
+  });
+
+  it("单行压缩 JSON：容器已存在时更新条目后仍合法且幂等（C1）", () => {
+    const empty = '{"mcpServers":{}}';
+    expect(JSON.parse(call(empty).text).mcpServers.openwiki).toEqual(cmd);
+
+    const filled = '{"mcpServers":{"other":1}}';
+    const created = call(filled);
+    expect(JSON.parse(created.text).mcpServers).toEqual({ other: 1, openwiki: cmd });
+    const again = call(created.text);
+    expect(again.action).toBe("unchanged");
+    expect(JSON.parse(again.text).mcpServers).toEqual({ other: 1, openwiki: cmd });
+  });
+
+  it("单行压缩 JSON：删除条目后仍合法（C1）", () => {
+    const base = call('{"mcpServers":{"other":1}}');
+    const r = spliceJsonEntry(base.text, {
+      containerKey: "mcpServers", entryKey: "openwiki", entryJson: null,
+    });
+    expect(r.removed).toBe(true);
+    expect(JSON.parse(r.text)).toEqual({ mcpServers: { other: 1 } });
+  });
+
+  it("前导空白开头的 JSON 也能处理（M5）", () => {
+    const r = call('\n  {"mcpServers":{}}\n');
+    expect(JSON.parse(r.text).mcpServers.openwiki).toEqual(cmd);
+  });
 });
 
 describe("opencode jsonc（mcp.openwiki）", () => {

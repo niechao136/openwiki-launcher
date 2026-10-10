@@ -1,6 +1,9 @@
 ﻿import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { findHost } from "./registry.mjs";
+import { skillsDirFor } from "./ownership.mjs";
+
+export { skillsDirFor };
 
 /**
  * 作用域、目标与「现状快照」的解析。
@@ -73,12 +76,19 @@ export function collectNativeSnapshot(hosts, { scope, baseDir, platform, exists 
       snapshot[host.id] = { receipt: false, skillDir: null };
       continue;
     }
-    const relDir = scope === "user" ? host.skill.globalDir : host.skill.projectDir;
+    // 优先用注册表里 openwiki 原生安装器自己的路径；没有才按本包的布局推导。
+    // omp 的两者不同（原生用户级是 .omp/agent/skills，opencode 项目级是 .opencode/skills），
+    // 用错会导致原生收据探测落空、接管静默失效。
+    const relDir = host.native.skillDir
+      ? host.native.skillDir
+      : skillsDirFor(host, { scope, platform });
     if (!relDir) {
       snapshot[host.id] = { receipt: false, skillDir: null };
       continue;
     }
-    const skillDir = impl.join(baseDir, ...relDir.split("/"), "openwiki");
+    const skillDir = relDir.endsWith("/openwiki")
+      ? impl.join(baseDir, ...relDir.split("/"))
+      : impl.join(baseDir, ...relDir.split("/"), "openwiki");
     const receipt = exists(path.join(skillDir, host.native.receipt));
     snapshot[host.id] = { receipt, skillDir };
   }
@@ -88,16 +98,18 @@ export function collectNativeSnapshot(hosts, { scope, baseDir, platform, exists 
 /**
  * 读取各宿主 MCP 配置文件的当前文本，供决策器判断「条目是否已存在、是否已经是我们的」。
  *
- * 读失败按「存在但内容为空」处理，交给切片层走空配置分支 —— 那样会写出新配置，
- * 而一个读不出来的文件大概率是权限问题，用户会从写入失败里看到真实原因。
+ * 读不出来时标记 `unreadable` —— **绝不能当成空文件**。「可写但不可读」是真实存在的
+ * （Windows 上被独占、间歇性 IO 错误、并发写导致的截断），把读失败当成空配置会走
+ * 「新建」分支，用「只有 openwiki 一个 server」的新内容**覆盖掉用户整个配置文件**，
+ * 而且退出码是 0（I7）。
  *
  * @param {object[]} hosts 注册表条目
  * @param {{ scope: string, baseDir: string, platform?: string,
  *           exists?: (p: string) => boolean, read?: (p: string) => string }} options
- * @returns {Record<string, { path: string, text: string, exists: boolean }>}
+ * @returns {Record<string, { path: string, text: string, exists: boolean, unreadable?: string }>}
  */
 export function collectMcpSnapshot(hosts, { scope, baseDir, platform, exists = existsSync, read = readFileSync }) {
-  /** @type {Record<string, { path: string, text: string, exists: boolean }>} */
+  /** @type {Record<string, { path: string, text: string, exists: boolean, unreadable?: string }>} */
   const snapshot = {};
   const impl = platform === "win32" ? path.win32 : path.posix;
 
@@ -111,15 +123,15 @@ export function collectMcpSnapshot(hosts, { scope, baseDir, platform, exists = e
     }
     const p = impl.join(baseDir, ...rel.split("/"));
     const present = exists(p);
-    let text = "";
-    if (present) {
-      try {
-        text = read(p, "utf8");
-      } catch {
-        text = "";
-      }
+    if (!present) {
+      snapshot[host.id] = { path: p, text: "", exists: false };
+      continue;
     }
-    snapshot[host.id] = { path: p, text, exists: present };
+    try {
+      snapshot[host.id] = { path: p, text: read(p, "utf8"), exists: true };
+    } catch (error) {
+      snapshot[host.id] = { path: p, text: "", exists: true, unreadable: error.message };
+    }
   }
   return snapshot;
 }

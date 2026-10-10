@@ -1,6 +1,7 @@
 ﻿import path from "node:path";
 import { isSystemDir as defaultIsSystemDir, isHomeDir as defaultIsHomeDir } from "./guards.mjs";
 import { spliceJsonEntry, readJsonEntry, upsertTomlBlock, readTomlBlock } from "./mcp-config.mjs";
+import { skillsDirFor, isOursEntry } from "./ownership.mjs";
 
 /**
  * 安装决策器：一个**纯函数**，不碰文件系统。
@@ -81,11 +82,9 @@ function buildEntryPayload(host, nodeAndBin) {
  *
  * @param {object} host 注册表条目
  * @param {{ path: string, text: string, exists: boolean }} snapshot
- * @param {{ command: string, args: string[] }} nodeAndBin
  * @returns {object | null} 条目值；读不出来（文本畸形等）时返回 null
  */
-function readExistingEntry(host, snapshot, nodeAndBin) {
-  void nodeAndBin;
+function readExistingEntry(host, snapshot) {
   try {
     if (host.mcp.kind === "codex-toml") {
       const block = readTomlBlock(snapshot.text, { tableName: `${host.mcp.containerKey}.${ENTRY_KEY}` });
@@ -100,27 +99,6 @@ function readExistingEntry(host, snapshot, nodeAndBin) {
   } catch {
     return null;
   }
-}
-
-/**
- * 判断已存在的条目是否由本安装器写入。
- *
- * @param {object} existing readExistingEntry 的结果
- * @param {{ command: string, args: string[] }} nodeAndBin
- * @returns {boolean}
- */
-function isOurs(existing, nodeAndBin) {
-  if (!existing || typeof existing !== "object") return false;
-  const wantArgs = JSON.stringify(nodeAndBin.args);
-  if (Array.isArray(existing.args)) {
-    // opencode 把 command 与 args 合成一个数组
-    return existing.command === nodeAndBin.command
-      && JSON.stringify(existing.args) === wantArgs;
-  }
-  const argsMatch = JSON.stringify(existing.args) === wantArgs
-    // toml 的 args 被读成整段文本，退化成包含判断
-    || String(existing.args ?? "").includes(nodeAndBin.args.join(", "));
-  return existing.command === nodeAndBin.command && argsMatch;
 }
 
 /**
@@ -148,13 +126,16 @@ export function planInstall(opts) {
     const mine = { command: nodeCommand.command, args };
 
     // ---- skill 目录 ----
-    const relDir = scope === "user" ? host.skill.globalDir : host.skill.projectDir;
+    // skillsDirFor 会按 platform 选 globalDirWin（Crush / Reasonix 的 Windows 全局路径与
+    // unix 不同构），直接读 globalDir 会把 skill 装到宿主不扫描的目录（I1）
+    const relDir = skillsDirFor(host, { scope, platform: opts.platform });
     /** @type {{action: string, dir: string, reason?: string}} */
     let skill;
     if (!relDir) {
       skill = {
         action: "skip",
         dir: "",
+        skipKind: "scope",
         reason: scope === "user"
           ? "该宿主没有已核实的全局技能目录，请改用项目级安装"
           : (host.noProjectReason ?? "该宿主不支持项目级安装"),
@@ -175,6 +156,16 @@ export function planInstall(opts) {
     } else {
       const mcpPath = joinFor(opts.platform, baseDir, relMcp);
       const snapshot = mcpSnapshot[hostId] ?? { path: mcpPath, text: "", exists: false };
+      if (snapshot.unreadable) {
+        // 读不出来的配置绝不能当成空配置：那样会用「只有 openwiki 一个 server」的
+        // 新内容覆盖用户的整个配置文件，其他 server 全部消失（I7）。
+        // 仍然往下走护栏检查，不因为这里提前返回。
+        mcp = {
+          action: "error", path: mcpPath, kind: host.mcp.kind,
+          containerKey: host.mcp.containerKey,
+          reason: `无法读取配置文件，已跳过以免覆盖：${snapshot.unreadable}`,
+        };
+      } else {
       const payload = buildEntryPayload(host, mine);
       try {
         const result = host.mcp.kind === "codex-toml"
@@ -197,6 +188,7 @@ export function planInstall(opts) {
         };
       } catch (error) {
         mcp = { action: "error", path: mcpPath, kind: host.mcp.kind, containerKey: host.mcp.containerKey, reason: error.message };
+      }
       }
     }
 
@@ -226,16 +218,19 @@ export function planInstall(opts) {
       takeover = true;
       takeoverReason = "native-receipt";
     } else if (mcp.action === "updated") {
-      const existing = readExistingEntry(host, mcpSnapshot[hostId] ?? { path: "", text: "", exists: false }, mine);
-      if (!isOurs(existing, mine)) {
+      const existing = readExistingEntry(host, mcpSnapshot[hostId] ?? { path: "", text: "", exists: false });
+      if (!isOursEntry(existing, mine)) {
         takeover = true;
         takeoverReason = "foreign-entry";
       }
     }
 
     if (takeover && flags.noTakeover) {
-      skill = { action: "skip", dir: skill.dir, reason: "检测到 openwiki 原生安装，--no-takeover 已跳过" };
-      mcp = { ...mcp, action: "skip", reason: "native install present (--no-takeover)" };
+      skill = {
+        action: "skip", dir: skill.dir, skipKind: "takeover",
+        reason: "检测到 openwiki 原生安装，--no-takeover 已跳过",
+      };
+      mcp = { ...mcp, action: "skip", skipKind: "takeover", reason: "native install present (--no-takeover)" };
       takeover = false;
     }
 

@@ -164,4 +164,74 @@ describe("runInstall", () => {
     expect(existsSync(join(proj, ".claude/skills/openwiki/SKILL.md"))).toBe(true);
     expect(existsSync(join(proj, ".codebuddy/skills/openwiki/SKILL.md"))).toBe(true);
   });
+
+  it("配置文件读不出来时跳过写盘而不是当成空配置覆盖（I7）", () => {
+    const cfg = join(proj, ".mcp.json");
+    writeFileSync(cfg, '{"mcpServers":{"other":{"command":"x"}}}', "utf8");
+    const r = runInstall(deps({
+      tool: "claude",
+      // 存在但读不出来（权限不足 / 被独占 / 间歇性 IO 错误）
+      read: () => { throw new Error("EACCES: permission denied"); },
+    }));
+    expect(r.exitCode).toBe(1);
+    expect(readFileSync(cfg, "utf8")).toBe('{"mcpServers":{"other":{"command":"x"}}}');
+    expect(logs.text()).toContain("无法读取");
+  });
+
+  it("--no-takeover 跳过是成功路径，不该报「不支持该作用域」（I2）", () => {
+    const skillDir = join(home, ".claude/skills/openwiki");
+    mkdirSync(skillDir, { recursive: true });
+    writeFileSync(join(skillDir, ".openwiki-install.json"), '{"package":"openwiki"}', "utf8");
+    writeFileSync(join(home, ".claude.json"),
+      '{"mcpServers":{"openwiki":{"command":"openwiki","args":["mcp","--host","claude"]}}}', "utf8");
+
+    const r = runInstall(deps({ tool: "claude", global: true, noTakeover: true }));
+    expect(r.exitCode).toBe(0);
+    expect(logs.text()).not.toContain("不支持你选择的安装作用域");
+    expect(logs.text()).toContain("跳过");
+  });
+
+  it("写入中途失败时回滚，且不删运行之前就存在的 skill 目录（I3）", () => {
+    // 一个「用户手放的」skill 目录：没有收据，安装会覆盖它，但回滚不该删掉它
+    const manualDir = join(proj, ".codebuddy/skills/openwiki");
+    mkdirSync(manualDir, { recursive: true });
+    writeFileSync(join(manualDir, "用户手放.txt"), "keep me", "utf8");
+    // 预置 claude 的配置文件，让「读不出来」这条路径真的被走到
+    writeFileSync(join(proj, ".mcp.json"), '{"mcpServers":{"other":{"command":"x"}}}', "utf8");
+
+    const r = runInstall(deps({
+      detectSnapshotOverride: { claude: true, codebuddy: true },
+      read: (p) => {
+        if (String(p).endsWith(".mcp.json")) throw new Error("EACCES: permission denied");
+        return readFileSync(p, "utf8");
+      },
+    }));
+
+    expect(r.exitCode).toBe(1);
+    expect(existsSync(join(manualDir, "用户手放.txt"))).toBe(true);
+    expect(existsSync(join(proj, ".claude/skills/openwiki"))).toBe(false);
+    // 失败目标的错误与成功目标的报告同时可见
+    expect(logs.text()).toContain("claude");
+    expect(logs.text()).toContain("codebuddy");
+  });
+
+  it("win32 上 --global 用 globalDirWin（I1）", () => {
+    const home2 = makeTempDir("ow-win-");
+    try {
+      const logs2 = collectLogger();
+      const r = runInstall({
+        ...baseDeps({
+          logger: logs2.logger, cwd: join(home2, "proj"), homeDir: home2, platform: "win32",
+        }),
+        tool: "crush",
+        global: true,
+      });
+      expect(r.exitCode).toBe(0);
+      // Crush 的 Windows 全局目录是 AppData/Local/crush/skills，不是 .config/crush/skills
+      const crushDir = join(home2, "AppData", "Local", "crush", "skills", "openwiki", "SKILL.md");
+      const unixDir = join(home2, ".config", "crush", "skills", "openwiki", "SKILL.md");
+      expect(existsSync(crushDir)).toBe(true);
+      expect(existsSync(unixDir)).toBe(false);
+    } finally { removeTempDir(home2); }
+  });
 });

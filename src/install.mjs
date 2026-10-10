@@ -83,7 +83,7 @@ export function runInstall(deps) {
 const detectSnapshot = deps.detectSnapshotOverride
     ?? collectDetectSnapshot(hosts, { scope, baseDir });
   const nativeSnapshot = collectNativeSnapshot(hosts, { scope, baseDir, platform });
-  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform });
+  const mcpSnapshot = collectMcpSnapshot(hosts, { scope, baseDir, platform, read: deps.read });
 
   const plan = planInstall({
     hosts, scope, baseDir, homeDir: deps.homeDir,
@@ -115,7 +115,9 @@ const detectSnapshot = deps.detectSnapshotOverride
   // 显式 --tool 指定了不支持该作用域的宿主时必须失败，不能静默什么都不做。
   // 自动检测时不同：某一家不支持只跳过那一家，其余宿主照常安装。
   if (explicitTargets) {
-    const unsupported = plan.entries.filter((e) => e.skill.action === "skip");
+    // 只把「该作用域不支持」算失败；--no-takeover 跳过是**成功路径**
+    // （规格 4.4 要求「零改动 + 报告标 skipped」），不能报成作用域错误（I2）
+    const unsupported = plan.entries.filter((e) => e.skill.skipKind === "scope");
     if (unsupported.length > 0) {
       logger.error("该宿主不支持你选择的安装作用域：");
       for (const e of unsupported) logger.error(`  ${e.displayName}: ${e.skill.reason}`);
@@ -157,12 +159,15 @@ const detectSnapshot = deps.detectSnapshotOverride
 
     if (e.skill.action === "install") {
       try {
-        installSkill({
+        const result = installSkill({
           bundleDir, targetDir: e.skill.dir, hostId: e.hostId, scope,
           mcpCommand: { command: nodeCommand.command, args: [selfBin, "mcp", "--host", e.hostId] },
           launcherVersion, logger, takeover: e.takeover && e.takeoverReason === "native-receipt",
         });
-        createdSkillDirs.push(e.skill.dir);
+        // 只有本次**新建**的目录才进回滚清单。若把「运行之前就存在」的目录
+        // （用户手放的、或原生安装留下的）也塞进去，一次失败就会把用户原有的
+        // skill 目录整个删掉，而报告说的是「已回滚本次写入的内容」（I3）。
+        if (!result.preexisting) createdSkillDirs.push(e.skill.dir);
         row.skill.action = "installed";
       } catch (error) {
         row.skill.action = "error";
@@ -171,6 +176,9 @@ const detectSnapshot = deps.detectSnapshotOverride
       }
     } else {
       logger.info(`${e.displayName}: 跳过 skill（${e.skill.reason}）`);
+      if (e.skill.skipKind === "takeover") {
+        logger.info(`  ${e.displayName}: 已跳过（--no-takeover），未改动任何文件`);
+      }
     }
 
     if (["created", "updated"].includes(e.mcp.action)) {

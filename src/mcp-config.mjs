@@ -452,13 +452,15 @@ export function spliceJsonEntry(text, opts) {
   }
 
   const mask = codeMask(body, allowComments);
-  if (mask[0] !== "{") {
-    throw new Error(`无法解析: 配置必须以 { 开头（实际是 ${JSON.stringify(body[0])}）`);
+  // 前导空白要跳过：编辑器模板与 echo 拼接很容易产出 `\n{ ... }`（M5）
+  const rootStart = skipSpace(mask, 0, mask.length);
+  if (mask[rootStart] !== "{") {
+    throw new Error(`无法解析: 配置必须以 { 开头（实际是 ${JSON.stringify(body[rootStart] ?? "")}）`);
   }
   const pairs = matchBraces(mask);
-  const rootEnd = pairs.get(0);
+  const rootEnd = pairs.get(rootStart);
   if (rootEnd === undefined) throw new Error("无法解析: 根对象没有闭合");
-  const root = { start: 0, end: rootEnd };
+  const root = { start: rootStart, end: rootEnd };
 
   const container = findMember(body, mask, root, containerKey, pairs);
 
@@ -475,7 +477,8 @@ export function spliceJsonEntry(text, opts) {
     // 容器变空则连容器键一起删（卸载后不留空壳）
     const mask2 = codeMask(next, allowComments);
     const pairs2 = matchBraces(mask2);
-    const root2 = { start: 0, end: pairs2.get(0) };
+    const start2 = skipSpace(mask2, 0, mask2.length);
+    const root2 = { start: start2, end: pairs2.get(start2) };
     const container2 = findMember(next, mask2, root2, containerKey, pairs2);
     if (container2?.range && isObjectEmpty(mask2, container2.range)) {
       const span2 = deleteMemberSpan(mask2, container2, root2.start, root2.end);
@@ -523,8 +526,13 @@ export function spliceJsonEntry(text, opts) {
     const sibling = findAnyMember(mask, containerRange, pairs);
     const indent = sibling ? inferIndent(body, sibling, containerRange.start) : INDENT_STEP;
     const insertAt = skipToNextLine(body, containerRange.start + 1, containerRange.end);
-    const needsComma = !isObjectEmpty(mask, containerRange);
-    const piece = `${renderMember(entryKey, entryJson, indent)}${needsComma ? "," : ""}\n`;
+    // 插入点之后、容器闭合之前是否还有内容 —— 这才是「需不需要尾随逗号」的正确判据。
+    // 不能用「容器原来非空」：多行格式里新成员插到最前面（后面有成员 → 要逗号），
+    // 单行格式里插到最后一个（后面没成员 → 不要逗号），两种都「容器原来非空」。
+    const hasMembersAfter = mask.slice(insertAt, containerRange.end).trim() !== "";
+    const leading = needsCommaBefore(body, insertAt) ? "," : "";
+    const piece = `${leading}${renderMember(entryKey, entryJson, indent)}`
+      + `${hasMembersAfter ? "," : ""}\n`;
     return { text: bom + body.slice(0, insertAt) + piece + body.slice(insertAt), action: "created" };
   }
 
@@ -538,13 +546,32 @@ export function spliceJsonEntry(text, opts) {
     return { text: bom + `{\n${rendered}\n}\n`, action: "created" };
   }
 
-  const insertAt = skipToNextLine(body, 0, root.end);
+  const insertAt = skipToNextLine(body, root.start + 1, root.end);
   const tail = body.slice(insertAt);
-  const needsComma = !/^\s*[}\]]/u.test(tail);
+  // 单行压缩 JSON 里插入点紧跟在上一个值后面（没有换行可借），必须自己补逗号 ——
+  // 否则会产出 `{"a":1"mcpServers":{...}}` 这种非法 JSON，且被当成 created 成功写盘（C1）
+  const leading = needsCommaBefore(body, insertAt) ? "," : "";
+  const trailing = mask.slice(insertAt, root.end).trim() === "" ? "" : ",";
   return {
-    text: bom + body.slice(0, insertAt) + rendered + (needsComma ? "," : "") + `\n${tail}`,
+    text: bom + body.slice(0, insertAt) + leading + rendered + trailing + `\n${tail}`,
     action: "created",
   };
+}
+
+/**
+ * 在 pos 处插入新成员时，前面是否需要补一个逗号。
+ *
+ * 多行格式里插入点总是落在换行之后（前一个字符是 `\n`），逗号已在上一行末尾，无需补。
+ * 单行压缩 JSON 没有换行可借，插入点紧跟前一个值的末尾 —— 那里没有逗号，必须补。
+ *
+ * @param {string} text
+ * @param {number} pos
+ * @returns {boolean}
+ */
+function needsCommaBefore(text, pos) {
+  if (pos <= 0) return false;
+  const prev = text[pos - 1];
+  return prev !== "{" && prev !== "[" && !/[\s]/u.test(prev);
 }
 
 /**
@@ -563,12 +590,13 @@ export function readJsonEntry(text, opts) {
   if (body.trim() === "") return null;
 
   const mask = codeMask(body, allowComments);
-  if (mask[0] !== "{") throw new Error("无法解析: 配置必须以 { 开头");
+  const rootStart = skipSpace(mask, 0, mask.length);
+  if (mask[rootStart] !== "{") throw new Error("无法解析: 配置必须以 { 开头");
   const pairs = matchBraces(mask);
-  const rootEnd = pairs.get(0);
+  const rootEnd = pairs.get(rootStart);
   if (rootEnd === undefined) throw new Error("无法解析: 根对象没有闭合");
 
-  const container = findMember(body, mask, { start: 0, end: rootEnd }, containerKey, pairs);
+  const container = findMember(body, mask, { start: rootStart, end: rootEnd }, containerKey, pairs);
   if (!container?.range) return null;
   const inner = findMember(body, mask, container.range, entryKey, pairs);
   if (!inner) return null;

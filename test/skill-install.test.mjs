@@ -126,3 +126,49 @@ it("readReceipt 在无收据或收据损坏时都返回 null", () => {
   writeFileSync(join(targetDir, ".openwiki-launcher.json"), "{ 坏掉的 json", "utf8");
   expect(readReceipt(targetDir)).toBeNull();
 });
+
+describe("多家宿主共用同一个 skills 目录（I5）", () => {
+  // codex / antigravity / bob 的 projectDir 与 globalDir 都是 .agents/skills，
+  // 装出来是同一个目录。卸载任一家时不能把别家的 skill 一起删掉。
+  const shared = () => join(root, ".agents/skills/openwiki");
+  const installAs = (hostId) => installSkill(args(shared(), { hostId }));
+
+  it("第二次安装把 host 追加进收据而不是覆盖", () => {
+    installAs("codex");
+    installAs("bob");
+    const receipt = readReceipt(shared());
+    expect(receipt.hosts.sort()).toEqual(["bob", "codex"]);
+  });
+
+  it("removeSkill 在还剩其他宿主时只删文件、不删目录", () => {
+    installAs("codex");
+    installAs("bob");
+    const result = removeSkill(shared(), logger, { hostId: "codex" });
+    expect(result).toMatchObject({ removed: false, reason: "shared" });
+    expect(existsSync(join(shared(), "SKILL.md"))).toBe(true);
+  });
+
+  it("收据里只剩一个宿主时才真正删除目录", () => {
+    installAs("bob");
+    expect(removeSkill(shared(), logger, { hostId: "bob" })).toMatchObject({ removed: true });
+    expect(existsSync(shared())).toBe(false);
+  });
+
+  it("installSkill 报告目录此前是否已存在（I3 回滚要靠它）", () => {
+    expect(installSkill(args(shared(), { hostId: "codex" })).preexisting).toBe(false);
+    expect(installSkill(args(shared(), { hostId: "bob" })).preexisting).toBe(true);
+  });
+});
+
+describe("收据记下当时写入的 MCP 命令（I4）", () => {
+  it("卸载可用它认领条目，而不必依赖当前的 node 路径", () => {
+    const targetDir = join(root, ".claude/skills/openwiki");
+    installSkill(args(targetDir, {
+      mcpCommand: { command: "/old/node", args: ["/old/bin/openwiki-launcher.mjs", "mcp", "--host", "claude"] },
+    }));
+    const receipt = readReceipt(targetDir);
+    expect(receipt.mcpServerCommand).toEqual({
+      command: "/old/node", args: ["/old/bin/openwiki-launcher.mjs", "mcp", "--host", "claude"],
+    });
+  });
+});

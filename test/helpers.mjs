@@ -80,6 +80,7 @@ export function baseDeps(options) {
     // 需要真的触发护栏时通过 systemRoots 覆盖。
     tmpdir: options.tmpdir ?? options.homeDir,
     systemRoots: options.systemRoots ?? ["/__never_a_system_root__"],
+    read: options.read,
     selfBin: options.selfBin ?? SELF_BIN,
     nodeCommand: options.nodeCommand ?? { command: NODE, warning: null },
     launcherVersion: "0.2.0",
