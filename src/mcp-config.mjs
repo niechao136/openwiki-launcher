@@ -328,9 +328,11 @@ function deleteMemberSpan(mask, member, objStart, objEnd) {
   const line = memberLineSpan(mask, member, objStart);
   const afterIdx = skipSpace(mask, line.valueEnd, mask.length);
 
-  // 后面还有成员：吃掉尾随逗号与这一行的换行
+  // 后面还有成员：吃掉尾随逗号与这一行的换行。
+  // 注意只能用 skipInlineSpace —— skipSpace 会跨过换行继续吃下一行的缩进，
+  // 那样「删掉 openwiki」会把紧随其后的 other 的缩进一起吃掉。
   if (mask[afterIdx] === ",") {
-    let end = skipSpace(mask, afterIdx + 1, mask.length);
+    let end = skipInlineSpace(mask, afterIdx + 1);
     if (mask[end] === "\n") end += 1;
     return { start: line.start, end };
   }
@@ -340,10 +342,26 @@ function deleteMemberSpan(mask, member, objStart, objEnd) {
   const beforeIdx = skipSpaceBack(mask, start - 1, objStart);
   if (beforeIdx >= objStart && mask[beforeIdx] === ",") start = beforeIdx;
 
-  let end = skipSpace(mask, line.valueEnd, mask.length);
+  let end = skipInlineSpace(mask, line.valueEnd);
   if (mask[end] === "\n") end += 1;
   void objEnd;
   return { start, end };
+}
+
+/**
+ * 只跳空格与制表符，**不跨换行**。
+ *
+ * 与 skipSpace 的区别就是「不跨行」这一个语义：删除成员时要精确地吃掉「本行的
+ * 逗号与换行」，若顺手把下一行的缩进也吃掉，用户文件里下一个成员就贴到行首了。
+ *
+ * @param {string} mask
+ * @param {number} from
+ * @returns {number}
+ */
+function skipInlineSpace(mask, from) {
+  let i = from;
+  while (i < mask.length && (mask[i] === " " || mask[i] === "\t")) i += 1;
+  return i;
 }
 
 /**

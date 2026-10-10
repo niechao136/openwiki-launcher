@@ -1,4 +1,5 @@
 import path from "node:path";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { main } from "../src/cli.mjs";
@@ -90,7 +91,11 @@ describe("main", () => {
     const code = await main(["version"], { logger });
 
     expect(code).toBe(0);
-    expect(lines.join("\n")).toContain("0.1.0");
+    // 不写死版本号：0.2.0 起实现了安装器，改版本时这条测试不该红。
+    // 断言的是「输出的版本与 package.json 一致」这个不变量。
+    expect(lines.join("\n")).toContain(
+      JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version,
+    );
   });
 
   it("refuses to run on an unsupported Node version", async () => {

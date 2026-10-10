@@ -27,7 +27,9 @@
     "codebuddy",
     "claude-code",
     "cursor",
-    "codex"
+    "codex",
+    "installer",
+    "host-integration"
   ],
   "dependencies": {
     "openwiki": "0.6.0"

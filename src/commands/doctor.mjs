@@ -1,7 +1,87 @@
+import { existsSync } from "node:fs";
 import { createBackendSupervisor } from "../backend.mjs";
 import { loadManifest } from "../manifest.mjs";
 import { MIN_NODE, nodeVersionSupported } from "../node-version.mjs";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
+import { HOSTS } from "../registry.mjs";
+import { readJsonEntry, readTomlBlock } from "../mcp-config.mjs";
+import { collectMcpSnapshot } from "../targets.mjs";
+
+const ENTRY_KEY = "openwiki";
+const AUTO_KINDS = ["json", "codex-toml", "opencode-json"];
+
+/**
+ * 读回某个宿主已写入的 MCP 条目。
+ *
+ * @param {object} host 注册表条目
+ * @param {{path: string, text: string, exists: boolean}} snapshot
+ * @returns {object | null} 条目值；不存在或读不出来时返回 null
+ */
+function readEntry(host, snapshot) {
+  if (!snapshot || !snapshot.exists) return null;
+  try {
+    if (host.mcp.kind === "codex-toml") {
+      const block = readTomlBlock(snapshot.text, { tableName: `${host.mcp.containerKey}.${ENTRY_KEY}` });
+      if (block === null) return null;
+      return { command: /command = "([^"]*)"/u.exec(block)?.[1] ?? "", args: block };
+    }
+    return readJsonEntry(snapshot.text, {
+      containerKey: host.mcp.containerKey,
+      entryKey: ENTRY_KEY,
+      allowComments: host.mcp.kind === "opencode-json",
+    });
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 核对已写入的 MCP 条目是否仍指向当前 node 与本安装器。
+ *
+ * node 升级后 process.execPath 会变，而配置里存的是旧绝对路径 —— 那时宿主只会报
+ * 连接错误，原因（配置里的路径过期了）不在任何日志里。这项检查就是把它讲出来。
+ *
+ * @param {object} options
+ */
+function checkInstalledMcpCommands({ logger, scope, baseDir, platform, nodeCommand, selfBin }) {
+  const snapshot = collectMcpSnapshot(HOSTS, { scope, baseDir, platform, exists: existsSync });
+  /** @type {string[]} */
+  const problems = [];
+
+  for (const host of HOSTS) {
+    if (!AUTO_KINDS.includes(host.mcp?.kind)) continue;
+    const entry = readEntry(host, snapshot[host.id]);
+    if (!entry) continue;
+
+    const command = Array.isArray(entry.command) ? entry.command[0] : entry.command;
+    const args0 = Array.isArray(entry.command) ? entry.command[1] : entry.args?.[0];
+    if (command !== nodeCommand.command || args0 !== selfBin) {
+      problems.push(`  ! ${host.id}: command=${command ?? "(无)"} args0=${args0 ?? "(无)"}`
+        + `（当前应为 command=${nodeCommand.command} args0=${selfBin}）`);
+    }
+  }
+
+  if (problems.length === 0) {
+    logger.info("✓ MCP 命令指向当前 node 与本安装器");
+    return;
+  }
+  logger.warn("已写入的 MCP 命令与当前环境不一致，请重新运行 install 修正：");
+  for (const line of problems) logger.warn(line);
+}
+
+/**
+ * 核对实际解析到的 openwiki 版本是否与本包锁定的一致。
+ *
+ * @param {object} options
+ */
+function checkOpenwikiPin({ logger, runtimeVersion }) {
+  const locked = "0.6.0";
+  if (runtimeVersion === locked) {
+    logger.info(`✓ openwiki 依赖与锁定版本一致（${locked}）`);
+    return;
+  }
+  logger.warn(`! 依赖 openwiki@${runtimeVersion} 与锁定的 ${locked} 不符，请检查安装来源`);
+}
 
 /**
  * Lists tools present on only one side of the comparison.
@@ -38,6 +118,12 @@ export function diffTools(expected, actual) {
  *   resolveRuntime?: Function,
  *   createSupervisor?: Function,
  *   hostId?: string,
+ *   scope?: "user" | "project",
+ *   baseDir?: string,
+ *   homeDir?: string,
+ *   platform?: string,
+ *   nodeCommand?: { command: string, warning: string | null },
+ *   selfBin?: string,
  * }} options
  * @returns {Promise<number>} Exit code.
  */
@@ -47,6 +133,12 @@ export async function runDoctorCommand({
   resolveRuntime = resolveOpenwikiRuntime,
   createSupervisor = createBackendSupervisor,
   hostId = "doctor",
+  scope = "project",
+  baseDir = process.cwd(),
+  homeDir = "",
+  platform = process.platform,
+  nodeCommand,
+  selfBin = "",
 }) {
   if (!nodeVersionSupported(nodeVersion)) {
     logger.error(
@@ -65,6 +157,14 @@ export async function runDoctorCommand({
     return 1;
   }
   logger.info(`✓ openwiki ${runtime.version}：${runtime.cliJs}`);
+
+  checkOpenwikiPin({ logger, runtimeVersion: runtime.version });
+
+  // 没有给 baseDir / nodeCommand 时静默跳过这两项：doctor 可能被只想检查后端的用户调用，
+  // 那时它对「装到哪儿了」一无所知，报告一堆「不一致」反而是噪声。
+  if (baseDir && nodeCommand && selfBin) {
+    checkInstalledMcpCommands({ logger, scope, baseDir, platform, nodeCommand, selfBin });
+  }
 
   const manifest = loadManifest(runtime.version);
   if (manifest) {

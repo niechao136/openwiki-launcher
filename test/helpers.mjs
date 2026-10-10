@@ -75,8 +75,11 @@ export function baseDeps(options) {
     homeDir: options.homeDir,
     platform,
     env: options.env ?? {},
-    tmpdir: options.homeDir,
-    systemRoots: ["/__never_a_system_root__"],
+    // 默认指向一个永不命中的路径，并让 tmpdir 落在 home 下 ——
+    // 这样任何「本机真实路径」都不会意外触发护栏，用例只测它自己声明的场景。
+    // 需要真的触发护栏时通过 systemRoots 覆盖。
+    tmpdir: options.tmpdir ?? options.homeDir,
+    systemRoots: options.systemRoots ?? ["/__never_a_system_root__"],
     selfBin: options.selfBin ?? SELF_BIN,
     nodeCommand: options.nodeCommand ?? { command: NODE, warning: null },
     launcherVersion: "0.2.0",

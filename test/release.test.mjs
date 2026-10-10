@@ -44,4 +44,26 @@ describe("published package contents", () => {
     expect(files.some((file) => file.startsWith("test/"))).toBe(false);
     expect(files.some((file) => file.startsWith("node_modules/"))).toBe(false);
   }, 120000);
+
+  it("ships every installer module the runtime needs", () => {
+    const files = packedFiles();
+    const required = [
+      "bin/openwiki-launcher.mjs",
+      "src/registry.mjs",
+      "src/targets.mjs",
+      "src/plan.mjs",
+      "src/install.mjs",
+      "src/uninstall.mjs",
+      "src/mcp-config.mjs",
+      "src/skill-install.mjs",
+      "src/backup.mjs",
+      "src/self-path.mjs",
+      "src/guards.mjs",
+      "src/commands/install.mjs",
+      "manifest/openwiki-0.6.0.json",
+    ];
+    for (const file of required) {
+      expect(files, `缺少 ${file}`).toContain(file);
+    }
+  }, 120000);
 });

@@ -113,11 +113,18 @@ export async function main(argv, deps = {}) {
   }
 
   if (command === "doctor") {
+    const installDeps = cliDeps(deps, logger);
     return runDoctorCommand({
       logger,
       nodeVersion,
       resolveRuntime: deps.resolveRuntime,
       createSupervisor: deps.createSupervisor,
+      scope: installDeps.scope ?? "project",
+      baseDir: installDeps.cwd,
+      homeDir: installDeps.homeDir,
+      platform: installDeps.platform,
+      nodeCommand: installDeps.nodeCommand,
+      selfBin: installDeps.selfBin,
     });
   }
 
@@ -157,6 +164,8 @@ function cliDeps(deps, logger) {
     logger,
     cwd: deps.cwd ?? process.cwd(),
     homeDir: deps.homeDir ?? os.homedir(),
+    // doctor 用它决定去哪里读已写入的 MCP 配置；install/uninstall 不用这个字段。
+    scope: deps.scope,
     env: deps.env ?? process.env,
     platform: deps.platform ?? process.platform,
     exists: deps.exists,
