@@ -59,11 +59,14 @@ function safeRealpath(p, fn) {
  * 不做这层归一化，同一条路径写成 C:\Windows 还是 C:/Windows 会得出不同结论 ——
  * 这正是原实现注释里记下的「在非 Windows 上根本没法测这段逻辑」的成因。
  *
+ * 导出供同项目里其他「路径逐字符比较会得出错误结论」的地方复用（如 MCP 条目的归属
+ * 判断）：整个项目对路径比较必须只有这一套约定，不能护栏一套、归属判断另一套。
+ *
  * @param {string} value
  * @param {string} platform
  * @returns {string}
  */
-function normalizeForCompare(value, platform) {
+export function normalizeForCompare(value, platform) {
   let v = String(value).replace(/\\/gu, "/").replace(/\/+$/u, "");
   return platform === "win32" ? v.toLowerCase() : v;
 }

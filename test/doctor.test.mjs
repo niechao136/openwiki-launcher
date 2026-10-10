@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadManifest } from "../src/manifest.mjs";
-import { runDoctorCommand } from "../src/commands/doctor.mjs";
+import { runDoctorCommand, installedEntryMatches } from "../src/commands/doctor.mjs";
 import { NODE, SELF_BIN, collectLogger } from "./helpers.mjs";
 
 const RUNTIME = { packageRoot: "root", version: "0.6.0", cliJs: "/abs/cli.js" };
@@ -119,6 +119,42 @@ describe("runDoctorCommand", () => {
   });
 });
 
+describe("doctor 的 openwiki 版本核对读声明，而不是读一个写死的常量", () => {
+  // 曾经的 bug：checkOpenwikiPin 里写死了 "0.6.0"。规格 6 把「doctor 是 openwiki
+  // 升级后的一条命令核对流程」写成产品承诺，而写死的常量在第一次升版就让这个承诺失效
+  // —— 它会永远报「与锁定的 0.6.0 不符」，用户从此不再相信 doctor 的任何结论。
+  const check = async (declaredOpenwiki) => {
+    const { lines, logger } = collectLogger();
+    const code = await runDoctorCommand({
+      logger, nodeVersion: "24.21.0",
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: supervisorWith(loadManifest("0.6.0").tools),
+      declaredOpenwiki,
+    });
+    return { code, out: lines.join("\n") };
+  };
+
+  it("声明被注入时逐字报出声明的版本，说明结论来自声明而非常量", async () => {
+    const { out } = await check("1.2.3");
+    expect(out).toContain("1.2.3");
+    expect(out).toContain("不符");
+  });
+
+  it("不注入时取本包 package.json 的声明，一致则报通过", async () => {
+    const { code, out } = await check(undefined);
+    expect(code).toBe(0);
+    expect(out).toMatch(/✓ openwiki 依赖与锁定版本一致（\d+\.\d+\.\d+[^）]*）/);
+  });
+
+  it("声明是范围时跳过核对，而不是拿范围当版本去比", async () => {
+    const { code, out } = await check("^0.6.0");
+    expect(code).toBe(0);
+    expect(out).toContain("范围");
+    expect(out).toContain("跳过");
+    expect(out).not.toContain("不符");
+  });
+});
+
 describe("doctor 的安装配置核对（新增两项）", () => {
   /** 造一个装好 claude 的临时项目目录。 */
   function installedProject({ command = NODE, args = [SELF_BIN, "mcp", "--host", "claude"] } = {}) {
@@ -190,5 +226,36 @@ describe("doctor 的安装配置核对（新增两项）", () => {
     });
     expect(code).toBe(0);
     expect(lines.join("\n")).not.toContain("重新运行 install");
+  });
+});
+
+describe("installedEntryMatches", () => {
+  const nodeCommand = { command: "D:\\Hub\\node\\node.exe", warning: null };
+  const selfBin = "D:\\Hub\\launcher\\bin\\openwiki-launcher.mjs";
+
+  it("win32 下路径大小写与斜杠写法不同也算指向当前环境", () => {
+    // 与 ownership.isOursEntry 同一个坑：逐字符比较会让 doctor 把自己刚写好的条目
+    // 报成「请重新运行 install」，用户照做也消不掉，误报循环。
+    const entry = { command: "d:/hub/node/node.exe", args: ["d:\\HUB\\LAUNCHER\\bin\\openwiki-launcher.mjs", "mcp", "--host", "claude"] };
+    expect(installedEntryMatches(entry, nodeCommand, selfBin, "win32")).toBe(true);
+  });
+
+  it("opencode 的数组形态（command 合并 node 与 args）也认", () => {
+    const entry = { command: ["d:\\hub\\node\\node.exe", "d:\\hub\\launcher\\bin\\openwiki-launcher.mjs", "mcp", "--host", "claude"] };
+    expect(installedEntryMatches(entry, nodeCommand, selfBin, "win32")).toBe(true);
+  });
+
+  it("linux 上大小写不同就是不同路径", () => {
+    const entry = { command: nodeCommand.command, args: ["d:\\hub\\launcher\\bin\\openwiki-launcher.mjs", "mcp", "--host", "claude"] };
+    expect(installedEntryMatches(entry, nodeCommand, selfBin, "linux")).toBe(false);
+  });
+
+  it("指向别处或缺字段时不算匹配", () => {
+    expect(installedEntryMatches(
+      { command: "/old/node", args: [selfBin, "mcp", "--host", "claude"] },
+      nodeCommand, selfBin, "win32",
+    )).toBe(false);
+    expect(installedEntryMatches({ command: nodeCommand.command }, nodeCommand, selfBin, "win32")).toBe(false);
+    expect(installedEntryMatches(null, nodeCommand, selfBin, "win32")).toBe(false);
   });
 });

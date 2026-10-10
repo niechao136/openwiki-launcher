@@ -1,8 +1,25 @@
 import { spawn } from "node:child_process";
 import { createLineParser, formatMessage } from "./jsonrpc.mjs";
+import { launcherVersion } from "./pkg.mjs";
 
 const STDERR_TAIL_LIMIT = 8192;
 const FORCE_KILL_AFTER_MS = 3000;
+
+/**
+ * broker 作为客户端向 openwiki 发起 initialize 时发的参数。
+ *
+ * clientInfo.version 必须来自本包 package.json：openwiki 会把它写进 run metadata，
+ * 写死的旧版本号会让排查的人先怀疑 openwiki 的数据，而不是这个包。
+ *
+ * @returns {{ protocolVersion: string, capabilities: object, clientInfo: object }}
+ */
+export function initializeParams() {
+  return {
+    protocolVersion: "2024-11-05",
+    capabilities: {},
+    clientInfo: { name: "openwiki-launcher", version: launcherVersion() },
+  };
+}
 
 /**
  * Starts one openwiki MCP backend and speaks MCP to it.
@@ -119,11 +136,7 @@ export function createBackendSession({
   }, callReadyTimeoutMs);
 
   const ready = new Promise((resolve, reject) => {
-    request("initialize", {
-      protocolVersion: "2024-11-05",
-      capabilities: {},
-      clientInfo: { name: "openwiki-launcher", version: "0.1.0" },
-    })
+    request("initialize", initializeParams())
       .then((result) => {
         notify("notifications/initialized", {});
         resolve(result);

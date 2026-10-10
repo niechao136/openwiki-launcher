@@ -58,7 +58,8 @@ function suggestFromPath({ logger, env, platform, exists }) {
  */
 export function runInstall(deps) {
   const {
-    logger, tool, global: isGlobal = false, force = false, noTakeover = false, bootstrap = false,
+    logger, tool, global: isGlobal = false, force = false, noTakeover = false,
+    bootstrap = false, noWarm = false,
     nodeCommand, selfBin, launcherVersion, bundleDir,
   } = deps;
 
@@ -252,7 +253,8 @@ const detectSnapshot = deps.detectSnapshotOverride
 
   if (plan.nodeWarning) logger.warn(plan.nodeWarning);
   if (bootstrap) logger.info("引导文件（--bootstrap）在 0.2.0 未启用，本次只安装 skill 与 MCP 配置。");
-  logger.info("下一步可运行 `openwiki-launcher warm` 预热后端，让第一次工具调用更快。");
+  // 自动预热已经跑过并自报了耗时，只有用户明确跳过时才给手动命令。
+  if (noWarm) logger.info("下一步可运行 `openwiki-launcher warm` 预热后端，让第一次工具调用更快。");
   if (platform === "win32") {
     logger.info("Windows 上建议把 Node 与 openwiki 依赖目录加入 Microsoft Defender 排除项，冷启动会快很多。");
   }

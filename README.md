@@ -52,9 +52,10 @@ openwiki-launcher --global           # 用户级：所有项目共享
 openwiki-launcher --tool codebuddy   # 显式指定宿主
 ```
 
-安装器做三件事：把 openwiki 的 skill 目录复制进该宿主的技能目录、把 MCP 配置写成指向本包的
-broker（**不是**裸 `openwiki` 命令，那条路径要等 30-50 秒的导入）、并在宿主没有 MCP 客户端
-能力时只装 skill。
+安装器做四件事：把 openwiki 的 skill 目录复制进该宿主的技能目录、把 MCP 配置写成指向本包的
+broker（**不是**裸 `openwiki` 命令，那条路径要等 30-50 秒的导入）、在宿主没有 MCP 客户端
+能力时只装 skill，并在安装成功后**自动预热一次**后端（预热只留 OS 文件缓存，收益窗口取决于
+你隔多久打开宿主；加 `--no-warm` 可跳过）。
 
 支持的 28 家宿主里，8 家（Claude Code、Cursor、Codex CLI、Kiro、OpenCode、Oh My Pi、
 IBM Bob、Antigravity）的 MCP 配置由安装器直接写入磁盘；CodeBuddy 等 18 家的 MCP 配置入口
@@ -85,6 +86,7 @@ MCP 条目要确认指向本包才删（指向别处的一律不碰）。备份�
 | `--force` | 允许在用户主目录里做项目级安装（系统目录护栏**没有**这个绕过） |
 | `--no-takeover` | 遇到 openwiki 原生安装时跳过而非接管 |
 | `--bootstrap` | 额外写引导文件（0.2.0 未启用，仅打印提示） |
+| `--no-warm` | 安装成功后不自动预热（默认会预热一次，上限 60 秒，失败不影响安装结果） |
 
 自动检测基于各宿主的标记文件/目录。检测落空时会扫 PATH 给出可直接复制的
 `--tool <id>` 命令，只提示不自动安装 —— IDE 装在应用目录里，PATH 上探不到。
@@ -140,7 +142,8 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 | 现象 | 处理 |
 | --- | --- |
 | 宿主仍报 `-32001` | 先跑 `openwiki-launcher warm` 预热，再让宿主重连 |
-| 首次调用很慢 | 正常：那是 openwiki 自己的导入时间。之后调用是透传 |
+| 首次调用很慢 | 正常：那是 openwiki 自己的导入时间。之后调用是透传。安装时的自动预热只能让 OS 文件缓存热着，隔了几小时就指望不上 |
+| 预热超时/失败但安装成功 | 预热是优化不是安装的一部分，不影响退出码；可单独跑 `openwiki-launcher warm`（上限 60 秒） |
 | `doctor` 报清单差异 | 按提示运行 `npm run manifest`（或在本仓库 `node scripts/gen-manifest.mjs`）重新生成快照 |
 | `doctor` 报「MCP 命令指向」不一致 | 你升级过 node，配置里存的是旧绝对路径。重跑 `openwiki-launcher` 即可 |
 | 安装退出码 2 | 护栏拒绝了（系统目录、或在主目录里做项目级安装），没有写入任何文件。主目录场景可加 `--force` 或改用 `--global` |

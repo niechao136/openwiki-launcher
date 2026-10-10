@@ -118,7 +118,7 @@ export function runUninstall(deps) {
           allowComments: mcp.kind === "opencode-json",
         });
 
-      const ours = isOursEntry(existing, mine);
+      const ours = isOursEntry(existing, mine, platform);
 
       if (!ours) {
         row.mcp = {

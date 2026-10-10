@@ -219,7 +219,7 @@ export function planInstall(opts) {
       takeoverReason = "native-receipt";
     } else if (mcp.action === "updated") {
       const existing = readExistingEntry(host, mcpSnapshot[hostId] ?? { path: "", text: "", exists: false });
-      if (!isOursEntry(existing, mine)) {
+      if (!isOursEntry(existing, mine, opts.platform)) {
         takeover = true;
         takeoverReason = "foreign-entry";
       }

@@ -54,6 +54,26 @@ describe("runWarmCommand", () => {
     expect(lines.join("\n")).toContain("boom: cannot load native module");
   });
 
+  it("gives up on a backend that never becomes ready and still stops it", async () => {
+    // 冷启动实测 5-50s，而 supervisor 内部最坏是 2×120s + 1s 重试。没有上限时
+    // `openwiki-launcher warm` 在后端卡住的情况下会一直挂着，用户只能强杀。
+    const { lines, logger } = capture();
+    const stopped = [];
+    const code = await runWarmCommand({
+      logger,
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: () => ({
+        ensureReady: () => new Promise(() => {}),
+        stop: () => stopped.push(true),
+      }),
+      timeoutMs: 20,
+    });
+
+    expect(code).toBe(1);
+    expect(lines.join("\n")).toContain("预热超时");
+    expect(stopped).toHaveLength(1);
+  });
+
   it("returns 1 when openwiki cannot be resolved at all", async () => {
     const { lines, logger } = capture();
     const code = await runWarmCommand({

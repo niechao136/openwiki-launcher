@@ -162,7 +162,7 @@ openwiki-launcher doctor                # 体检并输出核对报告
 
 行为约定：
 
-- `install` 成功后自动执行一次 `warm` 预热，并打印 Windows Defender 排除建议（排除 openwiki 依赖所在目录）；
+- `install` 成功后自动执行一次 `warm` 预热（60 秒上限，失败或超时只告警、不改安装退出码；`--no-warm` 可跳过，预热只留 OS 文件缓存，收益窗口取决于用户隔多久打开宿主），并打印 Windows Defender 排除建议（排除 openwiki 依赖所在目录）；
 - `doctor` 检查：node 版本（≥22.22.0）、openwiki 版本与 manifest 匹配、拉起后端冒烟握手、与 manifest 的工具清单比对；该命令同时是 openwiki 升级后的核对流程；
 - 退出码：0 成功；1 用户/环境错误；2 安装护栏拒绝；
 - `engines: { node: ">=22.22.0" }`，启动前置检查并给出可读报错。

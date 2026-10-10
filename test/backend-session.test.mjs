@@ -1,7 +1,12 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it } from "vitest";
-import { createBackendSession } from "../src/backend.mjs";
+import { createBackendSession, initializeParams } from "../src/backend.mjs";
+
+const LAUNCHER_PKG = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+);
 
 const FAKE_BACKEND = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -48,6 +53,15 @@ afterEach(() => {
 });
 
 describe("createBackendSession", () => {
+  it("向 openwiki 报的是本包的真实版本，而不是写死的字符串", () => {
+    // 写死的 "0.1.0" 不会让功能出错，但它会出现在 openwiki 的 run metadata 里 ——
+    // 版本对不上时，排查的人先怀疑 openwiki 的数据，而不是这个包。
+    expect(initializeParams().clientInfo).toEqual({
+      name: "openwiki-launcher",
+      version: LAUNCHER_PKG.version,
+    });
+  });
+
   it("completes the MCP handshake and exposes the backend serverInfo", async () => {
     const session = start({ env: { FAKE_SERVER_NAME: "fake-openwiki" } });
 

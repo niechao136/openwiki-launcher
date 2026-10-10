@@ -1,4 +1,3 @@
-import { createRequire } from "node:module";
 import os from "node:os";
 import { createLogger } from "./log.mjs";
 import { runDoctorCommand } from "./commands/doctor.mjs";
@@ -7,11 +6,9 @@ import { runWarmCommand } from "./commands/warm.mjs";
 import { runInstallCommand, parseInstallArgs } from "./commands/install.mjs";
 import { resolveSelfBin } from "./self-path.mjs";
 import { nodeVersionSupported } from "./node-version.mjs";
+import { launcherVersion } from "./pkg.mjs";
 
 const HOST_ID = /^[a-z0-9-]{1,64}$/u;
-
-const require = createRequire(import.meta.url);
-const pkg = require("../package.json");
 
 const HELP = [
   "用法:",
@@ -22,6 +19,7 @@ const HELP = [
   "  openwiki-launcher --force                允许项目级安装落到用户主目录",
   "  openwiki-launcher --no-takeover          遇到 openwiki 原生安装时跳过而非接管",
   "  openwiki-launcher --bootstrap            额外写引导文件（0.2.0 未启用，仅提示）",
+  "  openwiki-launcher --no-warm              安装后不自动预热（默认会预热一次）",
   "  openwiki-launcher mcp [--host <id>]      作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
   "  openwiki-launcher warm                    预热 openwiki 后端后退出",
   "  openwiki-launcher doctor                  检查环境、manifest 与已写入的 MCP 命令",
@@ -87,7 +85,7 @@ export async function main(argv, deps = {}) {
     return 0;
   }
   if (command === "version" || command === "--version" || command === "-v") {
-    logger.info(`openwiki-launcher ${pkg.version}`);
+    logger.info(`openwiki-launcher ${launcherVersion()}`);
     return 0;
   }
   if (!nodeVersionSupported(nodeVersion)) {
@@ -171,8 +169,10 @@ function cliDeps(deps, logger) {
     exists: deps.exists,
     nodeCommand: deps.nodeCommand,
     selfBin: deps.selfBin ?? resolveSelfBin(import.meta.url),
-    launcherVersion: pkg.version,
+    launcherVersion: deps.launcherVersion ?? launcherVersion(),
     bundleDir: deps.bundleDir,
+    // install 的自动预热要能被测试替掉，否则每个安装用例都会去 spawn 真实后端。
+    warmFn: deps.warmFn,
     now: deps.now,
   };
 }

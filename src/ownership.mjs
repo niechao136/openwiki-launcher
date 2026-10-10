@@ -1,4 +1,6 @@
-﻿/**
+﻿import { normalizeForCompare } from "./guards.mjs";
+
+/**
  * 「这个 MCP 条目是不是本安装器写的」以及「这个宿主的 skills 目录在哪」。
  *
  * 这两件事被 install、uninstall、plan、doctor 四处用到，而它们的判断口径必须一致 ——
@@ -28,6 +30,23 @@ export function skillsDirFor(host, { scope, platform }) {
 }
 
 /**
+ * 从 toml 块文本里抽出 args 数组的各个字符串字面量，并还原 toml 的 `\\` 转义。
+ *
+ * 块的形状由 plan 写入时确定（`args = ["a", "b", …]`），openwiki 原生安装器写的块
+ * 也是同一形状。字面量按 `", "` 切分：路径里不含这个序列，够用且不必引 toml 解析器。
+ *
+ * @param {string} block
+ * @returns {string[]}
+ */
+function tomlArgsTokens(block) {
+  const literal = /args\s*=\s*\[([^\]]*)\]/u.exec(block);
+  if (!literal) return [];
+  return literal[1]
+    .split(/",\s*"/u)
+    .map((token) => token.replace(/^"/u, "").replace(/"$/u, "").replaceAll("\\\\", "\\"));
+}
+
+/**
  * 判断一个已存在的 MCP 条目是否由本安装器写入。
  *
  * 三种条目形态都要认：
@@ -35,25 +54,41 @@ export function skillsDirFor(host, { scope, platform }) {
  *   - opencode-json：`{type, command:[node, ...args], enabled}`（command 与 args 合成一个数组）
  *   - codex-toml：marker 区间里的纯文本，用正则抽 command、对 bin 做包含判断
  *
+ * 路径比较走 normalizeForCompare，**不许逐字符比较**：Windows 的路径不区分大小写，
+ * 用户用小写盘符启动一次（或 npm shim 换了种写法），写进配置的路径与这里算出来的
+ * 就差在大小写上 —— 条目会被当成用户的，uninstall 退出码 0 却留下永远删不掉的残留，
+ * plan 则会对同一条目反复报「接管」。归一化只作用于路径参数；其余参数（"mcp"、
+ * "--host"、宿主 id）本来就限定为小写，一并归一化不会改变结论。
+ *
  * @param {object | null} existing readJsonEntry / readTomlBlock 的结果
  * @param {{ command: string, args: string[] }} mine 本安装器应当写入的形态
+ * @param {string} [platform] 缺省取 process.platform；plan 等纯函数必须显式传入
  * @returns {boolean}
  */
-export function isOursEntry(existing, mine) {
+export function isOursEntry(existing, mine, platform = process.platform) {
   if (!existing || typeof existing !== "object") return false;
+  if (typeof existing.command !== "string" && !Array.isArray(existing.command)) return false;
+
+  const norm = (value) => normalizeForCompare(value, platform);
 
   // opencode：command 数组的第 0 项是 node，第 1 项起是 args
   if (Array.isArray(existing.command)) {
-    return existing.command[0] === mine.command
-      && JSON.stringify(existing.command.slice(1)) === JSON.stringify(mine.args);
+    if (existing.command.length !== mine.args.length + 1) return false;
+    return norm(existing.command[0]) === norm(mine.command)
+      && existing.command.slice(1).every((arg, index) => norm(arg) === norm(mine.args[index]));
   }
 
-  // toml：args 只能当纯文本比对，退化成包含判断
+  // toml：args 是块文本（反斜杠已被转义成 \\），抽出字面量后与 json 同一套逐元素比较。
+  // 不能退化成「块里含 bin 路径」的包含判断 —— 那会让 --host cursor 的块被当成 claude 的。
   if (typeof existing.args === "string") {
-    return existing.command === mine.command && existing.args.includes(mine.args[0]);
+    const tokens = tomlArgsTokens(existing.args);
+    return norm(existing.command) === norm(mine.command)
+      && tokens.length === mine.args.length
+      && tokens.every((token, index) => norm(token) === norm(mine.args[index]));
   }
 
   // json
-  return existing.command === mine.command
-    && JSON.stringify(existing.args) === JSON.stringify(mine.args);
+  if (!Array.isArray(existing.args) || existing.args.length !== mine.args.length) return false;
+  return norm(existing.command) === norm(mine.command)
+    && existing.args.every((arg, index) => norm(arg) === norm(mine.args[index]));
 }

@@ -240,6 +240,7 @@ openwiki-launcher --uninstall [--global]   卸载
 openwiki-launcher --force                  允许项目级安装落到 home（系统目录护栏无绕过）
 openwiki-launcher --no-takeover            遇到 openwiki 原生安装时跳过而非接管
 openwiki-launcher --bootstrap              额外写入引导文件（首版默认关闭，见 1.1 修正三）
+openwiki-launcher --no-warm                安装成功后不自动预热（默认预热一次，60 秒上限，失败不改安装退出码）
 openwiki-launcher mcp [--host <id>]        broker（已交付）
 openwiki-launcher warm                     预热（已交付）
 openwiki-launcher doctor                   体检（已交付）

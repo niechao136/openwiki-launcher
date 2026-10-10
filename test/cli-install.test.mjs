@@ -4,13 +4,22 @@ import { join } from "node:path";
 import { main } from "../src/cli.mjs";
 import { BUNDLE, NODE, SELF_BIN, makeTempDir, removeTempDir, collectLogger } from "./helpers.mjs";
 
-let home, proj, logs;
+let home, proj, logs, warmCalls;
 beforeEach(() => {
   home = makeTempDir("ow-cli-home-");
   proj = makeTempDir("ow-cli-proj-");
   logs = collectLogger();
+  warmCalls = [];
 });
 afterEach(() => { removeTempDir(home); removeTempDir(proj); });
+
+// install 成功后会自动预热。不注入桩的话，这些用例会去 spawn 真实 openwiki 后端，
+// 每个多等 5-50s —— 测试变慢，而且失败时看不出是断言挂了还是后端没起来。
+const stubWarm = (code = 0) => async (options) => {
+  warmCalls.push(options);
+  if (code !== 0) logs.logger.error("预热失败：boom");
+  return code;
+};
 
 const deps = (over = {}) => ({
   logger: logs.logger,
@@ -22,6 +31,7 @@ const deps = (over = {}) => ({
   selfBin: SELF_BIN,
   nodeCommand: { command: NODE, warning: null },
   bundleDir: BUNDLE,
+  warmFn: stubWarm(),
   ...over,
 });
 
@@ -106,5 +116,41 @@ describe("install / uninstall 的 CLI 接线", () => {
     expect(cfg.mcpServers.openwiki).toEqual({
       command: NODE, args: [SELF_BIN, "mcp", "--host", "claude"],
     });
+  });
+});
+
+describe("安装后的自动预热", () => {
+  it("安装成功后预热一次", async () => {
+    const r = await main(["--tool", "claude"], deps());
+    expect(r).toBe(0);
+    expect(warmCalls).toHaveLength(1);
+  });
+
+  it("--no-warm 跳过预热，并提示可以手动跑", async () => {
+    const r = await main(["--tool", "claude", "--no-warm"], deps());
+    expect(r).toBe(0);
+    expect(warmCalls).toHaveLength(0);
+    expect(logs.text()).toContain("openwiki-launcher warm");
+  });
+
+  it("预热失败不影响安装结果：退出码仍是 0，并给出警告", async () => {
+    const r = await main(["--tool", "claude"], deps({ warmFn: stubWarm(1) }));
+    expect(r).toBe(0);
+    expect(logs.text()).toContain("预热未成功");
+    expect(existsSync(join(proj, ".claude/skills/openwiki/SKILL.md"))).toBe(true);
+  });
+
+  it("安装失败时不预热", async () => {
+    const r = await main(["--tool", "nope"], deps());
+    expect(r).toBe(1);
+    expect(warmCalls).toHaveLength(0);
+  });
+
+  it("卸载时不预热", async () => {
+    await main(["--tool", "claude"], deps());
+    warmCalls.length = 0;
+    const r = await main(["--uninstall", "--tool", "claude"], deps());
+    expect(r).toBe(0);
+    expect(warmCalls).toHaveLength(0);
   });
 });

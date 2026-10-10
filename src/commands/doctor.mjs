@@ -2,10 +2,12 @@ import { existsSync } from "node:fs";
 import { createBackendSupervisor } from "../backend.mjs";
 import { loadManifest } from "../manifest.mjs";
 import { MIN_NODE, nodeVersionSupported } from "../node-version.mjs";
+import { normalizeForCompare } from "../guards.mjs";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
 import { HOSTS } from "../registry.mjs";
 import { readJsonEntry, readTomlBlock } from "../mcp-config.mjs";
 import { collectMcpSnapshot } from "../targets.mjs";
+import { declaredOpenwikiRange, exactPinnedVersion } from "../pkg.mjs";
 
 const ENTRY_KEY = "openwiki";
 const AUTO_KINDS = ["json", "codex-toml", "opencode-json"];
@@ -36,6 +38,28 @@ function readEntry(host, snapshot) {
 }
 
 /**
+ * 已写入的 MCP 条目是否仍指向当前的 node 与本安装器 bin。
+ *
+ * 路径比较走 normalizeForCompare，**不许逐字符比较**：win32 的路径不区分大小写、
+ * 正反斜杠混写是同一条路径。用户换一种写法启动一次（小写盘符、npm shim 的路径形态），
+ * 逐字符比较就会把自己刚写好的条目报成「与当前环境不一致，请重新运行 install」——
+ * 用户照做，重跑又写入同一种写法的路径，误报循环。与 ownership.isOursEntry 同一套约定。
+ *
+ * @param {object | null} entry readEntry 的结果
+ * @param {{ command: string }} nodeCommand
+ * @param {string} selfBin
+ * @param {string} [platform] 缺省取 process.platform
+ * @returns {boolean}
+ */
+export function installedEntryMatches(entry, nodeCommand, selfBin, platform = process.platform) {
+  if (!entry) return false;
+  const command = Array.isArray(entry.command) ? entry.command[0] : entry.command;
+  const args0 = Array.isArray(entry.command) ? entry.command[1] : entry.args?.[0];
+  const norm = (value) => normalizeForCompare(String(value ?? ""), platform);
+  return norm(command) === norm(nodeCommand.command) && norm(args0) === norm(selfBin);
+}
+
+/**
  * 核对已写入的 MCP 条目是否仍指向当前 node 与本安装器。
  *
  * node 升级后 process.execPath 会变，而配置里存的是旧绝对路径 —— 那时宿主只会报
@@ -53,9 +77,9 @@ function checkInstalledMcpCommands({ logger, scope, baseDir, platform, nodeComma
     const entry = readEntry(host, snapshot[host.id]);
     if (!entry) continue;
 
-    const command = Array.isArray(entry.command) ? entry.command[0] : entry.command;
-    const args0 = Array.isArray(entry.command) ? entry.command[1] : entry.args?.[0];
-    if (command !== nodeCommand.command || args0 !== selfBin) {
+    if (!installedEntryMatches(entry, nodeCommand, selfBin, platform)) {
+      const command = Array.isArray(entry.command) ? entry.command[0] : entry.command;
+      const args0 = Array.isArray(entry.command) ? entry.command[1] : entry.args?.[0];
       problems.push(`  ! ${host.id}: command=${command ?? "(无)"} args0=${args0 ?? "(无)"}`
         + `（当前应为 command=${nodeCommand.command} args0=${selfBin}）`);
     }
@@ -72,15 +96,25 @@ function checkInstalledMcpCommands({ logger, scope, baseDir, platform, nodeComma
 /**
  * 核对实际解析到的 openwiki 版本是否与本包锁定的一致。
  *
- * @param {object} options
+ * `declared` 是 package.json 里的依赖声明，取自本包而不是写死的常量：规格把 doctor
+ * 定义成「openwiki 升级后的一条命令核对流程」，而写死的版本号在第一次升版后就会永远
+ * 报「不符」—— 一个永远在报警的 doctor 等于没有 doctor。
+ *
+ * 声明不是精确锁版时跳过核对并说明原因：拿范围当版本号去比，报出来的结论是假的。
+ *
+ * @param {{ logger: object, runtimeVersion: string, declared: string }} options
  */
-function checkOpenwikiPin({ logger, runtimeVersion }) {
-  const locked = "0.6.0";
-  if (runtimeVersion === locked) {
-    logger.info(`✓ openwiki 依赖与锁定版本一致（${locked}）`);
+function checkOpenwikiPin({ logger, runtimeVersion, declared }) {
+  const pinned = exactPinnedVersion(declared);
+  if (pinned === null) {
+    logger.info(`! 依赖声明 openwiki@${declared || "(缺失)"} 是范围而非精确锁版，已跳过版本核对`);
     return;
   }
-  logger.warn(`! 依赖 openwiki@${runtimeVersion} 与锁定的 ${locked} 不符，请检查安装来源`);
+  if (runtimeVersion === pinned) {
+    logger.info(`✓ openwiki 依赖与锁定版本一致（${pinned}）`);
+    return;
+  }
+  logger.warn(`! 依赖 openwiki@${runtimeVersion} 与锁定的 ${pinned} 不符，请检查安装来源`);
 }
 
 /**
@@ -124,6 +158,7 @@ export function diffTools(expected, actual) {
  *   platform?: string,
  *   nodeCommand?: { command: string, warning: string | null },
  *   selfBin?: string,
+ *   declaredOpenwiki?: string,
  * }} options
  * @returns {Promise<number>} Exit code.
  */
@@ -139,6 +174,7 @@ export async function runDoctorCommand({
   platform = process.platform,
   nodeCommand,
   selfBin = "",
+  declaredOpenwiki = declaredOpenwikiRange(),
 }) {
   if (!nodeVersionSupported(nodeVersion)) {
     logger.error(
@@ -158,7 +194,7 @@ export async function runDoctorCommand({
   }
   logger.info(`✓ openwiki ${runtime.version}：${runtime.cliJs}`);
 
-  checkOpenwikiPin({ logger, runtimeVersion: runtime.version });
+  checkOpenwikiPin({ logger, runtimeVersion: runtime.version, declared: declaredOpenwiki });
 
   // 没有给 baseDir / nodeCommand 时静默跳过这两项：doctor 可能被只想检查后端的用户调用，
   // 那时它对「装到哪儿了」一无所知，报告一堆「不一致」反而是噪声。
