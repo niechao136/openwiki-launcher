@@ -296,7 +296,10 @@ function memberLineSpan(mask, member, lowerBound) {
 }
 
 /**
- * 向前跳过空白。
+ * 向前跳过空白（含换行）。
+ *
+ * 必须连换行一起跳：多行格式里成员的前导逗号在**上一行末尾**，
+ * 只跳空格会停在换行上、找不到那个逗号，于是删除最后一个成员后留下 `},` 悬空逗号。
  *
  * @param {string} mask
  * @param {number} from
@@ -305,7 +308,10 @@ function memberLineSpan(mask, member, lowerBound) {
  */
 function skipSpaceBack(mask, from, limit) {
   let i = from;
-  while (i >= limit && (mask[i] === " " || mask[i] === "\t")) i -= 1;
+  while (i >= limit
+    && (mask[i] === " " || mask[i] === "\t" || mask[i] === "\n" || mask[i] === "\r")) {
+    i -= 1;
+  }
   return i;
 }
 
