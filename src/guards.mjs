@@ -1,5 +1,6 @@
-import { realpathSync, resolve as resolvePath } from "node:fs";
+import { realpathSync } from "node:fs";
 import os from "node:os";
+import { resolve as resolvePath } from "node:path";
 
 /**
  * 路径护栏：拒绝把 skill 装进系统目录，拒绝在主目录里做项目级安装。
