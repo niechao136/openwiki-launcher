@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:66dd5866e2bf487b293cfadc1eb2bc699260da5acded448826db6346f06ce2a3",
+  "claims": [
+    {
+      "id": "claim_78701406157f4630861f6589072acccf",
+      "statement": "stdio 上的 MCP 线格式是换行分隔 JSON，解析器用增量缓冲加按换行切分（先追加再循环切），因此能容忍宿主或后端在任意位置切断消息；end() 负责冲刷无换行尾包，runMcpCommand 在拆掉 broker 前先调用它以免丢掉最后一条消息。",
+      "evidence": [
+        {
+          "resource": "repo://src/jsonrpc.mjs#L1-L7",
+          "version": "repo-lines-v1:sha256:a0082c9a5b001fb986d879df3e09124812b0847a54590d68973ea2d59cf1dadf:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2U5ZmQwYmEyMDk2OWI5MzI3MjNjOWQyZTI2MTRhM2E0NjkwZTEwODQ5Y2EyMjg1MzU5Y2U1YjUyZTRjMWNlOSJ9"
+        },
+        {
+          "resource": "repo://src/jsonrpc.mjs#L43-L62",
+          "version": "repo-lines-v1:sha256:ad151e87f53deb58602f71534e7d0fdedd4db01207ecbf6ca0fb9ed081b02f23:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmMzE1ZjY2N2Y5Y2ZkMjViNjY3OGMyY2E4MGQwYmY2ODU3MGY3OWNkNTAzZmQ5NGIyOWQxZmY2NjFhZmY5OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwMWNiMmQwMGY3NDg3NTgyMzQ1ZTUwODQ1MmQ0YWNhM2Q0NmU5N2NlYTY1OTk0ZjZlOTY4ODM3NjM0ODMxZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhMjEyYTgzZGY1NGYxZTViZWIyNjdhOTA1ZjhiYWIxZTg3ZDVjNDBkZGU1Y2IyMzQyNTNlMTNjNDkyNjI5NGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_eef42049985d47bf9512b052015f5a57",
+      "statement": "handleLine 先剥尾部回车符再 trim 并跳过空行；JSON 解析失败时不抛错而把该行包成 { invalid: line } 交给消费者并继续解析后续行，因为一行不是 JSON 就不可能是协议消息，但因此丢掉后续消息会静默破坏整个会话。",
+      "evidence": [
+        {
+          "resource": "repo://src/jsonrpc.mjs#L9-L34",
+          "version": "repo-lines-v1:sha256:74c77ef707284750264579c68ded38ef1b39232041a3f7acb91c5cae89b3c6e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNTJkZGYwMzY3NzQ3YzBkNTQ3NWYzNDY0OTZjZTM4Zjg0MjgyNDIxZTY3MzA4NjJkYTQ0Nzk4YzQzOGEzMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmNDFmZjc2YzkzYmQzOTdkYmE4ZjY4ODkxOWM4ZDNjYzJiNjAyYjEzMzNjODA2YmRmNTllMDQ5ZWUyMTMwZjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c45c75a729c04f17b1c46621ca36dd9a",
+      "statement": "合法消息的投递刻意放在 JSON.parse 的 try/catch 之外：若在 try 内投递，抛错的消费者会让已成功解析的消息被当成解析失败而误报为 invalid 行，导致 broker 丢掉真实请求、宿主一直等不到应答。",
+      "evidence": [
+        {
+          "resource": "repo://src/jsonrpc.mjs#L29-L33",
+          "version": "repo-lines-v1:sha256:e66a0bf74e7c54d7fa0fc4384769b6d2ddf2b8609b898bdc745061dcb19c0edc:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDYzMDYxYTkwYWI3Y2QwNTFhZDE5MzYzYzEzZWI1Mjg0MmUyNDVkNWNlYWY1MTY2OTI1OTU1OGI0MjRjMzFlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDgxNjVmZWQyMDE0OGUzMmM2ZGRiNjhkMDI3YjRkMzE4ZDJmNmVmMDNmNzEwYjhiOGI0Y2EyOWE3OTBkYWE0OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODYzNjNiOTM4OWQ0YzY5NDU1NTZiN2MwZTRjZjE2OWM3ZmFiMWVkZTk5M2VmYmUxNmUyM2JkYzllMTFjY2E4NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1901d87b30eb445a9410542a4e88de8a",
+      "statement": "formatMessage 把消息序列化为单行加换行的线格式表示，保证输出永不跨行。",
+      "evidence": [
+        {
+          "resource": "repo://src/jsonrpc.mjs#L64-L72",
+          "version": "repo-lines-v1:sha256:6d5db3dcc81c00386262f559516e297477ebf1f4169eb1cffdc98be440139d3e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWZkMTQ2MTgxNmMzYzQyNzA2M2UzZjhhZGNmMzQ4N2I5YzMzNzhmN2Y1NTQxNzViYjM0MzNjOWIyZDJhNWExYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d556b523643a405090eaf94d86508a9f",
+      "statement": "日志工厂把 info/debug/warn/error 全部写到 stderr 并统一 [launcher] 前缀，因为 stdout 属于 MCP 线、一个杂字节就会破坏会话；debug 受 LAUNCHER_DEBUG 开关控制而 error 不受控制，诊断信息不能因为用户没开 debug 就消失。",
+      "evidence": [
+        {
+          "resource": "repo://src/log.mjs#L1-L33",
+          "version": "repo-lines-v1:sha256:0c3b74e927c8c181ab11ed70c82872c86ff38ec3f16891bda06578e0bbf987a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_829fc57df4254d67a3120ad1c7c59935",
+      "statement": "createLogger 的 sink 与 debug 开关都是入参，测试可注入内存 sink 断言输出；CLI 默认按 LAUNCHER_DEBUG=1 决定是否放开 debug。",
+      "evidence": [
+        {
+          "resource": "repo://src/cli.mjs#L75-L79",
+          "version": "repo-lines-v1:sha256:e422f94718b19cbe8d3e51dd5209ef7e05534345aec09358420785b6b54752f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjE3MzA0OWM5NTQyMTk1MTMwNjQ1MWY0MGRkOTE4ZTk1NGE3MjQwZGNhYTQyNmUxMzI0M2Y4NDFhNGEwN2IwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjI0YjdkOTI3NWZjNmY5ZTU5MjQ4YzUyNzY0Yzc1MDU3MTA4ZDQ2ZjFhZTQ2YjNhNDdiNDZkOTQ2NTcxNTIxNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzM5MTg2NmVjZjUwOTc5YzkzOWNlYzk0OWQ0NWM2ZWUzZTdiZWRhOTlmMDViMTA2ZWVhNmIxNjE0MDQzNjAwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2QwYWQwNjMyNjRiM2JlZjcxYTA5ZDJjN2I1ZTcxMWIzYTZiNGMxNjY4MjdkNTU1YzExZDI3YTdmNjg2OThkZCJ9"
+        },
+        {
+          "resource": "repo://src/log.mjs#L14-L33",
+          "version": "repo-lines-v1:sha256:560828ffe7fd37b41b85897652d1f83bf743e722a0a6bde1016c30723ae1232b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwZTcxMjBhNmU3NjZkNTdmMzU3MjY2ZDQ0ZGFjNTA0MzM2NWE3ZTExNGNiMzkyMWM4YWI0Y2IzODk3M2IyMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMDFlMTdjNTg5MjM4YzNlYTUwNGMwOTQ2OGM2YzI3MjlkYjg1NjY2N2IwN2U1MjExNWVjM2YyMjZjMmJhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3256be136bd9456b97b7009d02ea306c",
+      "statement": "stdio MCP 服务的收尾是幂等的：end、close、SIGTERM、SIGINT 共用带闸门的 finish（先 parser.end() 冲刷尾包再 handleClientEof），exit 时兜底 supervisor.stop()，stdin/stdout 的 error 事件只 debug 不抛。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/mcp.mjs#L61-L87",
+          "version": "repo-lines-v1:sha256:6d4259b837514c950bcccc208f03f654c73b4c7f1bfdffe213c48cfc46d51438:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNjdhNWQ1ZTllMWNiYjNjOTVlOThjOWVjNTM4N2JjMDM5ZGYyNGZkNGY3M2E3NzZiOTdmMGU4YzhhNTQwNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMmMwY2I1MTlhZWNlNzFiODNhNmY0ODExOTJkOWJlOTE5NjQxMTE1MjIwOTAwN2VmNzNiYzk4NWQ3OGVkZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

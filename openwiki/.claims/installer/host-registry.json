@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4c362a4e7cd23ff39dd3b69fd05308eb4304b2d3bf9b1d1392757ad5b8ddac99",
+  "claims": [
+    {
+      "id": "claim_2aa005f7a49b4f88ab14fb382bb8f229",
+      "statement": "宿主注册表把 28 家宿主的技能目录与 MCP 配置知识集中在 src/registry.mjs 的单一数据表中，路径知识只来自 superpowers-zh 的 TARGETS 表与 openwiki 自身注册表两个已核实来源，两表重叠 6 家、并集 28 家，不猜测路径。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L1-L13",
+          "version": "repo-lines-v1:sha256:5b87d175a7004ff99e39ae62de55cd74791c47153e32dd0d70e150988f61b402:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2N2JmOGU5Nzk1NGRjZjc5MTI3YjczMzhmMWMwN2QwMWFiYzM5YTcxMzkwNjYyYWYyZjBlYzI2NDEyMWUzYjEifQ"
+        },
+        {
+          "resource": "repo://src/registry.mjs#L475-L476",
+          "version": "repo-lines-v1:sha256:afed25d3e6c677217e7c8d14d8b684a1ec803ead6bbdbaf4715d423621afbc2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQzYzBjZDdmZTU1YmYzOWI4NDgyNTZlYWFlMjJjMWY0MDczYjRkN2I5ZmYyOGJhMzQxNjAxMzkzMTk2NWMyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjAzZDdmNWIzMmI4ODdjOTY0OTFmNjY3YTIzNmJmNDc0MTIyYzUzNmE3MTJjYjFmYzYwYzM3MjhjNTljYTA2ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWZkMTQ2MTgxNmMzYzQyNzA2M2UzZjhhZGNmMzQ4N2I5YzMzNzhmN2Y1NTQxNzViYjM0MzNjOWIyZDJhNWExYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjIxZGQxMGMxZDlmYzJjMGMwZGVkMjI0MDVhN2IwNTQwNTU0ZjFiYzhhZTNjMDVkYWRiODNjZmI4NzgyZWQ0MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0ac686615fd4fba8c9ed49f5cad77f6",
+      "statement": "normalizeHost 在导出前把数据表整形成消费端可无差别处理的形状：detect/globalDetect/aliases 一律为数组，globalDir/globalDirWin/globalDetect/bootFile/noProjectReason/mcp/native 缺省补 null，使「不支持」成为值而非缺键，避免消费端判断分叉。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L444-L473",
+          "version": "repo-lines-v1:sha256:c1b52bfc38185fe07da5c9e5e404850eb375f00ef0b2a304357c7608a6ce6a0b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZjU1YWRmZmI5MjA3NDQzNWE5NzE3NDE0NWFjODdjYzhhMWZkMTc5NzQ1MjUwYTIwMWIxNDA1MTZmMzIyYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxZGFlNmIxYjViMjAxYmZjMjU4MzgzOWU2YWUyMGY2OGIzOTU4YmJhODA4ODI5MGUxZGU2MzJkOTQxNTI1NWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a3c2fb0b22ee45db82d44f19335580bf",
+      "statement": "注册表按 mcp.kind 分为三组：NATIVE_IDS 列出的 8 家（claude/cursor/codex/kiro/opencode/antigravity/bob/omp）MCP 配置有 ground truth 可自动写盘，18 家为 kind=manual 只打印片段，aider 与 deerflow 的 mcp 为 null 表示无 MCP 客户端能力。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L16-L17",
+          "version": "repo-lines-v1:sha256:0ec32f34136b2a145f37dfee6cd00b5115955cf57e88700e01038c3b4deb3998:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzc4MWY4ZWRiMzUyZmFiODAwYzQ4NDcxYWMxY2NhNWJlYTI2YTdiYzI5MWI0Njg1NWExYjkwOTZmNjUxYTg1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFlZjlhYmY3NDVkZTc2YjAxMWJmZThkMWQ5NzJmZGVkNDIzYmE4YTk2MGVkOGM1YWNjZmM3MDE0MDJlMmVkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDY1ZGIwZDk5ZjRmOWE3MzVmNjUwOWQ3NWYzMWRlYTMwMjdmYWQxMTg3OTViMmM4ZmQxNjMxNzNkYWZlNmNhMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2Q5NmE2NDI4ODk1NjQ4Y2Q3ZjVjMjhmYzQzNDNjNTcwOTRhZTRlMzcxNjlhMWNlNTVlMzhjMDIyNjk5ODRjMyJ9"
+        },
+        {
+          "resource": "repo://src/registry.mjs#L22-L154",
+          "version": "repo-lines-v1:sha256:33578cdfabd575f3754fed82716a6ba90ec20ac72c861e6e6f40f71b1558d916:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1ZjQ2OTZiMzRjNDFjNDY3ZDhlMjQ0OWQzMTMyOWQyN2RhYTE4OWQ4ZDFhNTQ1OTlhMTA4YzNlNjgxNTMzNDI5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiMGM5NDk4NTUyNmMxYzU3ZWYwMGMwMGQzZjRkYzkwNjE1Njc3YTBhMzZhOGI3OTVkZmY5YWZmZDUwZmU5ZjU4IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiMmMxMDRjZmQ1YWY3YjA4ODgyZDdlNTBjZTkyNWMyZDNjOGU2NGY0ZjkyZjc0ZjYxOWI5NTQwNWJkOTQxNjA0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NWJmZDNjNGI2OTVhODhjYjM5YzQwODBhMmMzMjQzZjlhZGQ0OGVjNTg5NThiMmQ3YzIyY2JiZWJhOTg5MmIwIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_ecdbf88c77bf43779b1321d9d58a7591",
+      "statement": "Codex 各层级扫描的都是 .agents/skills 而非 .codex/skills，其用户级 MCP 配置是 .codex/config.toml 的 codex-toml 格式、容器键 mcp_servers；它与 Antigravity 共用 .agents/skills 是预期的开放约定。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L53-L67",
+          "version": "repo-lines-v1:sha256:80269b294e8c67a8212ca6841e79899e4a85d16ecccba0f2434101c57b2c58cf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiN2E0NTg3YTg2MzlkNzU4MDYwYWYzYTM2MTM4OGVmYjEyNGFjNDM3NTM5ZTFmMTIyMTQ5MjQ5YzlhZDU0N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwMTUwOGRjNGYyMjhiMWE2YzNlZGQ3ODkyYmIwMmRiNjQ5NzMzN2QxZDI2NDQ0ZmQyMWZhMGVjNGVkZWYyYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4NTY1M2JkY2YyMzhjZmRjOGEwMGFhMzg0NWU3MWZiMGM0ZWJiZGEwNjU0ODM0ZTY1MmIwMzEwZWQ0NDBmMzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8e85e5fcd6c446fc84c2a3a178143879",
+      "statement": "Antigravity 的 globalDir 被刻意置为 null：superpowers-zh 标注该路径未在文档证实，openwiki 注册表声称的路径引用的其实是 MCP 文档；保守的代价是拒绝少数可用情况，冒进的代价是装到不扫描的目录。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L102-L123",
+          "version": "repo-lines-v1:sha256:b19971028c6b544da66cca436164623d6186ca8a6e56072d9d60c811c7a17612:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiN2E0NTg3YTg2MzlkNzU4MDYwYWYzYTM2MTM4OGVmYjEyNGFjNDM3NTM5ZTFmMTIyMTQ5MjQ5YzlhZDU0N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkNTE0YjdmYjY3MjYxZmI2MmY0NDE5ZmJlZWQ4NDdhMzQ1Zjk4OGI0MTE1M2UyZmUwNjZmODQxMTExZGIwYmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmODQ2OTVjZGE2NDlmYTU1M2U3NzU2Y2Y2MmM4MjM4MzZkN2Y1MDVhMjk0ZDljNzRlNDdkMGY2YTA0M2Y0ZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aee57ab4ca1c4c20af1fb45d4abee335",
+      "statement": "projectDir 为 null 的宿主（trae-cn、zcode）必须给出 noProjectReason：TRAE CN 的项目级目录与国际版相同已由 Trae 条目覆盖，ZCode 的项目级技能只能通过 UI 导入、官方文档从未暴露磁盘路径，两者都引导用户改用全局安装。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L196-L199",
+          "version": "repo-lines-v1:sha256:2caed798a5d81ea7071ddd7464899b9751cc64cf75a2bc7fe18ce111bc3c324b:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDUyMDcxZWIzODdlMzg3ODQxYzRkMGU3MzFmOGI5MTRkYTA1ZGM5OGU4NTYzZDViOGI4YmRiMWU3YjAyMjdkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDkzMzY0OGVhMzdhYThmYWFiMjE5YjI5YzliMDI3OWYyNTNjZDRhMTYzODAwZjI1YWMzN2ZiYmNkNWIxYmY2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmQ5ZmEyYTJiYzYwYWM5NDgyYmRkZGU2NjYzZDJjZWFhY2YzMmNhNTQ1NGQ4ZWNlNTc0NDRlZGNmMzRkZDhlZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGMyNTNiMjIyZDAzNzJkMDg5MGNiNmQ0N2NhZTJkNGRmMWU3NWEzYzQyMzg4ZGQyZjU3OTkxZTE4NTJlOTRhYiJ9"
+        },
+        {
+          "resource": "repo://src/registry.mjs#L379-L381",
+          "version": "repo-lines-v1:sha256:0b0411f13c11212f550dd72b95a202466fb6e34b98ef4fedfd89b0cec0ad9a8d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDUyMDcxZWIzODdlMzg3ODQxYzRkMGU3MzFmOGI5MTRkYTA1ZGM5OGU4NTYzZDViOGI4YmRiMWU3YjAyMjdkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTFkMDc4MmQ1NWUxMjRhYmQ3MjFjODNiYjVlM2FmNDM2MTU5M2IzNDQ5Y2QxODhkMjZjNTcwNDVhYzA5NjAxOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmY5ZTA3ZmRkM2M1ZjMwOGJjYWY3Njc0MWE2YjE2MjdmNDY2YmE4MTQ0ZDE5NWE2ZDdiMzcyYjA2YmY5YzFjMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmJjZTY3ZDc2YzQ2NDc3ODlmMDFjNjE0ZWEyOGJjMzMwZjI4ZWE0NzJhOGMxOTBhNWEwYTQyNGFkY2NkMTBhNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_92b8649fc7bf44118105b362c84e270a",
+      "statement": "globalDirWin 字段用于 Windows home 与 Unix 不同构的宿主，目前只有 crush（AppData/Local/crush/skills）与 reasonix（AppData/Roaming/reasonix/skills）。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L338-L353",
+          "version": "repo-lines-v1:sha256:b8567817e5618e15448a24b1ad180643cde1abc49e0b0274234f9ae90f98e18f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiN2E0NTg3YTg2MzlkNzU4MDYwYWYzYTM2MTM4OGVmYjEyNGFjNDM3NTM5ZTFmMTIyMTQ5MjQ5YzlhZDU0N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3NzA2NjA1MTg1ZTZlNjg1NmQzYjNmMGJlNmRlYWNlZWQ5MGFiMGQ0YWYyODE2ODcyZTE0YTEzOWY1YTg4MmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0OTg5MDNlMzVmNTIzNGRlMmYwOGQ1YTczMTFlMzIyOWJkZTIzM2MyMmNiNzAzNmI3MjFmNjFhNWUzMDExNmMifQ"
+        },
+        {
+          "resource": "repo://src/registry.mjs#L384-L400",
+          "version": "repo-lines-v1:sha256:b0ef25b0e2c7d2035871c5bc8f7a9fc1e6845c61ea863b0a186955637ec09e32:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiN2E0NTg3YTg2MzlkNzU4MDYwYWYzYTM2MTM4OGVmYjEyNGFjNDM3NTM5ZTFmMTIyMTQ5MjQ5YzlhZDU0N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmODUxMWY2OTU4ODFhN2E3MGRmZjcwZTk4ZWUwNTllYzU1OWIzNzBlNTg0MDAyN2E3MGU4YTYyMTU4ZDcxNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA1MDliY2UyMDUwNzc2ZDM4ZTdjZDYyZTEzMGQ3YmNjNGVhYjBlMDgzNWUzNGI0ZGZiNTM0ZGRhMjJlYjMwNGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b0b0dd09f574718bed9e55e99220023",
+      "statement": "ALIASES 把常见输入写法映射到规范 id（如 cc/copilot→claude、gemini→gemini-cli、codebuddy-cn→codebuddy、huawei→codearts、deepseek→dsh），findHost 先按 id 命中再查别名表，shortestAlias 反查最短别名用于拼出可直接复制的 --tool 命令。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L478-L513",
+          "version": "repo-lines-v1:sha256:4c0ede10c7050823380d2c41db10af9fb496046b29d0c1d62048798ea6f66fc7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZTExYTcxMmI4YzczYzA5N2U4YTFmMGFjYmE5YzQyMjYxNWMzYjllZTc3ZjdhNzBiMTZhZGYxMTk3MTNlMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMGRjYjRmOWQ4MTQ5YWNjZmZiNWZiNmUwNDdiZjYzNGUwNDk4NGRkNzUwMzE3NjM2YTk1YTlhNTBiYTNmZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzZDU5YzRlZDE4ZWNkZTg0MTU3MDk5ZGQyZDJmYmY2ZjRhNzQwODhmNmRhYTQ2NTljMTQyYTVhNzBjMjdjYmEifQ"
+        },
+        {
+          "resource": "repo://src/registry.mjs#L536-L560",
+          "version": "repo-lines-v1:sha256:796d464e080d5daa94af1c344b5223d0538f36185c1b6bbca451a959c373b3b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyZDdjODM0OGU2NmI1YzYxMWEyNDJiOWQ0YzU4MzUxODM1OTBlYjkzY2ZhZmNjNmM5YjYxZmVmYTY1YWQ1NGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5NzUwMjgwYzA1OWE3MDJhODg3ZWJjODMwNmU3MmIxZDZkMTlhMzFmMzQ0MTM1YTBjMTU1YmZhNWI2MjkyYWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2261cf164f1f4837872e7d1899a1f51f",
+      "statement": "CLI_PROBES 只列 CLI 类宿主而不列 IDE（IDE 装在应用目录里 PATH 探不到）；isOnPath 只用 existsSync 检查文件存在性、绝不 spawn 探测命令，win32 下按 PATHEXT 展开后缀且单个路径异常被吞掉。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L515-L530",
+          "version": "repo-lines-v1:sha256:7748f79ddd6fae142e1000dea73f5971da813ccd64adda188b9ebf82390ba17d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZTExYTcxMmI4YzczYzA5N2U4YTFmMGFjYmE5YzQyMjYxNWMzYjllZTc3ZjdhNzBiMTZhZGYxMTk3MTNlMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjMDVmMWNiMjJjYjNkYjZlZWYzNzBmMTgzMjgyMTkwMjk3ZTllNGZmMDMxMTQ3YTcxZTBjZDBiYzkzZDExMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwZTllMTRmM2UyY2ZmZGYxNGUzYmU1YTBkNTVlZmMyODg2ODViM2FmMmQ5MTFjZTA2NGJjYjhjNTMxNTQ4MDIifQ"
+        },
+        {
+          "resource": "repo://src/registry.mjs#L562-L589",
+          "version": "repo-lines-v1:sha256:e3ff923c43ee2234fde66d4d43b04b6129b24b20bf1757c93f025b0aedfb7ae8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3NTEzZjFiNjk5OTQ4MDI0ZDE5Zjc3Y2ZiYjI1MzlkMWJiOTI5NTA4MWIzODllZDMzNTI2YTc4YWEzN2VmNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkYjU0MjE0YmQxZjNjY2Q0YmFjODU5M2ZmY2ZjZDNhNmFkNDQ3NWQ5M2IzOTVhYzc1MjllM2EzNTg5YzNmY2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_35d22a8fdc814aa492dcf6339f39ed47",
+      "statement": "validateRegistry 是「不猜路径」的自动化闸门：校验 id 唯一合法、projectDir 为 null 必须有 noProjectReason、有 globalDir 必须有 globalDetect、有 globalDirWin 必须有 globalDir、三种可自动写的 mcp kind 必须齐备 containerKey/userPath/projectPath、native 字段只能出现在 8 家 NATIVE_IDS 上且 receipt 必须是 .openwiki-install.json、别名与 CLI_PROBES 必须指向已注册宿主。",
+      "evidence": [
+        {
+          "resource": "repo://src/registry.mjs#L591-L652",
+          "version": "repo-lines-v1:sha256:bf2e0b5456c691b3f8d9b89530732dc49cc0a8d80702279c1d5f6c4fa4de83cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiOGRhOGFkYmVmZGZkMWQ0OWMyNWM0NDEwZTU4ZTYyMjk1NzVkN2NkODg5NzE4OTdlMzBmMzkyZTkxOWVmMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

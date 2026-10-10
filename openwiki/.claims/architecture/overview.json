@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0910e8381a27c6ec3617a1acff60113bdb3cea78d3f04e7d1d8f201d20f412b4",
+  "claims": [
+    {
+      "id": "claim_daf71ade027a4879a29dd26382180b81",
+      "statement": "openwiki-launcher 的核心架构是「清单快照 + 后台按需启动」：宿主发来的 initialize 与 tools/list 由内置 manifest 快照即时应答而不触碰后端，tools/call 才排队等待真实 openwiki 后端就绪后透传。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L228-L249",
+          "version": "repo-lines-v1:sha256:44c22faf51ab24f83d326b9be42c22e40359dac60d19db9e2fc1fd9001e670ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMTFjOTU2NjQ5ODc0ZDkwYzBkODI0MDU5Y2E2ZmYzMjgyN2M3MzkxZmEyY2FkYzVlOGI1MjVhNTIyYjllYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMTIzNmYyYWVhMWNlNDJmYTJiMGNjYjI3ODMyYzc4ZjVkOGMxYzE5MjM4YTI0MDkyMjEwNjYzZDUzOWVkNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiN2Y3NGI1YmM3NjEwMmNkOTVlYTI5N2Q1MjU1NDQ3MGM4MTdiZjZmYjc1NWE1MGFkMWY2Yjg2ODk0NDgyN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNWY3OTgwYmY3NTgwYjlkMmM3MTU0OTBjNjlmZDhlMDQzZmNmYTBiOTZhY2ZhZTBiMjZjZWRjNmVkMTU2NjEifQ"
+        },
+        {
+          "resource": "repo://src/broker.mjs#L9-L15",
+          "version": "repo-lines-v1:sha256:76d945658c7c94f901a55b08324c55e8626ec2b3d4de60e034dd5fed1580c3ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVjNDEzZDM1MGU5MmEwNTE1NTBmOWU5ODJhYmY2ZmFiOGRjYTgyMjA0NTJiMTJhYzZhMWI5OWQ2OWYxMmE4NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTZlMzBkMjViNmNiYjQ2ZmFiMWU2ZjM5ZWRiOTE0MmMzZWJiYWE2Yzc1Yjc3ZTk0NDJhMDEzNWQwMzFmYTcxMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzJkOWRlY2Y4M2EyN2ZjZDAwMzdlMjhhOWM0YTgzMDE1ODIzMWNhMzY1NjdhZTAzNGU3NmQzY2Q2MzZlMTJiOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9044905e6cd94603a173fe1e555387bf",
+      "statement": "broker 对 initialize 在存在 manifest 时直接用快照应答；对 tools/list 只有在 manifest 存在且后端尚未启动（supervisor.current() 为空）时才走快照，后端已启动则以真实清单为准。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L228-L244",
+          "version": "repo-lines-v1:sha256:9ac5d2e4cb65c97b068c6f89ff1a8cac25c500a8ebdccdc02f9a8655d72a0d11:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMTFjOTU2NjQ5ODc0ZDkwYzBkODI0MDU5Y2E2ZmYzMjgyN2M3MzkxZmEyY2FkYzVlOGI1MjVhNTIyYjllYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMTIzNmYyYWVhMWNlNDJmYTJiMGNjYjI3ODMyYzc4ZjVkOGMxYzE5MjM4YTI0MDkyMjEwNjYzZDUzOWVkNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiN2Y3NGI1YmM3NjEwMmNkOTVlYTI5N2Q1MjU1NDQ3MGM4MTdiZjZmYjc1NWE1MGFkMWY2Yjg2ODk0NDgyN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgxYWMyNzQ2ZWM1MmQ3ZjdlMDMwMDRmNTAyMjE0M2RkYmRmM2E4NGQ1NzRlZTNiZTlhNGJmOWRjMTY0NWVjN2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8bf5546f329c427a9a02b28882c45100",
+      "statement": "当 manifest 为 null（版本无匹配快照）时 broker 降级为直通模式：initialize 与 tools/list 都经由 dispatch 等待真实后端，宁可慢也不给宿主一份对不上的工具清单。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L228-L235",
+          "version": "repo-lines-v1:sha256:3c3856451ebe6595a0dd0ff4f5be77dd699fdde9a4b5668d3d3ccc3731d3e441:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWMxMWM5NTY2NDk4NzRkOTBjMGQ4MjQwNTljYTZmZjMyODI3YzczOTFmYTJjYWRjNWU4YjUyNWE1MjJiOWVhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDlhNDllODgwZmFhMmQ4YjljNjQyZWYyNTY2NTkwZTc5NzU5ZDA5Mjk5MzY0MWFiMDMwY2M5Yjc4Y2I0ZDFjNiJ9"
+        },
+        {
+          "resource": "repo://src/manifest.mjs#L27-L33",
+          "version": "repo-lines-v1:sha256:3aebdc6c4f30e8edd788910082bad022a599321e163fac8a426059fc64c840e6:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTYxYjY5N2RhZjdiMmE5ZTAwYjMxMTVlODdiMGY5NmUxNjhjN2YyMWM2NzQwZTg5OWIyYjViNDIyNzRhNDY4MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjljNThhMjQwYWMyZTYwZTNiMTM0MWQ3MDRmOTA3ZmQ1YzliZmM1OWFiZTNmMzVlZmU1ZmJhODFjMWI2N2Q4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_bde1115b9e3a4368afc47f2c23a4d821",
+      "statement": "openwiki 后端始终以 process.execPath 加绝对 cli.js 路径 spawn（spawnFn(process.execPath, [cliJs, \"mcp\", \"--host\", hostId])），而不是直接执行 openwiki 可执行文件，因为 Windows 上 nvm 生成的 openwiki.exe shim 不转发 stdio，表现与挂死无异。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L38-L41",
+          "version": "repo-lines-v1:sha256:f570d9d40ed6332dbdd448acc6b58cc8f10abe8355d028e2b68c75a99b6c458d:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTI2NDZiMDJkNWJjMzkxMmE5MDNiZWZlMzlkODQ5ZWI0NGZmMjdkOTI1MjFkOWZlZTkwYTFiMTE1NjljY2I4NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGU3YWNjYzdjZTYyMWJjYmZjYjA0ZDU2NDE4ZjUxMGZmZTlkMGJjOTNiYjc1ZWU4MzhiZDBjMWU5MTAwNjgwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTVjYjRhZTFlOTYzZGYyNDJjMDg3MmY5MGYzNGI4ZjAwMDQwY2FmNTk5ZWI5YzNlYmY0MDU3NGUzNzI1NDA4MyJ9"
+        },
+        {
+          "resource": "repo://src/backend.mjs#L7-L12",
+          "version": "repo-lines-v1:sha256:9602e66639b69393c6e8de6fb713b9743b31d900e0d47a1c29ae8774ba7b0c2c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTdkNDU0ODAwYmI2NTMwNWExMGE3M2ExMDY5YzMzNTI3MzA2ZmM2ZDM5OWYzMDMwODA2OGUxZWQ2NTVmOGY2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYwNDIxZWU2NTFjZTIyZmEyNjYzMjFmZjQxYWRlOGZhYjMxNTgwZjBhM2YxMWM2MjZiNGNlZTI1ZDljYzFjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmFiZjljMTYzMDUyNzVjM2EyNzYyMGFlYWViZmUxYTQ1Zjk5MWY2MmZkMmNkMzllYTk5YWJjZmUxNmI5ZDBkYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8039499051054b5884afcff85f290e2f",
+      "statement": "解析 openwiki 运行时只走 Node 模块解析（require.resolve(\"openwiki/package.json\") 与 \"openwiki/dist/cli/cli.js\"），解析失败抛 OpenwikiNotFoundError，绝不猜测全局安装路径。",
+      "evidence": [
+        {
+          "resource": "repo://src/paths.mjs#L25-L38",
+          "version": "repo-lines-v1:sha256:17d436985faf281647d97738448afa0b01a4303eed91d66f8d4d3b97f40a8559:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmYWRkOWQwYWZmYTk0MmUwY2M4MWI1ZjU4NzA3MzkyM2VmODA3ZTBhODM1OWNhMGRjNDlhZjUyOTFlYTRmNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmMTg5MDIyMTFkYjc0NjNjMzNjYWUyMmJiOWMzZTgwOWNkMWU3OTI5NjhjOTg5ZWY4YzU3NTBlOTI2ZGY3MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/paths.mjs#L5-L12",
+          "version": "repo-lines-v1:sha256:1aa0efea76331b912aa5ccba0363c8880dcb8dcdf1983a8d19937e24817552ac:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmZlNjc4N2JjZDk5NzI2MWQ4N2YyOWM3NWY0ZTViYWQ3MTQ4YTJhOGZjMDhmYTkzNjU4MGI1MzhjM2U4ODU5NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxMDliNDBjZGE1NzY2NDExMjU5MGQxZWZjOWI4OTc2YTMyZmE1NWI0ZmViMDUzYzUyNTI4MmJmZjdmYWMwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTdkMjU5MDQ0MDk2OTg1ZGY2Mjc5YzA2NGFhYWJlN2FjZjQxYjhkMWFkZjM4ZmY4ZjAyNjQxMDAyNmY4MDY2OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ef7ac721a87a4f3c86d47a6b982c28cf",
+      "statement": "写进宿主 MCP 配置的 node 路径取自 process.execPath、本包 bin 路径由 import.meta.url 推导而非 process.argv[1]，以规避 npm shim（Windows 的 .exe/.cmd 不转发 stdio）带来的故障面；node 绝对路径取不到时退化为字符串 \"node\" 并附带警告。",
+      "evidence": [
+        {
+          "resource": "repo://src/self-path.mjs#L11-L24",
+          "version": "repo-lines-v1:sha256:c3faf85a193f56361e439d906c01be753f0a749d9dbe79a8507b7ecd2db0bbbc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyODc5OWRmNGYyNzA3MzNmN2VlZWM0NmI3OTk5YzQ2NGE0YmYzNGE5NDZkOWE1MTZkMmI4OWQyY2NhZjQ3MjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjNmM5ZDA3ZWM2YmVhODY5MGEzN2Y2NWM1M2FiMWI0NTFmNzk2MWYzZmFiOGFlYTA1YmVkNWRjYzIzMmFhMDAifQ"
+        },
+        {
+          "resource": "repo://src/self-path.mjs#L26-L48",
+          "version": "repo-lines-v1:sha256:fcc755ed2b8056216da148cf2e7708b05215ba73d7379d287c4a12e0b072bb57:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzNGIwNjFlYTcwZTU0ODM3MmQ5YTM5YTk2NGE5YWRhNWQzNDAxYzkzZGEzNTdhMTBlODNiNjFmOTQ0NzUxMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YzVmYzQ1YTdmNWFhZTBiNGU1M2QwYTZhYTM1OWIxMTAwNGI4MTdhMDI5M2MzNjY4NjIzMmI0OTRlOTA1MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2NWNmYThlNGI2ZDg3NzZiMjJkNTM5Y2JhOTg0MmVhYzdkNWZiZjM5ZGVjM2QyNDY2NDU5OTQ5OTc1ODczMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e87236ea9e74da4be99ff617adf845f",
+      "statement": "stdout 只承载 MCP 线协议，launcher 的 info/warn/error/debug 日志全部写 stderr 并带 [launcher] 前缀，debug 输出受 LAUNCHER_DEBUG 开关控制。",
+      "evidence": [
+        {
+          "resource": "repo://src/log.mjs#L1-L33",
+          "version": "repo-lines-v1:sha256:0c3b74e927c8c181ab11ed70c82872c86ff38ec3f16891bda06578e0bbf987a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c5c12368930e4ad489bd1e83233c54bd",
+      "statement": "安装侧的决策与 IO 严格分离：plan.mjs、targets.mjs、guards.mjs、ownership.mjs、node-version.mjs 是不碰文件系统的纯函数，隐式全局（platform、homedir、tmpdir、env）都改为入参。",
+      "evidence": [
+        {
+          "resource": "repo://src/guards.mjs#L8-L11",
+          "version": "repo-lines-v1:sha256:d670efdc4378e03207def50d71755385c6cc8c96c4f165cd8594add7ee4fa2c2:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmM2ZGM2YTMxOGFjNGMwMjdjMjY2MTQxNDhmNzk1NjQwZTllNjk4NGExZjc5NjFhMzRlMDExYjYxZDdlMGE1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWQxNjdmODg3YjdkNDBlYWJjNzNiYmEwODU5ODI4ZTgxNmQ4NzhkYjBjYzViYTFiMTU5OTllMjhjMWUzODUzNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzA2NmU0MDc1MzQxNjBkYjI0NTY3ODFmOGMyMTk3ZGE1ZjY5MzQwMmY1Y2FhNTIzMzk2YjU0YTZkMGE4YzIyNyJ9"
+        },
+        {
+          "resource": "repo://src/plan.mjs#L6-L18",
+          "version": "repo-lines-v1:sha256:9ae897f8c051d169d46b869fcf86b92c2757c010d0acc4328266f0e59f36201b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMjdkZDRhNTJmNzc1OGFmZjliYzQ3NzdlNjFiM2YwNzE2ZTc4OTJiZDg3ZTg5OWYyOGE0NGUwYWU4NzIzYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyN2RmY2QzNDk4M2U4ZDM4NDBmOWU4MDQ0ZGNjMmQzMmI3MGJhYTIyMjFhMzZkZjQxMTIwOWYxODRmMTg5Y2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e3192b7213674fa68c0341340404c172",
+      "statement": "broker 的入口 bin/openwiki-launcher.mjs 只是把 main() 的返回值赋给 process.exitCode，不做额外工作。",
+      "evidence": [
+        {
+          "resource": "repo://bin/openwiki-launcher.mjs#L1-L4",
+          "version": "repo-lines-v1:sha256:3558251c9470b6305dc59a80d57107cf77d38a459db136e842589c08867e2caf:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU5YzQ3ODcyYjcxZjEyNTg5OTQyODkyNDY0ZTc2NGMwZGIzNTBjMjBiNzIyMjg2NDU2MTVjYzM2ZTBhMDcyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRiMzZmZDE4MjAxZTVhMWNiZjlkY2FiNTA5OTZjNDA5NWE4NTQzNmY0NDhlNzk4NzgxZWU2NGQwNTVlMTBjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://src/cli.mjs#L75-L152",
+          "version": "repo-lines-v1:sha256:8c8805612fba84299cc3700ec6272171e5426e43e5f67f63d6d4ae09ebbf20e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxNzMwNDljOTU0MjE5NTEzMDY0NTFmNDBkZDkxOGU5NTRhNzI0MGRjYWE0MjZlMTMyNDNmODQxYTRhMDdiMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3MDY1NWM1ZjM2MTg2YjhiZGY5ODRkMmFiOTUxODRmY2U5MDVmZmJkODQzNGZkYjY4OGJhYjQ4YjlhZjE5MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOTE4NjZlY2Y1MDk3OWM5MzljZWM5NDlkNDVjNmVlM2U3YmVkYTk5ZjA1YjEwNmVlYTZiMTYxNDA0MzYwMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce9b2f32077e4d858a311bc7abf4234d",
+      "statement": "项目采用「只删自己写过的东西」的归属策略：安装写入收据与逐文件 sha256，卸载需要全匹配才删除，用户修改过的文件被跳过。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L149-L158",
+          "version": "repo-lines-v1:sha256:2b88343a3e51f7d6f2030e8f60a5cc6ad553d75f42ba72ae13c3d947aa011dae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhMWJlYTE2OWZkMWYzMmFjNDBmOWEwNDU0ZDFlNzMxM2ZjMzM2NTVmYzJhZmYzNmNjOTUzYzFkZjZmNWUzNzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmI5M2VjY2ZhYzExNmZjN2Q4OGQ3OTk1ZGRkOTJiOTdiMmEyZDQ5YjMxZDM5NmU2ZWEyYjFhZmFlOGQ4MGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxMzdjYTc1MGM4ZGI4MDBlZWQxNjA0MThkM2MyODUyYTA5ODMzZWViMGU4ZTFkZTg2MjdkZDQ5OGE5NTE5ZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjYjFjMGNlZTlkNDU2NDJmMzA2ZmFmYjgwMDEwODAwNGYxMTgyYTc1OWJhZWUwODEwMzNmNjg1NzIwNTZmZmUifQ"
+        },
+        {
+          "resource": "repo://src/skill-install.mjs#L188-L227",
+          "version": "repo-lines-v1:sha256:fd331405b2126f1c5f34a9b74e1341dab3a250700270273a462e6c41b5c13651:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiMjY0MWJlN2E3ZDUwYWExZDgxYzBhMDQ0ZmQzNmM3YzI3YzQ5YjZjOTVlNWUzYzE4ZmYzNjc2MWUwYmY2YWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyMTY2MWJjZjFjMDhjZTZkYzYwMTMzMTVmYWM5OGQzNDM0Mzg3ODY5NjY4YjU4ZGM4ZmNhYzExZTEzNjVlYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjM2MyY2ZhMWNhNmJiMzVjOGU2MGIyMzE1NWM5ZTFmYjk3MWQwNGU0ZjI1MzA4MTUyYzUxODdhYTg3MmI2ZTEifQ"
+        },
+        {
+          "resource": "repo://src/uninstall.mjs#L14-L20",
+          "version": "repo-lines-v1:sha256:80493449997fa25e4e19551ce3e56c1ed10c9272ca5845530c47ee36b1f40789:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTIwYmVhODNjYjVhN2ViZDgwNjMyZjNhMGRiMTQxMjE0M2RjODBmOWUxNzIwMWU2YTY4M2UzZjg1ODg2MWUzZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjE2NWRmMDYyODRiZDNiZDczODllNzk3ZmVlYWJmYzY4Mjg2NWVmOTFkZWUwOWVhZTdkODJiYmVhNTgxZTMyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODNjMzQ0NDlkNzg1YjZiZmZlYjhlMTQ0MTM4ZWExMTZkODBlNjVlNThiNGUxMzdiNGE5NzAwNTMwMTU0YTkwOSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

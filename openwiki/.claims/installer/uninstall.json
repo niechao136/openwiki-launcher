@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:663ee7cf39a950c59087f82172fa974e06248ac06b79f4978d542e459f792585",
+  "claims": [
+    {
+      "id": "claim_17e6cc8935474083b75b9b3855f9c6cd",
+      "statement": "卸载有两条硬规则：只删自己写过的东西（skill 需收据加逐文件 sha256 全匹配、MCP 条目需确认指向本安装器），以及不做顺手清理（不删备份文件、不删用户目录、不动其他 server 的条目）。",
+      "evidence": [
+        {
+          "resource": "repo://src/uninstall.mjs#L12-L20",
+          "version": "repo-lines-v1:sha256:7fd3e93245c581dc71fbf5faad93872ca1237360a047144632f3ae5e24dd73bd:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDMwMGQ2ZTBmNjkyMjg4ZGFkNDI1NDkwNjFlMTgzYmMwZGU3YWQ1ZmU1ZTQ3ODliOGUzZTYyNzM5MzMyODk1OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODNjMzQ0NDlkNzg1YjZiZmZlYjhlMTQ0MTM4ZWExMTZkODBlNjVlNThiNGUxMzdiNGE5NzAwNTMwMTU0YTkwOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9c30f300f755482db1a9fc6d7d08f298",
+      "statement": "卸载复用 targets.mjs 的作用域解析、目标解析与快照采集，与安装共用同一套判定，避免出现装到 A 目录、卸载去 B 目录找的删不掉的残留；未知宿主同样在任何写入之前拒绝。",
+      "evidence": [
+        {
+          "resource": "repo://src/targets.mjs#L8-L13",
+          "version": "repo-lines-v1:sha256:62111c805d7c6056e42a21e37d04ba2f542a49c509051a2bfd2fe19af8c8d853:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjEyMThjNmQ2ZWFiNTBjN2MxYzYyNTI4ZGI3NWFlN2MwMmM3NjNjOTg0OTNkMTY2MzQ4YmRiYTBjYzBhZWExMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDkwNzRjODU1ZDI4NTAwODc5MDE4ZTBkOWMzOTMwNTFmMWE2OWM0NTQzNTczZjgyOGJiNGE2OGQyZWNjNmUyNSJ9"
+        },
+        {
+          "resource": "repo://src/uninstall.mjs#L37-L56",
+          "version": "repo-lines-v1:sha256:6614b0eb5c7b1742c737e9d0d11d353ae2e0883bbc3bdfe4a5ca97e94fa460c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4YjNjYjdlMmY0ZDg3YTM5NWE5YjZjMTE2ODk0YzJiYWNkMzRmNjc5ZTg2NmM4YmIzZjEwNjE3NTMwZjYwNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1NjdlNjAwNzljZWM4Yjk3MWY1NDRiMWE3MTNkOTQ1MTc5YTZkNmM1MDRiOTYyMzllMmZlMWVhOTNiNDE3YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YzIwODg5YWFjMWRlMmU1NzYyMGQ2MDI4ODllYmVmODAyOTdhZWE1N2M5ZDhhZDE2ZmQyMDRhNjA4ZDI5MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0NWY0MWE4YTEyNjkyYTI1ODVmODc3YmVmY2E0NmVlZjc4MTYyNmRhMTc5ODViZWQxYzlhNjFlNjVmNzM1YjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_753bcf0ca9fd47aab9a53d0c0970c7df",
+      "statement": "MCP 条目的归属判定优先使用 skill 收据里当时写入的 mcpServerCommand，而不是当前 node 路径与 bin 路径：用户升级 node 或换全局 npm 前缀后当前路径已变，拿它比对会把「自己写的条目」判成「不是本安装器写入的」，条目留在配置里而退出码为 0，用户永远删不掉它。",
+      "evidence": [
+        {
+          "resource": "repo://src/uninstall.mjs#L88-L94",
+          "version": "repo-lines-v1:sha256:aab90fb491a967c3e7310b6bcaec257cb4264b9905553c76bdf2fb41923cc42b:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ5ZWNmYTEyZjQxY2IyMGM5NjM3OTFjODg3NzIyMzQzM2YyY2JmZTAxNzk0ODk2NDIwMTRlZTQ0ODllMDZiMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGVjZjI1ODYxZjI2MWZjMjliNWE1YWM0NWNhNDdhODBjY2FjZDA5YjdlOGNiMzJiZTBiMDY2NzIyM2I1MGUyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjg2ZDc3NmYxMzAwOTU2YmU0YWUwYzNhZGYzZTA2NThjMzQ4YThhMDMzMTI2ZjgyZWFlYmMzZWU3ODM4NzE5ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBhNjA3N2NjMzliN2Q5MGZlMTE3MjA5MjAyZWZhOGUyYzNhYWVhZmYyOTk4MmJkNThkMmMxNzQ1NmUxMGM4MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fbdd7a6d752a41f4b8e16c6ae981b510",
+      "statement": "卸载 skill 时传入 hostId，多家宿主共用同一 skills 目录时只移除本家在收据中的记录并保留目录（原因 shared），避免卸载 codex 连带删掉 antigravity 的 skill。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L216-L257",
+          "version": "repo-lines-v1:sha256:40ffa4ed2001bc7a901ba2c52a2f40a3bdb263ac161bc20c587029c1ef7c2fe8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1YjRhYjYyMmZjYjkwMTgwZTU3MjY1NjJiOGNjZDkyOGZhYzg2NmFkOTM0ZTJlY2NjYzg1MDZjMzU3NGM5MmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzMjY0NzJiZmU0NjY5ZDIyNDY2YWRkNzA2ZTVkYjBiOTZkNjRhNjNhYTY2NzVhNzI2MTE2NzYzMDgyZWU3MTUifQ"
+        },
+        {
+          "resource": "repo://src/uninstall.mjs#L71-L86",
+          "version": "repo-lines-v1:sha256:d03f9d13bf52d2d228055894f9c7fe31c159de8fc97e0c6f78669b6ecfba4c34:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NDM5YjI2OGIwYjUzYTA2OTdkODQwODQxNjdjZTYwMDVlYmQ5ZDhjYTVlODc2YTc1YzhiYzFkMzA5NjQxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyZDNhYWQxNTQ1OWY1YmVlM2IzYzAwZDc3MmE3MjdiNjViNmJkOWM1ZDQ5ZjNhYzRlNzJkOTE4ODdlNWI2MTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczM2I5YzkwMDc3ZmI5NTUzODc1NTA0NTQ5ZDkwNjcyYzg4MWQwYjFiOGE4NTVhM2IwNjFkYzU4YmRjNzk3YmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9d49918e138c46eea98075927e3c28fd",
+      "statement": "归属判定使用与安装、plan、doctor 共用的 isOursEntry；判定为不是本安装器写入时区分「配置里没有 openwiki 条目」与「该条目不是本安装器写入的，未触碰」两种可读原因，均不触碰配置。",
+      "evidence": [
+        {
+          "resource": "repo://src/uninstall.mjs#L121-L140",
+          "version": "repo-lines-v1:sha256:00c0e44d929de9ee3050be057c9028b12d3cf903e3f13a262307be643f31a01c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYjkzOWNiY2M4MWEzMWUzMDA2Y2FhM2Y0MjI5OTI1YzMwMGY4NWEwMzJkNDkyNTI0YWM5YWUyODU0OGZiYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMTIzNmYyYWVhMWNlNDJmYTJiMGNjYjI3ODMyYzc4ZjVkOGMxYzE5MjM4YTI0MDkyMjEwNjYzZDUzOWVkNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhMGZlMjVjMjAwYWQ1ZjhkOTU4MmI0ODBkNDQ2NWZjZTYyMTJkYTJhMTJiNDM0ZjA3MTEzNzE3MjBjMzUyNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0MTVkYTFhNDI5NjFhYWU1YjQ0YzI2M2E2NjI5NDllZmNiOGI0OTBiZmRkN2FmOGM4ZjUxYjJiMDIzY2I0MmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_443443769f8a4b5a90924f6c79842628",
+      "statement": "卸载删除 MCP 条目前同样先 createBackup，任一宿主出错时 rollbackAll 恢复配置并返回 1，回滚范围限于本次卸载写入的内容。",
+      "evidence": [
+        {
+          "resource": "repo://src/uninstall.mjs#L128-L161",
+          "version": "repo-lines-v1:sha256:253b41b083bd6cefa852775f84716788a8af405011fabd4498920b92a5517c20:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiNTY5NDRmZjE5ODQyMDMzOTMyOGZiMzhiZjYwMTQ0YmZjZjg0YTZhMDUwMmRjOWYwMjZmMTY2NzYzOWY1MzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZDdhYjFiNWMxNzk2YmRmZGYyM2MwNWRhNzMyZGQyZTQzNjU2MTFhMjUzZjY2OGMwMmZiN2I5OTRmNzgyMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YzFkZjI2ZjRkN2JiZTQ5Y2ZjNTQ2MDFlNjZiZjQ0OGRlZjFjZThjMmQ3ODg3OTEzOTVlYjAzOTNhMTZkODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ddd512ee00c4eaaa7d7972dd8ca7fd0",
+      "statement": "卸载成功后固定提示备份文件（形如 *.openwiki-launcher-backup-*）不会自动删除、需用户确认后自行清理，这是「不做顺手清理」硬规则的用户可见形式。",
+      "evidence": [
+        {
+          "resource": "repo://src/uninstall.mjs#L170-L170",
+          "version": "repo-lines-v1:sha256:691c1364567d5829b84350cfb2118b2d391c0eb65ce38bd7222bccff213500ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjkxYzEzNjQ1NjdkNTgyOWI4NDM1MGNmYjIxMThiMmQzOTFjMGViNjVjZTM4YmQ3MjIyYmNjZmYyMTM1MDBhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjkxYzEzNjQ1NjdkNTgyOWI4NDM1MGNmYjIxMThiMmQzOTFjMGViNjVjZTM4YmQ3MjIyYmNjZmYyMTM1MDBhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGY1YTQ0NWFkZjUwZWE0NGExYTY4MmNhNWRkY2NiNjc0ZmFkMjBiNjIzZjBjNDZkNDFhYWE4OTZmM2RlMjJkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTRhYWVkNTZjYTg4OGYyNDg5ZWNmNDljZmQ1NGY0ODllZTE5ZmVjMzAwZTFkOThmNDAzM2E2ZTFkOTgxNDRiNiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

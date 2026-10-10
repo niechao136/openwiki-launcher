@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "pages": {
+    "/openwiki/architecture/overview.md": {
+      "pageVersion": "sha256:0910e8381a27c6ec3617a1acff60113bdb3cea78d3f04e7d1d8f201d20f412b4",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/commands/cli-and-doctor.md": {
+      "pageVersion": "sha256:c76913c61d5b428cc1ded255780612a2feaefc6296f2107da10eab978a1da7f8",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/installer/host-registry.md": {
+      "pageVersion": "sha256:4c362a4e7cd23ff39dd3b69fd05308eb4304b2d3bf9b1d1392757ad5b8ddac99",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/installer/install-plan.md": {
+      "pageVersion": "sha256:3fec685470347490fb28d0565e86417c932b02b76eb3d5cc59e564a5c9a18651",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/installer/mcp-config-writer.md": {
+      "pageVersion": "sha256:999686fffe481af42a6578516fb4fd389f01a9ba352217c8420e0b8ba095758b",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/installer/skill-install.md": {
+      "pageVersion": "sha256:dcf4a4497b23baa8e405b4ed78020f341631b971cab78003b799024f6f15e780",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/installer/uninstall.md": {
+      "pageVersion": "sha256:663ee7cf39a950c59087f82172fa974e06248ac06b79f4978d542e459f792585",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/quickstart.md": {
+      "pageVersion": "sha256:c2de957f9360b5e8b890ddcf48cc1adc18f41cbf947608d640315d0625521c8f",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/runtime/backend-supervisor.md": {
+      "pageVersion": "sha256:7c7fbe69c2644fc5ba3ce1291957f52353d67683d75291eba2d3724d5d65cc2f",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/runtime/mcp-broker.md": {
+      "pageVersion": "sha256:f4e3eb3535f167ba02dcb31f8c043a08e1121e08396b979aa0dfd9e74a460e8a",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/runtime/protocol-and-logging.md": {
+      "pageVersion": "sha256:66dd5866e2bf487b293cfadc1eb2bc699260da5acded448826db6346f06ce2a3",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/runtime/tool-manifest.md": {
+      "pageVersion": "sha256:28edd4df713a691b9afc0cf12c39888badc0253f7c76785d0d37c5b7943bbb12",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/safety/guards-and-backups.md": {
+      "pageVersion": "sha256:9a2047d2b5a34dc46b6c7271dc2e428b1578743f918ee3fb457c725dedf33074",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    },
+    "/openwiki/testing/test-suite.md": {
+      "pageVersion": "sha256:817455e222ddb721c171c576ea2b73a7c97ed6b6382be0fbb273d6ef4e1e091f",
+      "completedBy": "codebuddy",
+      "completedRunId": "6b4bf004-820f-4cfc-9eb0-3b5eb8b8bc60",
+      "gitHead": "c32796d90b96e6654627162144f8f63720198284",
+      "sourceFingerprint": "sha256:a39e50d6f4f64c69bd660aed320b7163a366f72207bd1193b70f9ee98979bae8"
+    }
+  }
+}

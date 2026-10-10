@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:28edd4df713a691b9afc0cf12c39888badc0253f7c76785d0d37c5b7943bbb12",
+  "claims": [
+    {
+      "id": "claim_d1990066cde74dc0b189d8a2728736ec",
+      "statement": "快照文件路径由 openwiki 版本号拼出（<包根>/manifest/openwiki-<版本>.json），运行时按实际解析到的 openwiki 版本选取，因此不同 openwiki 版本各自有独立快照。",
+      "evidence": [
+        {
+          "resource": "repo://src/manifest.mjs#L7-L15",
+          "version": "repo-lines-v1:sha256:74e2e546f42ac1e6c4389da4db247f7e885bbd5a7d481a830e07e44e1e384797:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjMwNmQ0ZTQ3ZjA0ZTk5ZmQxMzQ3MDVjYWE3ZTQzZDljMGJkOWZmMjhhNTViNThlZjIzZjViN2VhOGZkOGY0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTJjODgyMWI2Nzk3MjE3OGQ0YzhhM2U1NTEwMDkyNjI1ZjNmN2NmOTFlYjA0NDE2MDMwYzllMWUxMjk5ZTAxYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_713a4df25edd453891caab649526f4a1",
+      "statement": "loadManifest 在文件不存在时返回 null 而其他错误照抛，因为「这个版本没有录过应答」与「快照文件损坏」是两回事，后者不应被静默降级掩盖。",
+      "evidence": [
+        {
+          "resource": "repo://src/manifest.mjs#L17-L34",
+          "version": "repo-lines-v1:sha256:dc41e2f4de41fc6d4fc9f9a362776dcdad5d4ed6ddbb7ad32d8e606994975e1a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyOGI2M2RmN2RjMTIzZTY2ZTlhY2Q4YjU2NDdhMDZjMzNjMzdhZWZlOWU5YWFlMmZkNDZlNmJlNDkyOWUyY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cee60d53d3384fe082c2ea4b37ac1195",
+      "statement": "当前快照 manifest/openwiki-0.6.0.json 记录 10 个 openwiki 工具（list_workspaces、list_wikis、search、read、begin、submit_plan、next_page、inspect_page_claims、submit_page、finish），每个带完整 inputSchema。",
+      "evidence": [
+        {
+          "resource": "repo://manifest/openwiki-0.6.0.json#L1-L431",
+          "version": "repo-lines-v1:sha256:97015e2fa8628e0977e2dcc6bebde377f9221904486bcd8a78901f59a191853b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4M2VhZTdlNmE0ZDNjNzFiY2M5NjMyOGM1MTlmYmEyOTQxZWU0ODY5NjhhNmQ2MzIyZmIwOGNlYjQ0ZTNlZmQ2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiNzBlODMzZjNkMmNmYjJmNjY1YTU4YjU1NWQ0YzkyNTUyMDMwNjQ4Yjk2N2ZiNzY2N2MyOTg1NjI0OTNiOTlkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlMjJmYWE1MzViZDJlYTNkNTJlNzQxZWQ0NTQ0MzViN2ZlNDllODM1ODZlOTQzZDk4ZDgyYmJmYjI0ZDFmNWM1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_e29e751fa11f4a918c8a782e8cad89a9",
+      "statement": "快照由 scripts/gen-manifest.mjs 连接真实 openwiki 后端录得：解析运行时后以 process.execPath 加绝对 cliJs 路径 spawn，依次请求 initialize 与 tools/list（超时 600 秒），组装成含 openwikiVersion/protocolVersion/serverInfo/instructions/tools 的形状，finally 中清理定时器并结束与杀死子进程。",
+      "evidence": [
+        {
+          "resource": "repo://scripts/gen-manifest.mjs#L19-L96",
+          "version": "repo-lines-v1:sha256:a2d75c2545973ed7cfb9af27a716377a9fa0002f3176f7e9c45629023319bc3f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5M2Y2ZTQ1MDdjYWJjYzExMGI3MTNkNTc1YThlMjU5YTFlODZmMGM5YmE1ZWE5ZmNmOTk0OWJlMzI5MWU4MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwYTYxOWQwOTE1ZDQ4MTZkZTEzZTdkYzg2ODU3MjRlZmYwMTg3NjJhYzVhNDMyZTRjYTNlZDg1YWMyNmJlMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkNDRmNGJhNGQ0YWE2NjU3YzM4Y2M4NzA2NDJlMDM3NGVjNmE2NTA3MWM2NjQ5MjQyNjUzYjNkN2NjNmUyZGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7407d65cad9f49e88349265ffd3fd37b",
+      "statement": "manifest 为 null 时 mcp 命令告警并降级为直通模式，broker 不再即时应答 initialize 与 tools/list 而一律等待真实后端，体现「宁慢不假」的口径。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L228-L235",
+          "version": "repo-lines-v1:sha256:3c3856451ebe6595a0dd0ff4f5be77dd699fdde9a4b5668d3d3ccc3731d3e441:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWMxMWM5NTY2NDk4NzRkOTBjMGQ4MjQwNTljYTZmZjMyODI3YzczOTFmYTJjYWRjNWU4YjUyNWE1MjJiOWVhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDlhNDllODgwZmFhMmQ4YjljNjQyZWYyNTY2NTkwZTc5NzU5ZDA5Mjk5MzY0MWFiMDMwY2M5Yjc4Y2I0ZDFjNiJ9"
+        },
+        {
+          "resource": "repo://src/commands/mcp.mjs#L42-L47",
+          "version": "repo-lines-v1:sha256:a949ab4ff27e43b7ef2879f3e32edc72845de4c35876ae5154cd791c543c1c3d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI4ZTNmODhmODY1NmYxYjY4ODU2NjcxMjljMjZiNzdmNTIwN2E3YmE2NmIwYWU0MDIwNjlhMTY3MjJmM2Y4MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzVhZmIwMjhiYzQ3MTY4MTliMDJjNWE1NmExYzhkYzBmYzQxOGE1ZGYzN2Y1M2FlNGVjOGVhZjEwZDFhMTMyNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzczY2RmNTI4ZDMyYzE4ZTc0ZjM4ZjJjZDFjMGUzMjk5ZTQ2NDZlNDYzMTEyN2I1Y2JmMzlmNzA3MzQwNWM4NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c6dc12484051440bb2233f5fb69340a5",
+      "statement": "漂移检测第一处在 broker 运行时：拿到真实清单后与快照比对工具名与 inputSchema，只告警一次且以真实后端清单为准返回给宿主。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L107-L131",
+          "version": "repo-lines-v1:sha256:4c73f8e034757c847bd107cb202ffa1c1e41172ca284886e29892f11e27971de:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0N2VhNDI3OTRhYmVkZjI5MjcxNmZkNjJkODI0MjY0ZjU4N2IyOWM3ZDFjNWI0OWVjOThkZDgwN2UzMjdlNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0ZGNhMDc5OGFlZjQxMWViYjhlYTU4MjNkNjU1NTU4MGQ5YmZhNGJiZThkMWQ1MzFkODJlZDY4YTNiZmZlYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3NTJiZjAzZGI3MzYyZGRjYjAwOWVmMzNjZTk5ZWQ0MTRiMzBiNmI5MWZlNDM2NDFhNzlmMDEyMTQ2MjVlNDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4531e6edca784a38b3bed846bae839f0",
+      "statement": "漂移检测第二处在 doctor：diffTools 列出只在实况侧出现的工具（+ name）与只在快照侧存在的（- name）并提示重新生成；由于漂移时 launcher 仍可用，doctor 只告警并返回 0，只有与真实后端握手失败才返回 1。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/doctor.mjs#L183-L193",
+          "version": "repo-lines-v1:sha256:712d69697ec12c7b1b319ebddbd1f8e8cdbc5f0c5c5be526065c8bc1212afaf3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMGU0ZmZjNDMyOTdjNGIxMDI3NzQ0ODdhZmFhZTBiZWVmNDY3ODdiMWM3NmJiYWQyNTg0NzA1YjBkYzRjYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzOTBjZDUxMzE0OTc5NWRmOTNmZjZlNWE2OGQyZTlhMjYzYjk1ODk0OGQ4ZDE4ZDE4YzNhYmY0OTBkZjAyMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNTllYzBlNDdmY2NmZDQ1OGU5YTA0MDI3ZjQyN2M2MjkxYjFmMTJkM2UwZTdkM2M5M2NmZDY5YzE4N2MyNGUifQ"
+        },
+        {
+          "resource": "repo://src/commands/doctor.mjs#L86-L105",
+          "version": "repo-lines-v1:sha256:c541402c081dce3b386255db352c022ddafcefbd16c02a5b0c33d89891aac8b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5YWJiN2QyY2ZlMGZmM2Y0ZGQ5NzIwZDI2ZTUyMzBlM2RiYzg0NmI4MGVkMWI5ZWI3Y2ZjYWM2OGYwOTkwNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3YjZhZWRmNjczZmY1M2M3NDE1MDFkZGQxYjY4NjUxZjU1YzU4ZTA1OWViOTE2YjZiNWY5ZGQzYzA5MDQ5Y2QifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

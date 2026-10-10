@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:dcf4a4497b23baa8e405b4ed78020f341631b971cab78003b799024f6f15e780",
+  "claims": [
+    {
+      "id": "claim_0a3d8d2a054545e1abf8ce3a3db2515f",
+      "statement": "skill bundle 有文件与目录分开的白名单（文件仅 SKILL.md，目录仅 agents 与 references），listBundleFiles 递归遍历时对含 .. 的路径、不在白名单内的顶层目录与文件一律抛「不允许的路径」，从而阻断 scripts/ 随依赖内容进入用户仓库。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L25-L28",
+          "version": "repo-lines-v1:sha256:81817d1151afa476e667a77cdc84df432b35ef9887884612f077ab67eefd2b05:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzY1MTkxYTc1MDk3M2ZhNmE3YzMyYjIyNjFlMTA4NmYwZGMzZGVhZjEyNTZmZTM3ZWUxMjFkODEzNDhlZmI0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDU5NzQ4NGEyZjMwZjk0MWJmNTZhYWM2YzZjOWRiN2U0YTZiNjI4NzQwM2EwMzBkNDQzYzRhZTRkYmNjNTc4NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzgxMmRhZmUwMmIxZjgxZjhhZDU1MmY3NzIyYjEyMDUyZjIxYmNhNzUyNTc2YWM5ODE4ZGYwYjkwN2Y0ZTgwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDcwYmY0N2I0ZDY3ODYwZTAzYzZmNjVhMDI4NDE0YmEzNjMzOTE1M2M1MDI1ZjNkMDU5OWM3NWQ5OWFkOGM4MCJ9"
+        },
+        {
+          "resource": "repo://src/skill-install.mjs#L53-L85",
+          "version": "repo-lines-v1:sha256:9da7d336edf5cd39282df95092a4935d979fc0e604f60c8ae2a3ac41a7d5f2b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3YjBmMmM2OTVkNTJlYWUyZGY1MzE3ZjhkOTNmM2I4NDgzY2FjYzNjZTg4Y2UyMTMwM2E2ZThmNDg4MTliODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjNzA1ZjI0NGMwN2QyNjEzNjUyNWIyMzBiN2NiNmI0NWJlY2ViOTJiZDExNjY1OGMxNDU1MGQyNmQ3YzkyMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmNWQzZWM0M2U1MzQzNWQxNDQ2MTZkMTBlYTAzNTdiNGNjZjJlMzg0MWQ2YTQxYWIxNGQ3MmYyMmIzNmMyN2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_84e9e35a6c2b45ddad403fe858f05195",
+      "statement": "installSkill 的第一步就是整棵树校验 listBundleFiles，此时一个文件都还没写；必须如此，因为半途发现违规文件会留下「装了一半」的状态。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L106-L111",
+          "version": "repo-lines-v1:sha256:3e376a53d9ce39e541007d3a287a22fcfec9bbc0d0e37bc43c6dac34809ba1c3:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWUzYTdlMDM0ZTA5MDJjMjlkY2E0YmRiNzQ0Y2Y0NWQ2NDg3MmRkNTJkOTdiMTBhYjllNTZhZGU5OWZmOGU0OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQxZjY4NTA1ZDM2NzU5MTczZTcyZjA4YzA0MGVkMDU4NmYwOWFiNGUzNjZkOWVkNjM1ZGVmYTI1ODVjZmFlMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmQyMTExZWY3MTYyODc2MTQ4ODQwNGVmNGQ2M2RlZjIzNzFjYTQ1ZWYzMjJkODBjYzhjOWQ1ZTkxZGJiYWZkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWI1Y2E0ZDAzZDBmODBkMzU2ZDc0NGJmM2EzNmVlZjRiMTI5YmQyNGRkYTdjNzZjM2VkOTE3NDUxYmVhZTM4YyJ9"
+        },
+        {
+          "resource": "repo://src/skill-install.mjs#L43-L52",
+          "version": "repo-lines-v1:sha256:152c421d2e8f2ba11fb96a50674f6acd417b6c24f4b52c9f44804df1a13998ab:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjNjIwNDYzNmQ2OWE1ZThiMDk1ZTg2NDg5OWFiMzNjNTU5NDAzZDhkMjAzZTE3NTcxZTlhMzA5NGUxMTYyYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwOWMzYWIwMTM1YzZlMjEzZjg5NDQwNTBkNmFmNjZjZGNlMDJlOGUyMzJkMzFjMDhlYmMzYTNhMzQ0NTNlODAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e655f5fda56f4a118e966f85da7e5a1c",
+      "statement": "本安装器的收据文件是 .openwiki-launcher.json，openwiki 原生安装器的收据是 .openwiki-install.json，两者严格区分：后者只在接管时被 collectNativeSnapshot 探测并删除。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L138-L159",
+          "version": "repo-lines-v1:sha256:6dfc3c615b7a03f2d197d7f1b746f6555000ce04bbaed93e7763bd62f28289b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjYWM4ZTY1MGU4M2MwZmQzMDRlN2MyNDljNTIyOGUwNTM2NjgyYmVkN2ZlOWJiYWMyNjBmYmNlNDlkNWFiMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjMDJlZWU0NzA1MTBhZDA0MzZlYjU5OWYyNjhiOTRmOWVkOTRiOTg2MmY1ZmU4ODA1MThlMmZiMmVkZDk0NDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1YTI4OWIxYjIzOGQ2YzI3OWUwZDEyZGFiZThjNzJjZjUxMTNkZmQ1NzUzMjBiMzE1OTI2ZTNhNDRiYzk0MmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMmMxYzQ2NzBkY2MzNzk3YTNkOTQ4MWNjMTI1OTAzNWE1NmFiYzgyZWEwM2U3NGE3ZDVhYmFlYTI5MzEzODQifQ"
+        },
+        {
+          "resource": "repo://src/skill-install.mjs#L19-L23",
+          "version": "repo-lines-v1:sha256:e1bbcc50adf018717b96fb6f10073462978ba7b931aad5eb661a4671abbeeb50:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTkxMTMzOTM5MDMyYTBmNjg0Njg0ZmRiM2E3M2QxMWE4N2ViNzJmMWZhZWFhZjJlY2FmNGJmYWZlMWRkMjA2MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQzOGU4ZWNlMjhlYWM1Yjg1ZThiYjg1YzE3NDhkODVkMDMyOTcxZDkwM2EyNjk2NmJmMGM5Zjc3NTVhMmJkNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAyZDJhNjZjMjZjMWZjNDk1ZGY0MTc2OTU0NTZiOGYyMTFhNDM2OWMxMTJhMzEyZmVlNjg0OTU5ZDZmOTU4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGZhMzU3MTU0ZGEwNWVkMzAwODAxZmEwMzU0YThjOGI2YzkwMmQ2OTBkYjY1M2FjZDcwM2VkN2M1ZDk2Y2ExNSJ9"
+        },
+        {
+          "resource": "repo://src/targets.mjs#L62-L96",
+          "version": "repo-lines-v1:sha256:12b610bac701e3d49c3cb4eb41146dd9e5c08676d163dd9d6096b56293cee80a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YWRlMWZkY2RjYmQ4ODM5MmFhYjA1YmEwZjA2ODJmNWRhZWU1ZGFlNWI5OWIyNDMwNjYwOGU5YjJiZTc2NTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjNjZjNGJjNjZmZDlkM2VjOGQyMWI3NTZjNDBjMmE4OGQ1OWIyOGE2YmMyMTU2Nzc4Yjk3NDM2M2U0YmY5M2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2aab6af698824beda1cf33ab365ac08b",
+      "statement": "收据记录 package、version、target、hosts 并集、scope、skillDir、mcpServerCommand 与逐文件 sha256 的 files 映射。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L149-L158",
+          "version": "repo-lines-v1:sha256:2b88343a3e51f7d6f2030e8f60a5cc6ad553d75f42ba72ae13c3d947aa011dae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhMWJlYTE2OWZkMWYzMmFjNDBmOWEwNDU0ZDFlNzMxM2ZjMzM2NTVmYzJhZmYzNmNjOTUzYzFkZjZmNWUzNzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmI5M2VjY2ZhYzExNmZjN2Q4OGQ3OTk1ZGRkOTJiOTdiMmEyZDQ5YjMxZDM5NmU2ZWEyYjFhZmFlOGQ4MGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxMzdjYTc1MGM4ZGI4MDBlZWQxNjA0MThkM2MyODUyYTA5ODMzZWViMGU4ZTFkZTg2MjdkZDQ5OGE5NTE5ZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjYjFjMGNlZTlkNDU2NDJmMzA2ZmFmYjgwMDEwODAwNGYxMTgyYTc1OWJhZWUwODEwMzNmNjg1NzIwNTZmZmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a5e7c8e51bb74b34ab115efb78685ef7",
+      "statement": "readReceipt 在收据不存在或 JSON 解析失败时都返回 null，用户不该因为安装器收据损坏而无法卸载。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L164-L180",
+          "version": "repo-lines-v1:sha256:98baead872132a0b0db3ebd68c806e7c50122bbbe05e0ad29066d588978d17db:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMDZhMGE0OTI3NzUwNjk0ODk0NjU1Y2IzNTc2MjUzMGM2NjllZGM2ZGI5OWU4NzBiNDJhZmZkMjRlZWU3YjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0ZmVkNzU4YWVlN2FiZTIwOWQ2NzNmM2EzOWNhNzUzOTEwNGM5NDVmNjEzMzk2Yzk3NmEzNWZlYzZiNDliMDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_902ee93b1032461cbc47802c2c4d3793",
+      "statement": "verifySkill 逐文件重算 sha256 与收据比对，缺失或哈希不符的文件收集为 mismatches；removeSkill 在哈希不符时拒绝删除并报告改动过的文件，体现「宁可留垃圾也不丢用户数据」。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L182-L199",
+          "version": "repo-lines-v1:sha256:b39a7002969e96a0bc04b614a910c0877088e2a81c7ab8625f722f213ef16f39:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwZmY3MmJiM2ZkNzdiNTQyYzljMTg1MWNiZjMzMjM0NGZkM2ViNWM4MGNmZmNlYTg4ZmFkN2QxNjNjNDk3MDEifQ"
+        },
+        {
+          "resource": "repo://src/skill-install.mjs#L228-L237",
+          "version": "repo-lines-v1:sha256:8ab84ea5ac6f931ada993d49db3541a6803f8f7ad39e7ecd4f86c1d132b012fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxZWNhMDg1NTAwMjAzNTM5YWJlYmFhZWQ1ZjE2MWQxYWU5YTAyZmQ4MjY0MDU2ZTY4Njk2MDE3NTU4MDkxNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZTY3MmI1ZjhlZDZkMzA4ODRjZjRmMGIwYmE4NzMyYmRkNjkwYzU3ODgxM2JlZDVkMWIwMzhlOGU4YTg4ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzOWYwY2E1NDYyNjE0Y2U2NDMxMGVjMjNiOGU0YjUwN2MxNjY4NTdmY2JmZjNiODJjNmJmNTY0ZTYxNThlMjAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7386613ffeec49dc922bee4a0e849071",
+      "statement": "收据记录 hosts 并集而非单个 target，因为 codex/antigravity/bob 共用 .agents/skills；写入时合并旧记录，removeSkill 传入 hostId 时若仍有其他宿主则只移除本家记录、保留目录。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L138-L147",
+          "version": "repo-lines-v1:sha256:e68a348a2bab75a15dc5b8395751475c3f41bc87020d84014a3bf2557c7bab34:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjYWM4ZTY1MGU4M2MwZmQzMDRlN2MyNDljNTIyOGUwNTM2NjgyYmVkN2ZlOWJiYWMyNjBmYmNlNDlkNWFiMmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyZGY5NzRhNzAzMGIwM2Y5NzFjNTBmYmRmYjYwY2I3MTYyYmM3MDQwZTJlNmQzNGVlMzMyNTY4ZDlhY2U2MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1YTI4OWIxYjIzOGQ2YzI3OWUwZDEyZGFiZThjNzJjZjUxMTNkZmQ1NzUzMjBiMzE1OTI2ZTNhNDRiYzk0MmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwNTc0YWU3MGMzZmM4ZDRhOTAwOTI5MjA0N2U4Mzc4NWI1MDNlZWY0MTM1OWQyY2JiOTZhYjNmZGVmZGM5MzIifQ"
+        },
+        {
+          "resource": "repo://src/skill-install.mjs#L216-L257",
+          "version": "repo-lines-v1:sha256:40ffa4ed2001bc7a901ba2c52a2f40a3bdb263ac161bc20c587029c1ef7c2fe8:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1YjRhYjYyMmZjYjkwMTgwZTU3MjY1NjJiOGNjZDkyOGZhYzg2NmFkOTM0ZTJlY2NjYzg1MDZjMzU3NGM5MmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzMjY0NzJiZmU0NjY5ZDIyNDY2YWRkNzA2ZTVkYjBiOTZkNjRhNjNhYTY2NzVhNzI2MTE2NzYzMDgyZWU3MTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_badb1c55f5dc460c954bcd0f32dc096d",
+      "statement": "isOursEntry 由 install、uninstall、plan、doctor 四处共用，必须口径一致：它认 opencode-json 的 command 数组形态、codex-toml 的纯文本包含判断与 json 的严格比对三种形态，口径分叉会导致误报接管且加 --no-takeover 后无法再更新条目。",
+      "evidence": [
+        {
+          "resource": "repo://src/ownership.mjs#L1-L8",
+          "version": "repo-lines-v1:sha256:3ee866d3940f8ba5c3ccb901db7f051dee89b905c9d7bccf6c52895f090c1ad7:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjMzY2YyOGFhZWRkZmI1MmZkOTRmNjVjNmM2M2NiMDI4Mzc2NDVhMmYyYmU0ZGMyNDE3ZjVkMmY3YTI2YTA4MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjExNGU3ZTk2ZjA3NWFkYmY0OTQwMzBlNGQzYzM3ZjQwZGI5N2IwYjc4YzVjNjNjNWJiNmQ1MGQ3OTkxYzcyNiJ9"
+        },
+        {
+          "resource": "repo://src/ownership.mjs#L30-L59",
+          "version": "repo-lines-v1:sha256:09d4559e00a2410247c6ec0a58b881b86179c22a3f7bb062c69b4fea089a1cf3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyYzE2YWZmMjVjOGE4YjdkNmEwM2FlYmY1OTgxNTQ4MWQ2NjQxOWQ3ZWE1ZmViYTYzYjNiZGFjZWI2MWU2NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8ae90e636058476994e6689b4ddf50c0",
+      "statement": "skillsDirFor 在用户作用域下按平台选目录，win32 优先取 globalDirWin（Crush 与 Reasonix 的 Windows 全局路径与 unix 不同构），不做这个选择会把 skill 装到宿主根本不扫的目录。",
+      "evidence": [
+        {
+          "resource": "repo://src/ownership.mjs#L10-L28",
+          "version": "repo-lines-v1:sha256:42d47cc872c9e53d0a7148b46e8bced429e14cad6abe418af4747e003e097a83:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMDFhOTYxYTNkODAwYjlkNTI4MjU3MWM5NTM0NzMwMDFiOTNmMzM1ZWQzMmRiY2FkOWQwOTkyNTM1MTQwZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYjA4NDkwNmM0NDAxYWI5ODg5NTEwNjY1ZTc2ODQwZTQyZGQ1NjNkNDgxMzllODE1OGM1NWVlZWE2OTJlNWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1e57e72ae36c4d8c81d39ce1d450b1b0",
+      "statement": "bundleDirFor 只做路径拼接（<openwiki>/integrations/openwiki），不做存在性判断与路径探测，唯一允许的入参来源是 resolveOpenwikiRuntime 返回的 packageRoot。",
+      "evidence": [
+        {
+          "resource": "repo://src/skill-install.mjs#L30-L41",
+          "version": "repo-lines-v1:sha256:f1a1653ea28689192e941e4cef60cd92918a4c67f9d731d0a5009700959b94b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkMDU3MWJhNmYzNTdmMzQ0NjZkNWRhZTE0ZDRlMjg0NWM2MWJkNTRjMGNlNzZkZDFmODMzNDM5ZGRjYzIwYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwMjE5NmFjYThlMTlhNzNkYzA5OWY4MDUxZGI1ZmNhOGMwYzVlMmNmYmU0N2ZkMDMzNTM0MGY1ZTUxZTdlMWQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

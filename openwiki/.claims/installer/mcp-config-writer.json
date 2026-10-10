@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:999686fffe481af42a6578516fb4fd389f01a9ba352217c8420e0b8ba095758b",
+  "claims": [
+    {
+      "id": "claim_1c7c9aa404a6440a967e67aaa29b03f2",
+      "statement": "mcp-config.mjs 对三种配置格式统一用文本切片替换而非 JSON.parse 加整体重写，理由是保住用户的注释、缩进风格、键顺序与其他条目，以及解析失败时不能当成空对象写回去；副作用是零新增运行时依赖。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L1-L18",
+          "version": "repo-lines-v1:sha256:2bd4f0611b3f206dbbfa2aea8b0be585b87707efa3dda7172386160fe55392a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlYmY2OGNlYjc3NWRjMzFkNWEzYWYxNDQ5OWRiNDNmOTEyZTE4NGMxOWQ2NTJkZmVjYzE4YjllMjQyYmJiZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce007a183ce74ff0bbf1ec0f68caf8b3",
+      "statement": "codeMask 生成与原文等长的结构副本：注释与字符串内容换成空格但保留引号与换行，转义序列整体吞成两个空格；因为长度不变，mask 上的偏移量可直接用于原文，使括号配对与键定位能用最朴素循环完成，函数末尾断言长度一致。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L27-L85",
+          "version": "repo-lines-v1:sha256:dd8f83087d213c28b7b96b3bc0671f1fd25b60fb59aadb34dec3d83223809e8c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhMDAxOTYyYTZhOTYyNzljY2I5ZWQ3MjU0MWJhOWJkODliNDhkMzlkNzUwNjFkNGVmODI3M2MyOTM4MWZmNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwNzM3NDgyMWNmYjcwZmUzODg0ZWY2ZjJhYTVhODhkYWRkZDQxOTQxMzkyZDMxMjAyMDY1MTk5ZDM2N2ZiMjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_944b95374f004080adc9c2710052545d",
+      "statement": "纯 JSON（allowComments 为 false）时 codeMask 遇到注释直接抛错，这是「.json 里混进注释」被拒绝的原因；opencode-json 传 allowComments 为 true。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L56-L62",
+          "version": "repo-lines-v1:sha256:56b3a91153b32cf5455e5694ee56ece4bbde7f5279ba831da890bf08dfd1b7bb:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjgzZTI5NDRkZjQ5NTVjYmIyY2QwY2U3ZWYwM2IwZjQxYzJhMWY3NTUxOWZlNWNkOGMzZmI0ZjZmZGNmMGVhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDMwZmI2NjViNjBiMDE4YWQxNTJmM2NlNGRmNTE4YjZhYTMyMTQ0NzdiYjhjZmU0NzI3YmM3MThhNWVkNjJjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDZlZDMwYTQ1N2IzY2YxODdlMGVkY2FkZTZkZWQ2Zjc3NjVlNzE1ZDQ1OWFiYzJlYzQ3NzAzZTY3OGFjNTU1MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_27fdece491a04cb8a6777d16ae70c204",
+      "statement": "assertNoTrailingComma 显式拒绝尾随逗号：这类文件括号配对与键语法都合法，但被当成空对象重写等于静默吞掉用户的一个条目。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L122-L138",
+          "version": "repo-lines-v1:sha256:0abeed0a25a1a072d51657dee28e8de6469d33d86286092949da3d6cebd9fb60:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliZjhmMWIyZTdhZTQzMzA0ZjNhZjU3ZmY1NTlkZjQ4MDE1ODkyMWUwMmUyMzkyZmJiMjI5YjA3MjM4YjVjNWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1ODNhYjJjYTU3ZDY2MDg1YzBmM2QzNDQzODMxOWJiY2FhYjBiNTRiMjUyMGZiZTA4MTE5YjQ0MGI0MjRkZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_675d4e46568e4987ac6d602de14dfe1f",
+      "statement": "valueEndAt 返回开区间下标（配对表给的是闭括号自身下标，必须 +1 否则每个对象值被切掉最后一个字符），findMember 返回的 range 只在值是对象或数组时存在，因为「成员」与「对象区间」是两种形状，混用会让 start 变成 undefined 而静默失配；键名从原文读，偏移量全部来自 mask。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L172-L196",
+          "version": "repo-lines-v1:sha256:039d2cfb393284b3c8423311a3efbe879a62e77833fb135db7e634860525edc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxMTJjODU4NWUyODk2Y2JkZjA5MWE2YzM3YmRhYmU4ZTM5OGVhOGFjZDIyNGI0NDcxYWM1MzQyZTVlZGRjMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlhMjViNjY5M2MzMGIxNDY3ZGRjZDRjYjg3MjFlYjhhNzI4Y2MzMmEzMWRiNjcxN2M0YzI2YmRlZjQ5MjZjMGIifQ"
+        },
+        {
+          "resource": "repo://src/mcp-config.mjs#L198-L247",
+          "version": "repo-lines-v1:sha256:b634456ebc3fa0007653b1e47f706465ee06c4b5dd356810dbee39b668d0fc95:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxMTJjODU4NWUyODk2Y2JkZjA5MWE2YzM3YmRhYmU4ZTM5OGVhOGFjZDIyNGI0NDcxYWM1MzQyZTVlZGRjMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3ODg2NzA0M2I3MzcyYzNjN2FmZjc3NjM4OWFlMTAxZDg0ZDM2ZGZhMWNmMWVmODYwZThhNGNmZTQ5MzBiZTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_50fcb38752e74fc3b81764439504e808",
+      "statement": "spliceJsonEntry 实现容器到条目的两级 upsert：保留 BOM、把空或纯空白视为空配置、跳过前导空白定位根对象、删除条目后容器变空则连容器键一起删。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L441-L559",
+          "version": "repo-lines-v1:sha256:628ffcc5d4f40a2c39b5aab39793f7ed1f9a17cf8ddc8ff4d9bf77ac72a830ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3ZWZkYjNhNmViMzliY2RhZTM2Y2Y5ZDlmMjQ0MjE3MTc5ZmZjYmI5NGQwNjIwMzk1NjBiMWZhZDRjMjM4ZDY5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlMjJmYWE1MzViZDJlYTNkNTJlNzQxZWQ0NTQ0MzViN2ZlNDllODM1ODZlOTQzZDk4ZDgyYmJmYjI0ZDFmNWM1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyZDAyYzMxMTA2NjE1ZWQxNDM0ZmZiM2EyNjFjYTg5ZTg0OWZkZTBhMWQ2NDM1NGMwMDhhOTJkZmFhODhhYTZlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0NDE0NzA0MmUyNWZlNTIyYjYwOGU3ZGZhMDQzZjY5ZjcwZmI4NDc5NmRiMjY3NDE5YjU3MjMxZDU1MmUyN2U3In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_fed1f32895f84b5a97817502a5f0f2cf",
+      "statement": "spliceJsonEntry 的幂等判定：现有条目值与期望值序列化后相等时返回 unchanged 且文本逐字节不变，这是重复安装不产生任何文件改动的基础。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L490-L504",
+          "version": "repo-lines-v1:sha256:61d8620c44224c3e74281e101e2804c7a45cc04f1f61621c5edadd0681483175:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzNTUwNWE3YWUyMzdmMGE0ZWIzNmM1Y2QwZmQzMTMzMDFiZGU5OTJkNWJjMGEyMmY5OGEwNjg2ZWNkNWE4OGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2OTZhN2ZjNTU5OTEzMzQ1ZjEwYzk1YmNhMzczNWEwMzI4Y2NjN2UyZjI3YWYzNDU4MTYzODM2ZjJjZDhjY2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmOTBmNGFjOGI2NmFlNDI4OGNkZjcwYzhiNjIwNWE0MmUyOTI0NWM3MTVlMDFmNTI0ZjdhNTE4MWEyZGIzOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyZDIzODA2ZGVlYzUwNDk1MjgxYWQzMmM5NDg1ZDdkYzZlZmY0ZmMxNTI5ZGMyZWRjM2QyM2UxMDRlZTRhM2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_679f9d50dafd4efca58ee3b24d8a6482",
+      "statement": "逗号处理的正确判据是「插入点之后、容器闭合之前是否还有内容」而不是「容器原来非空」：多行格式新成员插到最前面要逗号，单行格式插到最后一个不要逗号，两者容器原来都非空；更新已有成员时只有后面还有成员才补尾随逗号。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L506-L535",
+          "version": "repo-lines-v1:sha256:89d1248da3383271703d28dbe2b7947f60cd20a01bf11931330df937c6139a5e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0NTIwZGQ2Y2IxOTA0N2NiZjZlZGRkNmRhYzdjMjU3ODg4YzZkNWI5ZDMwMTFhYTVmYjlmZTE1ZWE5NWFjMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3Y2E1ODM1MmZjZGE0ZWViZDkwODRjZWI3MDEyNjU2Y2YzZGNjZWQzMTEyOThjZWZkZDk2ZDMxNTEzY2MxYzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlN2VjYzQwMGRlZjVhMzZjZWJjNjhlMTMwNDQwNTAzZDg2NzdhNGQ0NThiMGZlZDU3ODk4NTY4MmEwN2I3ZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3OTcwOWFjMTMyZDdlNmU1MTkzNDI3M2EyYzBlNDI0MTM3YzZkOTEwNmU4ZmJiNjI4Zjc3MTE1ZDRmY2RiMWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dc410093e1b94df0aa07c7429074979f",
+      "statement": "单行压缩 JSON 里插入点紧跟在上一个值后面、没有换行可借，必须由 needsCommaBefore 自己补前导逗号，否则会产出 {\"a\":1\"mcpServers\":{...}} 这种非法 JSON 而且被当成 created 成功写盘。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L545-L558",
+          "version": "repo-lines-v1:sha256:e6a50624c2c2f4a549c4d8d20fd88ca521a9f3fb6f6a7e5fcf4638fe28376f27:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4OGZiZDlkZDNkZDI0MjEyNTRkOGM4MzEwNzA0MGExNTI3NzU4YzljMDc3YmRlYjIxZDFkZGM4ZTg4ZTZmZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmI5M2VjY2ZhYzExNmZjN2Q4OGQ3OTk1ZGRkOTJiOTdiMmEyZDQ5YjMxZDM5NmU2ZWEyYjFhZmFlOGQ4MGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhYzY3OWQzZDk1MzM4OWI5M2YyZTdkMzI2YzE4Mjk5ZjlkMjI5NWVjZWE5NDM1Mzc3ZTYxZDU0MWUzMzA5NzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+        },
+        {
+          "resource": "repo://src/mcp-config.mjs#L561-L575",
+          "version": "repo-lines-v1:sha256:b25f2b32a4d2134d0607bf2a5e0fbf9cdb2df1eca8728ecb58d3e3e42865e0b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZDE0NjE4MTZjM2M0MjcwNjNlM2Y4YWRjZjM0ODdiOWMzMzc4ZjdmNTU0MTc1YmIzNDMzYzliMmQyYTVhMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE5MzY4YzY0ZDE3Njk5NmRlYjYyZTk5MTAxYTA3M2I2NDdjZTRjNWQxMGQyYTI1N2FkNTAzZWYwZGViYTE1ODAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0b5ff87fbb07475580e73ba47e5b445e",
+      "statement": "deleteMemberSpan 在后面还有成员时吃尾随逗号与本行换行、自己是最后一个时改吃前导逗号，并刻意使用不跨行的 skipInlineSpace，避免把下一个成员的缩进一起吃掉。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L318-L365",
+          "version": "repo-lines-v1:sha256:67e2750a2db396e133e0988c374327b8f39ea3028f3830800fdc1999730ba27a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxMTJjODU4NWUyODk2Y2JkZjA5MWE2YzM3YmRhYmU4ZTM5OGVhOGFjZDIyNGI0NDcxYWM1MzQyZTVlZGRjMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE4YWVkOGU3YmVhNjE3NDMzMDI2NGI2MTk3NmMzYzJmMWE5YzkyOGU4MWRmOWFlMTJjZDViYWQwMGE5YjQ4MTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bb070cfc3a0a4ce0b06ecb4850b3ddeb",
+      "statement": "readJsonEntry 对畸形文本抛错而不是返回 null：卸载与 doctor 依赖它判断条目是否为本安装器所写，静默返回 null 会让卸载误判成用户自己写的而留下删不掉的残留。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L577-L612",
+          "version": "repo-lines-v1:sha256:d05d67544a9edc5ef50be7b4f2362b01b76ef7db587ae809b5e0f6ca0af4f7d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4ZDYxYTIyNzMyNTg4NDVmYWUwYmZmMTdmMThiYjVmNjJmYjY2MmZiNTg2ZjNkYjY4NzhiNjY3YWUyOTZjOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1NGJlYTg3M2E4MGE0MTY4Y2Y4NjIyMGViYzZjOGFlYjI1Y2JmZGIyYTgyYmEwNDNjNGFjODlhNTBjYjE2MTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cfb0162d5ba34036aeeb24b036000937",
+      "statement": "Codex 的 TOML 写入用哨兵注释包裹，标记刻意不复用 openwiki 原生的 OPENWIKI:MCP:*，否则两个安装器写同一文件会互相误切；upsertTomlBlock 的相等比较必须走 readTomlBlock 以避免多带换行误判为需要更新，removeTomlBlock 对没有哨兵的裸表返回 removed:false 表示无权删除。",
+      "evidence": [
+        {
+          "resource": "repo://src/mcp-config.mjs#L20-L22",
+          "version": "repo-lines-v1:sha256:d8f016bb4a2471c2824a878164f9882f8d8cb82fb49e50d4e4c06430be8f205d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY5NzY0ZjA0MDIxODI0MTM0NmQyNjQ4NGUzYWQ2MWFhODU2OGMyYTkyZDE1YWE5NWNkNzVmNjlmMGI2OTBkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjUwMDhjNTBhMGExNDgyOTMyZWM0MDJjMTc0N2JhY2RlNDBhMGY3NTYxMTlhOGE2ZTg4MjcxOGQ2ZjQwNjE2NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTk3OWNhMjY3ZTc3YzE4NjYyMDBlOWM5NTQzNTFjY2Y5N2QxNjBjNTA2YTgxZjI2MzViZDQ1MWJiZDkzMjlhMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGZhMjM4MTA0MjE2MmYxYmEwODI2ZWYyZDFiMDBkOThjOGI2Nzc5MjNjZDEyNGViNzRmODgwODI2YjFkYzkzNiJ9"
+        },
+        {
+          "resource": "repo://src/mcp-config.mjs#L614-L692",
+          "version": "repo-lines-v1:sha256:3960e6e25e665d13e0e550cdc80734609b3231254033a14b5f2c5f3756800a69:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4M2Q1ZGQ5NjFiMGUwZmIyZWQ5ZjBiMzgyMDJlMDBlOTM5MTdmYjg4Mzk0YWI1OGYyNTU3YjExOGQwYzZlY2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_24b075d9de634d6baf446a0daceac67f",
+      "statement": "三种可自动写格式的载荷形状不同：json 为 {command,args}，opencode-json 为 {type:\"local\",command:[command,...args],enabled:true}，codex-toml 为 [mcp_servers.openwiki] 表块。",
+      "evidence": [
+        {
+          "resource": "repo://src/plan.mjs#L43-L78",
+          "version": "repo-lines-v1:sha256:f978baa6902b8bef906ce24ca33605c45f8b268850a063ae3076527c7638bb7d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlODQ2Y2JjZjhjZDI1NmE1Yzk0NjQwZTI2ODAyNDJkMmIzNWNmYTQwNTI3OGU3ZTViYzlhMTQ3MjhmNTYyNWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4MGU1MmQzZGJmNDNhMjJmNDQyYzQ1ODg5MDQ3ZjJlYjYwNmYxNzBmMWZmNTIyNWI2NmUwZGUxYzMyODA3NWIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

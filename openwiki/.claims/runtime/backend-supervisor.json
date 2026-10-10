@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:7c7fbe69c2644fc5ba3ce1291957f52353d67683d75291eba2d3724d5d65cc2f",
+  "claims": [
+    {
+      "id": "claim_92f16dd538894133bea5c23ca785c0aa",
+      "statement": "openwiki 后端始终以 spawn(process.execPath, [cliJs, \"mcp\", \"--host\", hostId]) 拉起并使用三个 stdio 管道，而不是执行 openwiki 可执行文件，因为 Windows 上 nvm 的 openwiki.exe shim 不转发 stdio、表现与挂死无异。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L38-L41",
+          "version": "repo-lines-v1:sha256:f570d9d40ed6332dbdd448acc6b58cc8f10abe8355d028e2b68c75a99b6c458d:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTI2NDZiMDJkNWJjMzkxMmE5MDNiZWZlMzlkODQ5ZWI0NGZmMjdkOTI1MjFkOWZlZTkwYTFiMTE1NjljY2I4NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGU3YWNjYzdjZTYyMWJjYmZjYjA0ZDU2NDE4ZjUxMGZmZTlkMGJjOTNiYjc1ZWU4MzhiZDBjMWU5MTAwNjgwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTVjYjRhZTFlOTYzZGYyNDJjMDg3MmY5MGYzNGI4ZjAwMDQwY2FmNTk5ZWI5YzNlYmY0MDU3NGUzNzI1NDA4MyJ9"
+        },
+        {
+          "resource": "repo://src/backend.mjs#L7-L12",
+          "version": "repo-lines-v1:sha256:9602e66639b69393c6e8de6fb713b9743b31d900e0d47a1c29ae8774ba7b0c2c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTdkNDU0ODAwYmI2NTMwNWExMGE3M2ExMDY5YzMzNTI3MzA2ZmM2ZDM5OWYzMDMwODA2OGUxZWQ2NTVmOGY2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYwNDIxZWU2NTFjZTIyZmEyNjYzMjFmZjQxYWRlOGZhYjMxNTgwZjBhM2YxMWM2MjZiNGNlZTI1ZDljYzFjMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmFiZjljMTYzMDUyNzVjM2EyNzYyMGFlYWViZmUxYTQ1Zjk5MWY2MmZkMmNkMzllYTk5YWJjZmUxNmI5ZDBkYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_14b145d0255d46a3a6b928a9c68277dc",
+      "statement": "解析 openwiki 运行时只走 Node 模块解析（require.resolve openwiki/package.json 与 openwiki/dist/cli/cli.js），失败抛 OpenwikiNotFoundError，绝不猜测全局安装路径，因为猜错会启动错误的后端或根本不启动，用户只看到超时而非诊断。",
+      "evidence": [
+        {
+          "resource": "repo://src/paths.mjs#L25-L38",
+          "version": "repo-lines-v1:sha256:17d436985faf281647d97738448afa0b01a4303eed91d66f8d4d3b97f40a8559:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmYWRkOWQwYWZmYTk0MmUwY2M4MWI1ZjU4NzA3MzkyM2VmODA3ZTBhODM1OWNhMGRjNDlhZjUyOTFlYTRmNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmMTg5MDIyMTFkYjc0NjNjMzNjYWUyMmJiOWMzZTgwOWNkMWU3OTI5NjhjOTg5ZWY4YzU3NTBlOTI2ZGY3MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/paths.mjs#L5-L12",
+          "version": "repo-lines-v1:sha256:1aa0efea76331b912aa5ccba0363c8880dcb8dcdf1983a8d19937e24817552ac:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmZlNjc4N2JjZDk5NzI2MWQ4N2YyOWM3NWY0ZTViYWQ3MTQ4YTJhOGZjMDhmYTkzNjU4MGI1MzhjM2U4ODU5NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxMDliNDBjZGE1NzY2NDExMjU5MGQxZWZjOWI4OTc2YTMyZmE1NWI0ZmViMDUzYzUyNTI4MmJmZjdmYWMwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTdkMjU5MDQ0MDk2OTg1ZGY2Mjc5YzA2NGFhYWJlN2FjZjQxYjhkMWFkZjM4ZmY4ZjAyNjQxMDAyNmY4MDY2OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f76e3622ccf64e14b5d8f35a02dd291c",
+      "statement": "后端会话创建后立即发起 initialize（协议版本 2024-11-05）并在成功后补发 notifications/initialized，其 promise 即为 ready，默认 120 秒超时后 kill 子进程。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L117-L136",
+          "version": "repo-lines-v1:sha256:cf05ba7af87d038ea70d354281bde98ce47620a58acad41492ddb17cafa61b5e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5NTJlMjQ2NWJiNDMzOWYyOTFhNzY1NmI1ZjljYTA4Njc4YmMzNDdmNjVhMzBjODEzNGNjNWNjMDVmMmU2OTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3MmM4ZjhmYzJlZDQzY2Y0ZGEwNTQ5MjA5MGQ3NzIwOTY2MGYwYzYzNTk5MDFhZmVhODgwZmM1NjJjMjFhZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxYjQyOTc2YTlmNzM2MzM1MmFlOWU0MzU4MzRhOTRiMjJlMTcyMjA4NDZkZjZiYTZlY2Y0NjhkYjY0NTU3ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzZmE5ZjdiZjViMWZmYjdjOTJmY2E0MzI1ODU0M2MzYzgwNzM3N2VlMGNlNDI3YjhiM2NmM2ViMDRkZDkyY2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3bdbd4ac7d0c48969b6a522058e15f95",
+      "statement": "后端请求关联使用单调递增的 nextId 与 pending Map，进程已退出时 request 直接 reject、notify 静默返回。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L103-L115",
+          "version": "repo-lines-v1:sha256:8b41182f837100583e602a8dc3062262b5d9cc80f9d9dc953656a50d34b604bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxNzhjN2RlNzA4Yjg2YjA5OGRiYjZlYTZjY2IzMDM4YWUwM2IxN2ZmNmVlMDJjYjQ0OGEzY2YzOWVlZmU3YTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmI5M2VjY2ZhYzExNmZjN2Q4OGQ3OTk1ZGRkOTJiOTdiMmEyZDQ5YjMxZDM5NmU2ZWEyYjFhZmFlOGQ4MGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyZjgyYzQ1ODAyODAzMWNiYjliNDhiMzkwMWJlOWFhYTE0YzkxZWNhZGU1NTBlZDljNDI5M2UzYzg5OThmMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwNjMzOTkxODY0ZmRiZjFiZjk2OGRjY2EwNGIyNjNkMThlNjEyZjdlMDJlMWM1NjcxYmU4MDE0MTEwNmQzOTIifQ"
+        },
+        {
+          "resource": "repo://src/backend.mjs#L46-L48",
+          "version": "repo-lines-v1:sha256:6bb59104495f0a069bb487ad3448f7093c4a2a62993b2ded3b0427eb966ca28c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzBjOWRjYmRiY2ZlMmY5N2UyN2FhOTAzMGM5ZGMxZGU2ZTgzZGQ5Y2MzMWQ0YTlhZWYyMjExYzg4YjdmMTgxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFjYjhlYTYxMjVjZmRkMTRmMTU4YTA1MWI0NDM3N2VjNzRjZGMwYzkwNGI2NDUwNmU4NWFjZWUxOGQ5Yzg3OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjdjNzBiY2Y2YWZlYjkyMGQ2YzdkMmM2NGE0NDViYzYyYmYzNmRmY2FmOWUwMWMyN2E5OWU1ZmI0NzE5ODk1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWZkZDRiOTc4ZWU3ZTY4ZTNmMjNjMDcyY2U3NzNmNTdhNDQ4MGRiMzI0NjliZmRjYTE5ZmM1ODFmZTQwMmY0MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_094c4f1a096a4abbaa0205f7c3f82bc8",
+      "statement": "后端输出不是 JSON 行时只 warn 一次再降为 debug，因为干净的服务器不写这种行，它是「起的不是 openwiki」的强信号，值得在不开 LAUNCHER_DEBUG 时也可见；无法对应的响应 id 只 debug 忽略。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L60-L81",
+          "version": "repo-lines-v1:sha256:0d52a03a2a7380c9b459f38cdf9c4fa45b0c5581964efee2dce1a73d4eb37cb6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZTFkMmYwMzRkZmQ4ZGJlNjUzNDg5Y2UzZmQyOWU5OTYxOGFlNzU5MTE2MGJkYTdkYzU3ZjYxZmZjZTgyNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGI2OWIxMjMxZTc1MDMzNWQ5ZGQxZjc5ZDc4NmVjOGQzMjEzZTQ2MDRmMzRhMGExMmRjZTRjMDM0ZTBlYTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxYjNhOTJlNzllNmIzNjI2MWNiM2M0NWZkNmY0ZmQ3NzY1YTkyYmNhODIxOTU1YmE4NjBkODA3ZTI0MjUxNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1NTNhYzBhMTNjMTNkMjE0Njk2MTZlY2JhMmEzZjFiMWNhOTE3YmMxMjgxMTc0YTRhOGU0MWM4MWFhNjJhZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7570b7c4f816407eb122cf38b9016e55",
+      "statement": "后端 stderr 只保留最后 8192 字节作为 stderrTail，启动最终失败时把尾部 400 字打到 stderr，因为最常见的失败原因（原生模块未构建、Node 版本不匹配）只在那里说得清。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L244-L254",
+          "version": "repo-lines-v1:sha256:ab176ab90f21173f6c9d43eb1210de7e772592b28c909995eeb86e5e15d91533:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwZTgwNjUyNTA2YTg0NTQ4MGNjYTJmYTljODllNDE2NzMyZDg0NTdiYWJiZGUzYmNlZTUyYTIwNTZmMjE4MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNzFkOWZiODgwZWVjZGNiYTUzMjc1MmRhMjM3YTZlOGI2MzJlMWNlY2ZlNTM2ZDhmZTkyYjhmZDA5NzJiYzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhMjkzYmJlZDNhMDdkY2ExNWMwNDNhOTIyM2U4ODliMDFkZmNjNmE1ODc4M2MwODljMWNkYzkxNTFmYjRjOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1NDQ4Zjc1MjcxZmU1ZWU3MWJhMzRhZjAxZDcwMjU4ZDcxZDg5YWUzNmY2OWU3MTMzNGU2NmE3NDM1MzA2MjAifQ"
+        },
+        {
+          "resource": "repo://src/backend.mjs#L4-L4",
+          "version": "repo-lines-v1:sha256:5570c82c8d1162b69751618e1f6e9ecac86e1ae63fb5e2352da6b498e0af0b52:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU3MGM4MmM4ZDExNjJiNjk3NTE2MThlMWY2ZTllY2FjODZlMWFlNjNmYjVlMjM1MmRhNmI0OThlMGFmMGI1MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU3MGM4MmM4ZDExNjJiNjk3NTE2MThlMWY2ZTllY2FjODZlMWFlNjNmYjVlMjM1MmRhNmI0OThlMGFmMGI1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODIzYmI5MjhjOWExZjU1Mzg4Y2Q4ZWM4YWZlYjJhNzAyOTFjOWRjM2E2NGE1ZTgzMWE1MjhjOGZjMjk0NTE1OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGRhODliZGU2Y2I1YmRiYjQwZTliZDU1NTQ4MGYwMWExZGY5N2U1M2UxMzUwZWU3ZDkyNzhhZDgyNDdmOTM1OCJ9"
+        },
+        {
+          "resource": "repo://src/backend.mjs#L86-L89",
+          "version": "repo-lines-v1:sha256:4beb9e87f800fcfb02573aecc47a163ef18930d7251e70a6825678c32ae5e4e1:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWUxNmMxZWI3ZmJlYjMyYTQ5MGVmYmIxYjU2MTM0MTAyYjRhYzZhMTU0OGYwZGZjMTI5MWZiZDJhODE3ZDQwMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODExYzYwMjEzNDVkZWUzMzI2MGFhYmJkM2Y0ZTVhMGM0Zjg2MWM1OTIyMjRiNTg2ZmM5ZmJjMmM3NjQxNjkyNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjZkMjc2Nzc0YmE3MjI1MGZiY2MyOWIxMWJiODc0Yzk0ZjY0ZDkwMzQ5OTk1MGY4NjkzZjRkYzViZGQyZjcwNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_17bfd0478034489e8ae913feb9860046",
+      "statement": "stop 先发 SIGTERM，3 秒后发 SIGKILL，且强杀定时器调用 unref，避免定时器吊住事件循环使进程退不出去。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L138-L143",
+          "version": "repo-lines-v1:sha256:4d8fc02862b3eae83338e63e9791610bb880519d55996610f8cb76c24b1c6251:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTc4NzM4YzE4Y2E4MWU2OWNkZWNhZTAxNDcxYmU1ZGUwNmJmMDMwY2U3ODExMjlhNTE2YTM5ZWUyNjM4ZDljMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNmYjkzZWNjZmFjMTE2ZmM3ZDg4ZDc5OTVkZGQ5MmI5N2IyYTJkNDliMzFkMzk2ZTZlYTJiMWFmYWU4ZDgwZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZThhN2MxMThlMzQ5N2I1M2U4ZjExNTVmM2MxM2Q1NmJkY2FjZDRhYTkzNzNmMTU0YjIxNWRkNDhlMzQxZmQwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWJjZTMxYzljYzk2MGNmYWI0OGJjODU1MmRlMzdlZDU1MGQxODhmZTM1YjdkZmNlZTc5M2Y1NWQwN2I2MTEwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ac36f7afae54110978ac3b5cd82eada",
+      "statement": "监管器的 ensureReady 是单飞的：已有会话直接返回，进行中的启动 promise 被复用，并发调用共享同一次启动而不会 spawn 多个后端。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L257-L280",
+          "version": "repo-lines-v1:sha256:3db104ea19b5afd11605af95de70c79bdad8fd2323324aac4caf889d35f38b03:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjNmQxYjZkMTI3NjBkZmYzZTA5ZjQyZTUzNzMzNjk5MWVjMzNjN2UwOWY1NjZiMWUzZjE2YmM1YWI0ZGI3NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzNGI0NDQ0ODYxOWFlOTUwY2RlYzBkNjRhMmExYmQ1NWY4M2M0MmYxNTE5OThlYTM0YTE1Y2U4Mjg1NmM0ODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMzBkMGI5MTExYmQ4MjY1MDcxNjY0OWYzNzI2M2IyZTM5ZDljY2M0NTYwMGI4NjA2MWMxNTliZmY2MjdkYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_409c092aeafb4c79b740e10fb3d8e2c8",
+      "statement": "监管器默认最多尝试 2 次、间隔 1000ms，理由是拿不到应答的宿主本来就会重连，无界重试会把坏安装变成看起来卡死的 agent；握手前就死掉的进程计为启动失败并消耗一次尝试额度。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L163-L168",
+          "version": "repo-lines-v1:sha256:acd6a33a62770f55a5f7ea1e81d00feddba3445214da0a5448efe71d2fcc2efc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmMyMzA2ZTYwYmIwMGQwZDkwNDk1ODY5NWVlYjg3OTYwYmFjY2E4NDk0M2QxYTZhMDMwMWNmMzg3MTk5MzBjZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDQ3ZjIyMDNkZTNhY2E2NWE2NWE2MWZiNTcyZWY5NGQxMDljNDc5ZmI0NDMyNmQxOGFlYTM0ZTZiOGI1MzliNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmFiZjljMTYzMDUyNzVjM2EyNzYyMGFlYWViZmUxYTQ1Zjk5MWY2MmZkMmNkMzllYTk5YWJjZmUxNmI5ZDBkYyJ9"
+        },
+        {
+          "resource": "repo://src/backend.mjs#L202-L255",
+          "version": "repo-lines-v1:sha256:3a00ac672863dc17986c4cb8458b864b3f925c92570a3ba557adb4d75683d26e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhZDkyYmQ3NDkxODBhZDBjMzc2ZjkyZDczNWI2OTY1Yzk4NWRjNmE5NmIwMTI1ZjEwNTM4ODM5YjNhZDVjZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhZTAzNmU1ZjIzMTE3OWM5MzNlY2ZkNjVjYjUzZWU5YTlhMDBmOWRkYTQ5NzJlYzczZDJmZTkwNDk5MGJhMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzNmJhMGNhMjBkNGMyM2Y1ZDBlNzFlNDBhOGM4ZmMzZGYwMzVkNjEwNmNlNmZmYTk4MTBhZjllNWQ5OWJjZmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c6a52144bcde4dd0b52e271697f4c793",
+      "statement": "后端崩溃后监管器在会话 exited 时清空 session 并广播 onSessionExit，下次 ensureReady 会自动重启。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L264-L280",
+          "version": "repo-lines-v1:sha256:43bac4227498cb8f6551190411a4cfe74174ad121865eb504ede150ada17dd53:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4NmM3ZDE3NzhkMzBhNzIyZDQyMWZiYTkyNjZmMzhlMDUwOWM3Y2UyZDA0NmJhOTBjZjhjZGY3MzBkMWQ3YzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MjM5NDE2N2E1OGRhYWE3M2ZmM2JiODdiYTY0M2Q1MWY5Yzg2YTI1OTk1MmQzYjliMTFiZTU3MjAyZDg0YTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMzBkMGI5MTExYmQ4MjY1MDcxNjY0OWYzNzI2M2IyZTM5ZDljY2M0NTYwMGI4NjA2MWMxNTliZmY2MjdkYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_be701e3be5ae4bc39cd0f19b1b5b4148",
+      "statement": "启动完成后检查 stopped 标志：宿主可能在后端仍在导入时就断开，没有这个检查刚起的进程会活过 broker 成为孤儿并继续吊住事件循环。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L214-L231",
+          "version": "repo-lines-v1:sha256:234116a1eff97d27338725a506fb4f19cc68ed42bd16fe030fe58b23aeb2ac6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwMjZlNDA0Y2RlYTMyNDBhMjA4MmMyOTQ2NGMwZjQzMDkzODU1YTNlYjBiZjkyNDhjZDRlMzk1Y2IzMzgyOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyNTFiZmFiY2ZiNmQ4OWZkOWY0ZTNiN2JjNGExNzRmZDkwYzk5ODE4NmU0ZmRlMmM4ZmEzNGU2ZDVjMjkzYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVjNjE5ZTBhMDlmYzllYTg3Y2M1NWZkMGI5ODE1ZDg5NGY2NjkzZjg4Y2RiZGE2N2YzNDhlZjlkZTNjNmVlMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhNzU1NGE0ZjU2NjVjZGU0MDE1YjhhYjkxZGIwZTJkZDZhYWYwZWVmMzhhMDViZDJmODQwNDBkYWE5YmQ5NmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bced860dae534cfead2b51f99f2eed8d",
+      "statement": "会话对 ready promise 挂一个空的 rejection 处理器，因为调用方可能很晚才 await ready，未观测的 rejection 会在 Node 22 上杀掉 broker，而真实消费者仍能拿到原始 rejection。",
+      "evidence": [
+        {
+          "resource": "repo://src/backend.mjs#L134-L136",
+          "version": "repo-lines-v1:sha256:9f61abad5571bf3c1680abf182b7698f9d89e746e12c82526a957b891e80d69c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTIxYjA4MWMwYjliZDE4ZDQyOTIxNDEyZDM3ODQ3NWJmZTAxMjFiMTJkZWNhYzhkNWY2YWYyMGUxMzFjYTRlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzcyYzhmOGZjMmVkNDNjZjRkYTA1NDkyMDkwZDc3MjA5NjYwZjBjNjM1OTkwMWFmZWE4ODBmYzU2MmMyMWFkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODA1NTIyYTYyMjFlODBlNDQwN2YxMDlhZWM4OTZlODBkYmZlZWYwMDY2MDNiNDNkZmExNWNjYTcyNDBkY2JiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzNmYTlmN2JmNWIxZmZiN2M5MmZjYTQzMjU4NTQzYzNjODA3Mzc3ZWUwY2U0MjdiOGIzY2YzZWIwNGRkOTJjZSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

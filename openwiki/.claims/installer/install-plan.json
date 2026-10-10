@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:3fec685470347490fb28d0565e86417c932b02b76eb3d5cc59e564a5c9a18651",
+  "claims": [
+    {
+      "id": "claim_b16b57b96e00412f90868b67650e4b70",
+      "statement": "安装面切分为纯函数决策器 planInstall（不碰文件系统，所有检测结果由调用方传入）与编排器 runInstall（只负责按表执行与善后），使整个安装决策面可用纯数据输入完整测试，并使护栏被拒时执行器一个字节都不写。",
+      "evidence": [
+        {
+          "resource": "repo://src/plan.mjs#L6-L18",
+          "version": "repo-lines-v1:sha256:9ae897f8c051d169d46b869fcf86b92c2757c010d0acc4328266f0e59f36201b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMjdkZDRhNTJmNzc1OGFmZjliYzQ3NzdlNjFiM2YwNzE2ZTc4OTJiZDg3ZTg5OWYyOGE0NGUwYWU4NzIzYTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyN2RmY2QzNDk4M2U4ZDM4NDBmOWU4MDQ0ZGNjMmQzMmI3MGJhYTIyMjFhMzZkZjQxMTIwOWYxODRmMTg5Y2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c33b0ce9923546e49b18ab3726c515cc",
+      "statement": "planInstall 用 joinFor 按传入的 platform 选择 path.win32 或 path.posix 拼接路径，而不是用宿主平台的 path.join，否则「注入 linux、跑在 Windows 上」的组合会产出反斜杠路径，破坏纯函数只依赖输入的性质。",
+      "evidence": [
+        {
+          "resource": "repo://src/plan.mjs#L26-L41",
+          "version": "repo-lines-v1:sha256:a11a97535cf43fb626096f56b0c3ea650dd53b1e192279cb4867a6d6c66c0172:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyODk4OWM2MzBhZDczOTRkY2Y4MjNhZjI1OWU0Zjk0MTcwZjE4ZTdhOGY5NWM5YmU0ODE0YWI4ZWY3YWVkODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2YWMyZTM2NWU0YzMyYWRmNmM4ZmRmMjIyN2I0ZmQzZWU1OWI5MzlkYWEwMDE5ODU4MDI3NWRlNTA2MDFhN2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5abbc62863034d4ca29e47886944a100",
+      "statement": "所有检测快照必须在任何写入之前一次性算完：Codex 的技能目录是 .agents/skills，而 Antigravity 的 detect 标记正是 .agents，先写后判会让 Antigravity 被邻居的产物误判成已安装而跳过。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L12-L18",
+          "version": "repo-lines-v1:sha256:2b1e7c7ac284c5910c9582fe58896ab4a5b02721c0c9cd85609d73e3134a3a5f:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTJmOGIzYjk3MDg0MmM1NTgwYmZiYzcxNGNmMDQzYmZjOTAzMTYxZDM3MTllNGI1YjI3YzM3OTBkMTY0NTFiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODNjMzQ0NDlkNzg1YjZiZmZlYjhlMTQ0MTM4ZWExMTZkODBlNjVlNThiNGUxMzdiNGE5NzAwNTMwMTU0YTkwOSJ9"
+        },
+        {
+          "resource": "repo://src/targets.mjs#L40-L60",
+          "version": "repo-lines-v1:sha256:43ccd6ef113c7665454f5cbb4c23e2ca16bc0339fd537ccb68fbe54f450b3ebe:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhMGI4YTFlODE3M2YyOGRiYzk3OTdlOTY2MzUzNjIwNWVjYmUzYjQwMGYwOTY3ZGFlNjdkNTNiYWRkY2FmNmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4Yzc0NmUxNDI1NWIyYjhmMmY3YTFmYzhiOThiYWJiOTBjNTdlNDBkMDdhMjFkYTBjNGM1YmZmOWVhMzE2NzEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7403c99fd4724ca2897052a0f845bda4",
+      "statement": "collectMcpSnapshot 在读文件失败时标记 unreadable 而不是当作空配置，决策器据此把该条目标为 action=error；否则会走新建分支用只含 openwiki 一个 server 的内容覆盖用户整个配置文件，且退出码为 0。",
+      "evidence": [
+        {
+          "resource": "repo://src/plan.mjs#L157-L167",
+          "version": "repo-lines-v1:sha256:6c50e710247fa1e167f2907949859c620964f4e5fdc799db0b75bc2de83b20cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MzZmYTZjMmRkNjdmNTY2MzIxNzY1ZTI2NzM4NjlhYjcxMjNjMDU2Y2ZjNjYwZGZjZTBmZjA3YzljOWFlMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MDFhMTFmMmQ4MTcyMGMwMjU1ZDVlMTUyMjJiMTE4NTFmYTJmN2QxMjNjZjc0MzkyZGZkNWRmNmFlYTBmYWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmNTYwODhiMzg5MGUwN2I3MzcyZjJlZmE3ZGQyY2EyMjljNDMzMjEyNTdlMWI1ODM2MWU0MjJlNjQxOTI0NTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYyMmU4NmI2MWU2N2RjYWYwZmE2MTE1ZjM4ZGI4NTBmNDBlNDFlZTUyN2QyODk3MzY5YTE3ZWQxZTU3ZWNkNDcifQ"
+        },
+        {
+          "resource": "repo://src/targets.mjs#L98-L137",
+          "version": "repo-lines-v1:sha256:dc669940009ecdf7fae2e47abc4a82fecf5371c5a20e4f91baf00a7a23da6824:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0YWRlMWZkY2RjYmQ4ODM5MmFhYjA1YmEwZjA2ODJmNWRhZWU1ZGFlNWI5OWIyNDMwNjYwOGU5YjJiZTc2NTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce8870a6bcf74425a4c8d7ea95b5d19b",
+      "statement": "执行阶段把 mcp.action 为 error 的条目视为整次安装失败并返回非零退出码，即使不写该条目也不认为安装成功，以便用户看到可读原因。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L149-L158",
+          "version": "repo-lines-v1:sha256:fba058ba29b36bb833691cfcf2069da994d28204ba84f62aac34a7e1ddbefb28:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5YjViMjMwZTg1Yjg3NTk2Y2UyMzZhMDgzOWFlYTY5MDM1ZDczOWU2MWY5Nzc2OWFmODc1YTlkMGRiYjZjNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5YzBiNGZlMWU2NTAyOWI1YTA0ZDE0MGEyNjhkNTI0YTFhNmQ3OWI1ODU1M2U1OGE1NjRhNjdlMTZkNTI3NDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwNmFjODkzYTcwZWQ5ODc5YzI0OTM4ODU3Y2Q2NmY1YzdkOWVmMjA5NjYzZDlmYTFjNjU3MjMwNDk4NWI5ZTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_65a3cda7ef4542e8a7d2b45aa728cd2a",
+      "statement": "接管判定有两种来源：nativeSnapshot 的 receipt 为真时 takeoverReason 为 native-receipt；mcp.action 为 updated 且读回的旧条目 isOursEntry 为假时为 foreign-entry。--no-takeover 会把两者降级为 skill/mcp 跳过并复位 takeover，这是零改动的成功路径而非作用域错误。",
+      "evidence": [
+        {
+          "resource": "repo://src/plan.mjs#L214-L235",
+          "version": "repo-lines-v1:sha256:8a29d5c2723e2337452dcaa013704e5b58cc986e2bb6518f7e38794a0fc9db91:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMjU4Y2FiOTMyNGZmOGJjYzVhYTVlYmE0YTZiN2QzYTE0ZmRkNDQ5YTQ0M2I0MjlmZjY5MTExMGYzMTdiMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhMjkzYmJlZDNhMDdkY2ExNWMwNDNhOTIyM2U4ODliMDFkZmNjNmE1ODc4M2MwODljMWNkYzkxNTFmYjRjOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4OGJhMDc4ZDY5NTExMTgyM2IzZGRiNGExYzhiNWExNWY2N2RiYjhjYmM3NTNlNmExZWVlMDZlYmI1YjdhM2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2cc174ad48714b5499649e79590ca80a",
+      "statement": "护栏是一票否决：任一 entry guarded 时 runInstall 打印每家拒绝理由并返回 exitCode 2，报告中所有行 wrote 为 false，本次没有写入任何文件。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L96-L107",
+          "version": "repo-lines-v1:sha256:e86408e3188972dd5edae109733ec212487b07278466192d1d6665cda9626e4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2YWM0ODRkOGZhNzhhZDZjMmYzZmY3MWZiZDFhZDY1MzkyODRmMjEyMWRhM2FmY2I2NGI2OGYxNDkwMDhlMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3ZmFkNTMxZDBkNTVmZWQ3OWE3MDEyNjZjNWM3MGU0NjBkNjY3ODFlZDhlZTM1MTUwOGI1NGQzNThkOGUxZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmM2VlOGZiYmNlNTNhZDJlZmJlNzI4NjYzZjMzM2M3OWI5ODc4MzAyMmFhY2FhMGQwMGYzYjAzMjM1NWRkY2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_09c39a650f594fc091d74356840eeeed",
+      "statement": "护栏对系统目录的拒绝没有 --force 绕过，而项目级作用域落在 home 时可以 --force 绕过；显式 --tool 指定了不支持该作用域的宿主时整次安装失败，自动检测时则只跳过那一家、其余宿主照常安装。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L115-L131",
+          "version": "repo-lines-v1:sha256:049c91652790aae9afd85e65681827396cc995832919c2af8e69614c170fe65b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZDIxYjIxODhhYTFmYjE4ZDljYTA3MDc1Y2M0OGM1ZDU3ZTM4ZWE0ZTJmY2IzZWE4YzFlNmQ3ODFiZWE3M2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5N2U1YWE3ZTk1MDUyNzQ5YzJiOWZiZWEyODZhZGVhMmY5NDJjN2ExZTlmYmQ3MGFmOGUzNTA1NzA3NjY2NmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM5YmEyMzBhNTRkYzllZTI1MWY5NTY4ZjRkMWQwMmZjYTFkOTY0NzEwZmI5MWM4MGUyYjQ0YjVkZjgzODA4M2EifQ"
+        },
+        {
+          "resource": "repo://src/plan.mjs#L195-L212",
+          "version": "repo-lines-v1:sha256:d7bce03e298ae931ce3f7b9b68f2ec11590e1d8cfc02285496f4eddf463bbbbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3OTUxMjk4MzJmZWY2ZTRjNzdmMmJjOGUxYjgwNjBmNTg0YmYwMjk2ZTU3YWI3NmVmYmRhZGZiOTRhMWFjNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhMjkzYmJlZDNhMDdkY2ExNWMwNDNhOTIyM2U4ODliMDFkZmNjNmE1ODc4M2MwODljMWNkYzkxNTFmYjRjOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjM2QyYzE1ZjUzNzA3OTA2MmVkNDk5Yjk1MzFhODhmOGU0ZDc0NTAyMWFhYmUzMThhMDVkZmQxYWNlM2ZjNzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1f440c509cff4992b0173810e0fb59a7",
+      "statement": "执行阶段逐 entry 先安装 skill 再写 MCP 配置，写 MCP 前必先 createBackup；只有 created/updated 两种动作才真正写盘。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L133-L209",
+          "version": "repo-lines-v1:sha256:72bd442774cdfeda72fb0c01d1d6b87b7180acb547f6475e64ab2b10ba593a01:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NjQyOTE4NWE2NzZiYjE0MWM4OTIwMzMyOGY1NTYzMTEzNjU5NjBhM2I0ODUyYzJmYzc1ZWI3NTFlY2U3MzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4NTA4YjZjYjA1ODlhYmE3NTAzMjAyZGUyYzhmODdlZDliMTljZDU4NjUzZmQwMWEzZTY3NWUzYWI3YjU5NjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyMjgxMGY3NTBiNDZiODFkM2JhN2E1ZWNlNWFlYjkwMjYwYjQ5NjU3YzA4ZGM1NzQzZjY3OTc0ZmU3YmUxNDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9828d2cda6784172bc8ee0b20d5acfe4",
+      "statement": "回滚清单只收本次新建的 skill 目录（installSkill 返回 preexisting 为假者），避免一次失败把用户原有的 skill 目录整个删掉而报告却称只回滚了本次写入的内容；回滚出错只记日志不掩盖原始失败原因。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L160-L176",
+          "version": "repo-lines-v1:sha256:572acb131b103156428e186ae1048f638a3d6df48403fd9ebb068f96ef27c6ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkODFlZWFmMDRiOTdlZjNmZjc5YTc2ZDNlYzQ5MzVkM2IzYjNlZTIwM2RhZjU3ZWY2Mzk2ZTJmYzcxMGRkZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMTIzNmYyYWVhMWNlNDJmYTJiMGNjYjI3ODMyYzc4ZjVkOGMxYzE5MjM4YTI0MDkyMjEwNjYzZDUzOWVkNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxY2Y2ZmVjMTIwMTAzYzIwNTJmNTEzNjE2MTlmNDNhYWEwYzQ3ZDhiZGUzMGZkYzM5NDUxNzhiMTVhM2RhNWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkMjJmNGM2ZDE3NmFlM2E2N2U4ODAyNTFlMjdiYmIwYjViZjI2ODQyZGE4ZTdjNTAzYWZiNTNmY2YxNTMxMzAifQ"
+        },
+        {
+          "resource": "repo://src/install.mjs#L211-L226",
+          "version": "repo-lines-v1:sha256:ba4f8500ec9a584857d159579f469150b280a1448510492df0f34b652ae359fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0NTZiYmQxOTJhYzk0NDNkZjYzM2M4MDM2YTdkMzdjMjBjNWRiN2FiM2UzZWFhZmI2OTQ2MjE2N2NhNDZlN2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1ZDA3MjBmNGQ0NzJlMTNkYzdhMDBhODVmODMyODI0MmFlZDVhYTBkY2FhMmYwMzFmN2RiM2ZkMjgxODdiNjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYzk2ODMwNzc2OTQ1MmExYzc1ZGNlZmY3MzMxMDFiYzY5ZWRkMzcwZGZiNTc5MTNlYTc3MmIzZjUwNTY2NmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_acb3b1eccf574127a1b5a3abaddfdedd",
+      "statement": "安装快照一律使用真实的 existsSync 而不是 deps.exists（后者只是 PATH 探测的 seam，不是文件系统抽象），需要控制检测结果时走 detectSnapshotOverride，否则测试里 exists: () => false 会让快照永远认为文件不存在。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L76-L86",
+          "version": "repo-lines-v1:sha256:c4de7428f7f394aede4f94b0dbeb4ffd7735a7c85d92595d2d562e308172b2a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1NjdlNjAwNzljZWM4Yjk3MWY1NDRiMWE3MTNkOTQ1MTc5YTZkNmM1MDRiOTYyMzllMmZlMWVhOTNiNDE3YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0MDcyZTc0NjU5M2IxNWVlMWFhMDM5MTg3ZWExZmRiMWI1NzFiYzk5OTNiODliN2U2MWRiNmU0NzViZTUwMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4ZGRjMjc5MmE2NjAzM2M3MDYxOGY5ZDc4YzRlNWY4MDU3MjcxZDIwOTJiMmZkZDYwOWUxZGVmMzE3MGExZGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1cf39abdcbbb456d84c6a87b5a23837a",
+      "statement": "resolveScope 把 --global 映射为 {scope:user, baseDir:homeDir}、否则 {scope:project, baseDir:cwd}；resolveTargets 在 tool 未命中时也返回 null，由调用方区分「走自动检测」与「未知宿主」两种 null 并给出不同提示。",
+      "evidence": [
+        {
+          "resource": "repo://src/targets.mjs#L15-L38",
+          "version": "repo-lines-v1:sha256:3740aa644e34bb421abba5f473cb959c55edc17c1b6a233769dcfc4e4528be0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyMzVkZjA1NDdjYzg0ZjcwMTU2YTk0ZjVmOGFmMjRmNTM3MDMzZTYxYmRkMjhiNmQyZDcwYTJkMWM3YzIxOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ZTMzZDA3MWQ4NjY3NDAzYzVjZjU5YjBmNDczYTkzNzA1YWRhZWU5ZmY1YTcxYTcwZTJiYzY4MjQ4Yzk2M2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_83c00b584ac44654a34587dcc30100bf",
+      "statement": "install 与 uninstall 共用 targets.mjs 的作用域解析、目标解析与快照采集，保证两者的作用域语义、别名解析与 detect 判定完全一致，避免出现装到 A 目录、卸载去 B 目录找的残留。",
+      "evidence": [
+        {
+          "resource": "repo://src/targets.mjs#L8-L13",
+          "version": "repo-lines-v1:sha256:62111c805d7c6056e42a21e37d04ba2f542a49c509051a2bfd2fe19af8c8d853:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjEyMThjNmQ2ZWFiNTBjN2MxYzYyNTI4ZGI3NWFlN2MwMmM3NjNjOTg0OTNkMTY2MzQ4YmRiYTBjYzBhZWExMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDkwNzRjODU1ZDI4NTAwODc5MDE4ZTBkOWMzOTMwNTFmMWE2OWM0NTQzNTczZjgyOGJiNGE2OGQyZWNjNmUyNSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

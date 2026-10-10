@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:817455e222ddb721c171c576ea2b73a7c97ed6b6382be0fbb273d6ef4e1e091f",
+  "claims": [
+    {
+      "id": "claim_912bf95251804acaaf8504f5f5e07c82",
+      "statement": "测试栈是 vitest：只包含 test 下所有 .test.mjs 且超时 20000ms，无 setup 文件、无 environment 定制、无覆盖率门禁，跑在 Node 默认环境的单进程串行模式下。",
+      "evidence": [
+        {
+          "resource": "repo://vitest.config.mjs#L1-L8",
+          "version": "repo-lines-v1:sha256:4291bae0e1b2a0134330c9ab1d18fc5e44d646c4a162c85010480d72093e83a5:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk3MDI5MDIxOGY0ZDhmYjU3MDA4OTQzODg1N2Y4YmQ2NDg3MzA0NGY3NGFiMTRiYmExNzM2YjM3YmExYWVlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNkZGVmNzI0Nzg2YjRhZjQ1YWI3Y2FkODFkMzc3YWU1NDNiYjc4NDEyOTY1NjhmYjUyMjY5OThhZWMyMTYzNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5dff60c959ee4063ae537a1e71f5850d",
+      "statement": "fake-openwiki 夹具让后端完全可控（启动延迟、serverInfo 名称、延迟退出、stdout 噪声、stderr 内容、pid 文件、工具清单覆盖、调用挂起、拒绝启动），避免每个测试都付 openwiki 真实 10 到 60 秒的导入代价。",
+      "evidence": [
+        {
+          "resource": "repo://test/fixtures/fake-openwiki.mjs#L101-L119",
+          "version": "repo-lines-v1:sha256:bb03f28b93a9fb238ff2364ffc9a3cf67a139777fae369e19dad8e4e1b759d03:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmY2Y0N2Y5ZTJlYmM2NDNhMjRjZTU5YmUwNTVlM2U0YzJmNDAzZjI2NzkxN2JiZjkxZmYwMWI3MjAyMDYzNjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3NzhhOTU2ZmNmN2JjMmNhMGZjYWEwODhiNzA3MDMyMDMxNGU1MzQ3ZGU1ZGI1NzM1YzVjM2RhNzEwOGY2ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://test/fixtures/fake-openwiki.mjs#L2-L15",
+          "version": "repo-lines-v1:sha256:d0767ec4170aff0ecac39112965a3866935fa2911bb11a8970610ec2d42e83a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5ZmI0ZWMyNjNhMjQ0NDgwOTBiMjE4N2U1OWI0Nzc4MTJiMGJlM2E4ZTZmZWM0ZWYzY2YxNWZmYjIzODgzZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjZDBmMzU1MWI0MGYyZDFmMDRjM2M2YmM4OTAwODYwYzUwZjNlYTBkYzI4N2M2ZWZlMGRiNzYyZmU4OGVhYTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxODdkZGUzNTQ2Njk1YTk0MzIyN2FiMjJiNmIwMzYwOTQ4YTA2YTg1ZmVjMjYxZmQ1NDRmNzBmNWQxODU5MmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwZDVkNjg3Nzg3ZDVlOTJkNmVhNDdhNTg3Y2JjZTJiNTJiNzFlMDZkYjRjNTgwZmQ5MGJmNDAzYzAzNzdiY2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f86a70d66367450080b4742bad49f941",
+      "statement": "baseDeps 把外部依赖一次性装配并刻意中和真实机器路径（固定平台、永不匹配的系统根、固定假 node 与 bin 路径、固定时间戳），因此测试不会因运行机器不同而误触护栏。",
+      "evidence": [
+        {
+          "resource": "repo://test/helpers.mjs#L6-L11",
+          "version": "repo-lines-v1:sha256:fd848901b54e9b6492f038134c391cd8d40c05e3eef4b1bc176c9d4d4b9372b5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjg3ZTE4NTk5MDYyNmNiODE1ZTMxMTcxMzRkOGIwNzZkNzM4OGUwNjA1ZDUyMDJkMTZhYmM1YjA0ZmQ4M2YwYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGVlMjc2YTM4MDZmMjZjMDNkNTFlOGZlMjM3NmRmMTJhNWQ3MjQ2YWQ3MzdiN2Q1N2EwM2YwMGU0MjFmZGViZSJ9"
+        },
+        {
+          "resource": "repo://test/helpers.mjs#L70-L80",
+          "version": "repo-lines-v1:sha256:e4972c9955251b15ca420721245477576ff89a99dd07e8d0ad0a5e4e629e6eb6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5MzdiYzAxMTIzOWQxNTEyZWFhN2U0M2Q0OTkzNDU5OWViZWEwMmM4YjY0ZTQyZmE2NjljZmE3ODBjNTE3YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxZjYxMzcxYTk0YTE2MjBhY2EyYWNjOTVkNDBhOWQ2MDljZDhiOTJkODBkZTgxZjRiOWVmZDJlYmU2YjA0NDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmYTBlOTg3ZjlhM2YzMjkzYTg3ZjA0MTZiNGUxZGYzNDVjYWIwZDgyMDdmMjI1MzY3ZWIwZmMyZGIwYWY0NmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3OGQ4ZDNmNTM1ZmNiNjRkYWU1MTU5NzFmZmNjYjBkNTk1NjNjYzE2ZmM4NDc2NWJhYTVmYzFjNmI5OWUxMWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_953595f5135c4810b0ef34d7acf237a4",
+      "statement": "真实后端冒烟测试由 LAUNCHER_REAL_SMOKE 门控（real-openwiki 的整个 describe 与 manifest 快照一致性测试），默认跳过；应通过 npm run test:smoke 运行，因为命令行前置环境变量在 Windows shell 里不是合法语法。",
+      "evidence": [
+        {
+          "resource": "repo://scripts/run-smoke.mjs#L11-L27",
+          "version": "repo-lines-v1:sha256:4f080c2adbaae7ec35a79ca548aab6589866ffe11357fd0c94a9b2d5b147b1e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZGEyMGVlMTQwZWQzYmYyODQ1YjQwMTkxYjcxMzM2ODg0MDRjY2YwNGJmOTViMTg3MzY4ODAyNDgxYjUyZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwNWM3MzM5ZDk5Y2IxYzA0ZTgzM2E4NjBmOTNmZWFhYjM1M2Y2YWZiYWYzOTQ0ZWQ5MjIyMjRiMGRkNDVhMzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwZGU2ZWVjM2M2NDM0ZTk1MzM4ZDBhZGYxZDhjZWRjMjFlNjY1ZDQ4MjQzZDQwYmM2OWY1NWRkMjk5ZTJkMWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiZjM3MGNmODFiNWI1NjI4ZmZlNzI1MzgyNDZlOGZjZDZjNjhhYjUwMWU0NmIzNzY1ZDdiZDk1OTQ1YWVlYWQifQ"
+        },
+        {
+          "resource": "repo://test/manifest.test.mjs#L39-L44",
+          "version": "repo-lines-v1:sha256:2dc12ae51ef1fc637c004f629e273bc3c8b220c37acc84b02247f4d98f632e65:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjljM2JjMTAxYTI2MzIwNWNkNDg3ZjkzY2FmZmViMmJmOTMyNTI2OGZlMmEzMDkxOTJhZWE2ZTIyYzA4NTA5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWRjOTQ1OTM2YjNkZTYwMmNkZjY3MjRkZDMwYzVhM2I4NzgzOGFmZjgyN2FkMzRiYjczZGY2NThiN2E5ODM1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDk3N2FhMjdkMjdjNTVmYzk2YTZlZDM3MDcwYTllMjg5NTExZGZlMmI0NmYxNWZlOTM3ZDY3YTBjNDY1OTExOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzU2YzBjMmJiNzdiNzZlNmZiZWU4YmYyYzA0YTI3NzM2MzkwNmFhMjRmOGU4MjA4OGM4ZDA2MmNlYWVkYmYyMSJ9"
+        },
+        {
+          "resource": "repo://test/real-openwiki.test.mjs#L52-L53",
+          "version": "repo-lines-v1:sha256:f0d2944a9b6b5ed9cb14ca1db11ecb8e2b251ed6e2c7b9e958ae0685665e68fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTAxMTZmZTRiZjcwNGQ5ZGZhOTFiZjNmZWMxMzgyZTUwYWUyZjJjODcwODEyZTI2ZTMwZjdiMmI2NWZlMTkyYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGZlYzRkOGQwMDVhYmRhYTIxOGUyZWJhYWJiNjE0ZTRiYWUzOGM1MzMyZDRkM2E4Mzk4MDQ5OWEwZmRmMWMzNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGVlNTkyMjVmZmRiMjZkYjU5ZDYzYzNiMWU4ZjE3Zjg4MTRhMjdlMDQ2ZDY2YzYwYWM0MDllYjE3MDg3MDhiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzA1Y2NhZmU1NzdhMjJlOWZhODFiYjc4YzQwNzVjMmI4OGRjMjlmNzY1MzQ2N2FkMzRjYjMwZWUzZGZiMTJjNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_25f92333edcc4308bc7eb42d49b08242",
+      "statement": "测试 answers initialize from the manifest without starting the backend 断言快路径完全不 spawn 后端，钉住毫秒级握手这一核心设计；端到端版本断言在后端就绪之前很久就完成 initialize 并列出 10 个工具。",
+      "evidence": [
+        {
+          "resource": "repo://test/broker.test.mjs#L82-L107",
+          "version": "repo-lines-v1:sha256:6b8f4a3034c3f8b2d9b40c0dd90a3ae218a05c2715c0a27749f12ccc860f53d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmZjMzgxNDY4NmJmMThiMzU4YjAxMzIxNjkzYzJkMWJhYTdkOWVlODNkYWJiZjA1ZjdmYjAxNzBhYjJhMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjNWE0NmVjOTljYTAxZmNhZTcwMDQ5NmRlYTBjNDcwOTI0MjM0NjlmNzNlNjFiZDhjYWVjNGIyY2U1ZjUyYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMTZhOGRlNWQzZGI3ZDkwZWYyYzRkZTA5NDE5NzYzMzQ5MWQyODRhYTUyOTkwZmEwZGZmMDUxYzAwMWZmMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMmNjOGMyOGRmZGM3ZTYzNzEwNGU4NTVmNjQwNzI4ZTNiNWQxMjU3NTA3MGY5MzcwZDVhZjQxN2MwOTM2MzkifQ"
+        },
+        {
+          "resource": "repo://test/e2e-mcp.test.mjs#L97-L131",
+          "version": "repo-lines-v1:sha256:1f9e0733a0626a90419754d118b6a99dc5a3c06aa50c8467a4f6a65cf005dcc2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViYTE2M2VmMDYzOGZjMGUxMzcyMTZjMGRmNmU5OWM1ZTI2NGM5Zjk2MjgwNjI4YjU0ZTAzMWVhMTFkZjUxZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhMjg5YTRmZmI4YTA0Mjg2ZTBlZTM5MTY0YmIwZTFiYjU0YWY5ZDk5MWFkYjM3NDMzOGU4NmU3MDA5MDk4M2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1NGZjMGVjNjExMjE5M2EzZWQ4MTBlYWVlNzdlNGZjYzJjOTUxZWUzODE5YmUxZDk4ODczNDg0NzNjMjljZGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7c7075ba892848ee934062f1b1be3e54",
+      "statement": "测试 retries the backend after the failure cooldown instead of latching 先断言冷却期内快速失败再把注入时钟推进 31 秒断言重试成功，钉住「熔断只冷却不闩死」这一决定。",
+      "evidence": [
+        {
+          "resource": "repo://test/broker.test.mjs#L237-L288",
+          "version": "repo-lines-v1:sha256:c24a4212f2622eebfa66579422d10cb0d349e68aa1cccb180d9dd20fdfc4f722:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMTM4YTI5MDkyNGQ2ZGQ3MzUwMWU3NGMwMzJmMmZlOWE3NDE0ODFmNGI2OWMzZTJjYzBlZGEyYTg1ZDllMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGI2OWIxMjMxZTc1MDMzNWQ5ZGQxZjc5ZDc4NmVjOGQzMjEzZTQ2MDRmMzRhMGExMmRjZTRjMDM0ZTBlYTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiOTk1ZmQwNDdkMTc5MjQ3MWIxN2U2M2Q3N2ZjMmY3NmYxNjkwNTZkNTNlZGRmYTY2NDcwMGE2OTcyYjE4ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1NjI3NDViNmRkOTQ3MjAzMTYyNzg2NmY2YTRkYWQzYjczYmY2MGY0NjJiOTBlZTI1YjllM2IwNmU4YzAxNzEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e4fc0214a7ee41d0bbee3242eafa35d4",
+      "statement": "测试 shares a single startup across concurrent callers 断言并发调用只 spawn 一次且拿到同一会话对象，钉住监管器的单飞启动。",
+      "evidence": [
+        {
+          "resource": "repo://test/backend-supervisor.test.mjs#L138-L152",
+          "version": "repo-lines-v1:sha256:89d20b4490958de18990c4325c10c5958ecf37258c20e4b823516df4e4a9cd69:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlMzRkMGI2ZDMyNmY3NjRkM2I5ODNkOTI1ZTU3ZWY3Y2ExNzYxM2RkN2U3MjUwMjgzZjNmYzdiYzZmNjkyNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5ZGMxOThjMzIxODUzNTgwMmU5Y2VlZjMxMmJiNTk4OTI0ODJlMGZhODg0YjY5ZTAzYTU2Y2NlZTFiMWRjNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1NWI5NzBkNmU0ZjUxYTBmNjQzNjZkMjg0M2M5NDA5NjAxMDM4OGM1ZGVhYThjMTI3YzhjYjgwN2JmNTQwMTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_abb83070fe624f279a1ea3e35251b16b",
+      "statement": "测试 exits and leaves no backend behind when the host closes stdin 从 pid 文件读出后端 pid，断言退出码 0 且该进程已从进程表消失，端到端地钉住孤儿进程防御。",
+      "evidence": [
+        {
+          "resource": "repo://test/e2e-mcp.test.mjs#L147-L162",
+          "version": "repo-lines-v1:sha256:d5b7c50f101f7dc23472d18e6e0a5b531aa198302eda386ad84adf0945eb2be5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4YzA1Yjg1YjQxMjM3YjViZGMxYTk0OGY5NDJlY2U1NWI0OGVlNTA0MTBhODk5OTQ2ZWVhYzczYjA1ZTQ5ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0MzcxNzBkNGM0MmVlMmZmZTcxMTA2MTA1Zjk3Y2QzM2ZkNGNlOGI4Zjg1MzY2MDAzYzNkYjg1MDgyODVlNDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwNWRkMDQ0OTk5ZTRkNDY3NTA2ODdjNjE1NDA0NDQyZWZjYWQ2NGZjZjZhZjE1ODg0MTdjOGI3NDU5N2ViOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzZWFlMzc0OTgxYmZjN2U1M2Q1N2Y1NmM0MTVlMTdiZDdiM2YzZTZmNTNkYWIwYjg4YTVkYTkzYmRhOWNkNjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2324d96f39643c1bf9365f436ae5404",
+      "statement": "两层测试钉住畸形配置不被写入：切片层断言尾逗号、混入注释、括号不配对会抛错且原文本逐字节不变；安装层断言配置畸形时报可读错误并回滚、用户文件内容一字未变。",
+      "evidence": [
+        {
+          "resource": "repo://test/install.test.mjs#L128-L136",
+          "version": "repo-lines-v1:sha256:2f6f4e423e72de6cfb547146ff13fc28c944dd3300008dbfb2d649978aec86cf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWFmZjdjNGRkZmFjZWFiZTM5MGYzNTJlMzY1MDQ3ZDU0OGEzNGFkMDcyMzlkM2FlMzNiOTkwODg3NDc5MzMyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY4NjU5M2UxZjk5MjEzODRkYTI5ODcxYmJmODRmZTg0ZTA1ZDMzNDJlZjM0ZjJhYzdhNDU1YzkzOWE2NTFhZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGViMjFhNjEzZTYzMmZlN2MzMGM1ZTk2ODY0YmY0MjBlNjk1ZGI3OTkxZjY1OTVjMTIxZWNhMDQ2ZDU3YWY1MCJ9"
+        },
+        {
+          "resource": "repo://test/mcp-config.test.mjs#L84-L92",
+          "version": "repo-lines-v1:sha256:48fae71e08ba23a544b32d4f5d4e17d1121ede37867b5e85aec3e07a8ad11fdf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGRkNTRkZWExYjA4MTE3NzQwMzYwNjgxODdjZWIxOTY0ZDE2ZWE5ZmZhNWUwYTk5Mzc5NTMyNWFiMzA3MTMxOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjJiYjRjZTgwNjAyZDc4ZjU0MTQ0ZmNiNzMwMTRiMjAzYTI5YmUzMWNkNDEyNjA0ODg2MTMzNjYwN2Q5ZTI2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdhZDYwYzAyNTAyZTkzNzdkOThkMmViZDg0M2JjNzc3NDFlMzY1ZTM0OWJhODBkYjJhYWMzZjFjYzc3NjBmMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d119b9c727634eb48fea961bd53e893c",
+      "statement": "release 测试用 npm pack 的文件清单钉住发布边界：manifest 快照必须随包发布（否则用户装的 launcher 永远走直通模式），测试与依赖不得进入 tarball，安装器运行时需要的模块必须齐全。",
+      "evidence": [
+        {
+          "resource": "repo://test/release.test.mjs#L23-L68",
+          "version": "repo-lines-v1:sha256:ca1b829f795c3c9a66580e9f00c7d5d181aae0ebe0250aea30e0fb8c35dbad4a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNzU5OTdmNGQ2NjQxMGI0ODBkNGQ1ZmMyYWM4MDkzNzE0Yjc2ZTliYTRmZDg5NDQ4YjBhMGNiOTY3MzI0ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmZmY3NWNjMTczNjI5NzU1ZmVkYjJkYTA2MDI4MTZmYTBiNDVmNzVkNzZkYWJlZmMxMTY4MGYxOGYyNWUwY2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmNGQ4ZTZhMGEwNDhmM2NhZThlMTdlOWI2ZDk3MDRhZTQzNzNkYzZhZTY1ZjY0MTRlMjkxODliZmM0MGUwZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzZGRlZjcyNDc4NmI0YWY0NWFiN2NhZDgxZDM3N2FlNTQzYmI3ODQxMjk2NTY4ZmI1MjI2OTk4YWVjMjE2MzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4b74d5f4b4344054be5388486bb7d4bf",
+      "statement": "e2e-install 用 describe.each 对全部 28 家宿主跑安装卸载闭环并断言卸载后配置文件逐字节还原，另有跨宿主不变量测试覆盖护栏零改动、配置格式保真与共享技能目录不连带删除。",
+      "evidence": [
+        {
+          "resource": "repo://test/e2e-install.test.mjs#L30-L215",
+          "version": "repo-lines-v1:sha256:22c17ad6329f0013c39ff6b5bfe547dbaf1e4f3d46d80124703469790c35dc5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTg2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyN2FjODk3MzFmZjQwMzVkMjNhMmVhNzI1YzljOTY3NWNjMTY3N2ZiYjA4ZjE0NGUwMjlmYTg5NGM0MWJhMDFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlNjU0MzJjOTNlODA2ZDExY2NmZjYzODUyN2Y1ZDc5OGRiYzFhODhiZTcxZjUyMzI4Yjg3MmRiMDk1ZWE5Zjk3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiODhhODM1YTY0NWJiOTc0OTg0MzQxNDA5N2I2MTYyMWM3MjBlOWJlMjA0MjdiODY2YjU1NDBhOTBhOTA3NjFkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwOThiYjU0ZDdhNjBiMTA0NDhhM2Y2NjllODllODliNmFhOTZmMjdkMTMxZDZhZjdjMzZhMTQwZWY4YmVlMWJjIn0"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

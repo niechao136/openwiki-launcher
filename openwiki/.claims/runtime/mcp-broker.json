@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f4e3eb3535f167ba02dcb31f8c043a08e1121e08396b979aa0dfd9e74a460e8a",
+  "claims": [
+    {
+      "id": "claim_2276e9005072471495bf3e07bbdbeaa5",
+      "statement": "createBroker 的职责是能用录下来的清单回答时就用（握手因此是毫秒级）、需要真活儿的事情排队等后端起来、每次失败都以宿主能据以行动的有界工具错误呈现。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L9-L15",
+          "version": "repo-lines-v1:sha256:76d945658c7c94f901a55b08324c55e8626ec2b3d4de60e034dd5fed1580c3ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVjNDEzZDM1MGU5MmEwNTE1NTBmOWU5ODJhYmY2ZmFiOGRjYTgyMjA0NTJiMTJhYzZhMWI5OWQ2OWYxMmE4NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTZlMzBkMjViNmNiYjQ2ZmFiMWU2ZjM5ZWRiOTE0MmMzZWJiYWE2Yzc1Yjc3ZTk0NDJhMDEzNWQwMzFmYTcxMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzJkOWRlY2Y4M2EyN2ZjZDAwMzdlMjhhOWM0YTgzMDE1ODIzMWNhMzY1NjdhZTAzNGU3NmQzY2Q2MzZlMTJiOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_95db03dab1fa46caaa8838323e6e82f8",
+      "statement": "broker 有三个独立的时间预算：排队 120000ms、单次 tools/call 180000ms、后端启动失败熔断窗口 30000ms，三者独立才能区分「起得慢」「调用慢」「根本起不来」并给出可执行建议。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L1-L7",
+          "version": "repo-lines-v1:sha256:da085354949c4cf0473185d04d01b3c6906105e3633ca00c952a2280459b3d2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGVlNjNiNGI5NzAxZjk1Y2JkNjdlNzBjMGZjN2I0YjUyMDk4ODI3YjM2NDU3ODVlYzAyNzQ0YTY1MjNlYmE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDc4Nzc1ODI3MjU5ZTZlNjhiMDE4NTEyM2Y1ZmQ5ZmZkYTJjYzkxNWYyYzMxYWJlNmQ5ODJhYzAwYjViNWY4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmQ0OWUyYzU1ZDNjNTQ0MTBjYWQ1NGRjMTk1NDRhMzE2MGZhZTg0N2ZiNTkwZDJlYTc2Nzg0YTc4NDU3NGM5MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fd05485c61904818b51b1d2a232428c2",
+      "statement": "broker 对 initialize 在 manifest 存在时直接用快照应答且不启动后端，manifest 为 null 时才走 dispatch 等待真实后端。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L228-L235",
+          "version": "repo-lines-v1:sha256:3c3856451ebe6595a0dd0ff4f5be77dd699fdde9a4b5668d3d3ccc3731d3e441:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWMxMWM5NTY2NDk4NzRkOTBjMGQ4MjQwNTljYTZmZjMyODI3YzczOTFmYTJjYWRjNWU4YjUyNWE1MjJiOWVhMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDlhNDllODgwZmFhMmQ4YjljNjQyZWYyNTY2NTkwZTc5NzU5ZDA5Mjk5MzY0MWFiMDMwY2M5Yjc4Y2I0ZDFjNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c362ed550e26497f8a397c56ddbfbb7b",
+      "statement": "tools/list 的快照快路径条件是 manifest 存在且 supervisor.current() 为空（后端尚未启动）；后端一旦启动就以真实清单为准，避免给宿主一份可能过时的工具清单。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L237-L244",
+          "version": "repo-lines-v1:sha256:8e2f5889564ea40d5c351f8c09d347c0fe9a5ad738677a5cbabe936cbe20689d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzE1MWVhYzA3ZDYxNDU0ODcyZDFjZjlkZTA2ZmMwMTlhMzI0MmJmZjc4MWUxYTE3ZWU3OTJmNTM0YzAxYWNjYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODFhYzI3NDZlYzUyZDdmN2UwMzAwNGY1MDIyMTQzZGRiZGYzYTg0ZDU3NGVlM2JlOWE0YmY5ZGMxNjQ1ZWM3ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_133970b9b57e4042bbc2249391296813",
+      "statement": "无 id 的通知被转发给当前后端会话，后端未就绪时只 debug 记录后丢弃；未知方法回 JSON-RPC -32601；被行解析器标记为 invalid 的非 JSON 行只 debug 后忽略。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L221-L226",
+          "version": "repo-lines-v1:sha256:28fd4ed6defd8b304bb473f5aa892ed8a33d166f17e0f4fb7acb498765da4da2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZmNzMyMTIwYzY4NGI4NmZiYTliMzI3ZjJiNzk5OWFmNDE0MzdkZTgxZjVkN2RjMTc1NjgwOWVhODNiMGFjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM4YjU3MzA4NjViNjM4NzE1YjdlODY5OGU0NGI4YzBiYzJmY2FkYzhlY2U3NzhiZmUyYWU4YWRiOTIyN2RkNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_46749e346b2a4e2e82a649142ad6a8e6",
+      "statement": "启动失败只在 30 秒冷却窗口内快速失败，过期后重试而不永久闩死，因为 openwiki 冷导入在受扫描的文件系统上可能超过任何固定预算，永久闩死会让长达数小时的宿主会话里后续每次调用都失败；now 是注入时钟以便测试推进。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L42-L46",
+          "version": "repo-lines-v1:sha256:b0ec161dce246f7cec9fff8b1ac483e557aa285629eb30deb0b6df2e1b3a0107:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjY2ZWVhZTA2OGRlNzA2ZTMyYzEwZjNmN2M1YTBiN2MzNjA0YTUyYjJjMmMyZmJmYWZiMzIyMTUzN2JkZjE5YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTM0MzY1YTE0NTNlYWVjNmYwZGViNjI1ZmQxNGNmYjIzYzkwNDY0N2JhYTFkZWY5ZDg5NjEyOTRlOTUwYjY4ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWVjMDkzOTZmMzJkNmM1ZTdiNzYzOWE2YWNiYTEyOThlMTg1NWZjZmZkZjJhYTI2ZDEzZmQxNGM0OTkyNmNmNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTAzZGZkMmNmMWNhNDA4YTRmZjVhZDJiYjRhYTVhM2YzNTNjZjkzNzI2YTRiNWQyODkxNjliMTI1ZGNhYmQyOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5c35dda43d794e68a0626caa330ea95e",
+      "statement": "broker 把所有失败映射为带 isError 的工具结果（content 文本）而非 JSON-RPC error，因为工具错误能被宿主直接展示给用户并据此重试，JSON-RPC error 通常只进宿主日志。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L144-L194",
+          "version": "repo-lines-v1:sha256:0a02521059736ba987739e751b7fbcc5a9ab34d346e276985c563a0ba2ecdc7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzM1MzVlNmU2NjA1OWY0ZTVmZGIzM2I5MWYwZjA1ODA3YzA5MDJjYjU3Yzc2MGE3ODAxMzA5MmE4Y2UxYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1YjVlNjljYzQ3YzgzYWJhZmMzZmQyYmIzNWFjNWQ3YTMwNTY3NWUxNzAzYzk4MGY5ZGI5ODNmMDNhNjllNTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjZGVhOGJlODQzZjQzNDdmNzA1Zjc5ODA0ZDcxNDVkYWJiNjRhZmZmYzJhNjZjMTczYzZmZjhjNTVlMTMzZTcifQ"
+        },
+        {
+          "resource": "repo://src/broker.mjs#L50-L55",
+          "version": "repo-lines-v1:sha256:9ae12a6b0d652ca64f5d3dfa9afd02c7bc5e1109078e2c42be0ff0353e0bceca:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdhYjY0YWZmN2U2MmExNGE0MDFkYmY2ZWZlOWY3ODIwYTIyMDIxNzkzZGEwZWYyOWM2MjRjNjlhMjY3YThmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTEwNTljOGNmYjVhMDcyYzZmNjRkZDNkMWJmZGJjMzU2ZmJlYzkzYWVlYzg4NzkxZGE3ZWRiYTg5YzA4ODVkZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTAzZGZkMmNmMWNhNDA4YTRmZjVhZDJiYjRhYTVhM2YzNTNjZjkzNzI2YTRiNWQyODkxNjliMTI1ZGNhYmQyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQ4NTg4MWIyMDI5M2I1ODViNDc2Yjc0NmQzNmRhYTk4MzZiZTQ0ZjM2ODYyOTVkNzNiZDBlODk1ZDFkNDIwMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9f39de0ce0444c4ea7d2282b9aa9b50a",
+      "statement": "调用失败时用 session.isRunning() 判断后端是否已崩溃，只有确认进程死了才回复「后端已重启，请重试」，否则回复「调用失败」加原始消息。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L186-L193",
+          "version": "repo-lines-v1:sha256:20318db2edf5f4f5533950d53535a343510c267ea1b66a30053987952ba15c47:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmVlMDExOGY1NTBkNTIzZDg4NjJiMTYwYjk5MWJlOGVmN2EwMzc5NDI3YzA4MmEwZDQ2Nzc4MzhiMDZhMDBiYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQyOGJkZWI5MTU4ZTUxNzIwMzY4YThlMTc4YmYyNWU2MDk4NTVmMWFlZjBlZmI3MDhhZTFlODU0ZWUxNTIyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWQ3MTY0OTkyMGE0ZjNkOWFhOTZmZWRjN2YxZTgyYTU2NjgwNGVhMmFmNTk1YzVmNWNhZTQ0MWRjNmI3ZjlkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTg1MDhiNmNiMDU4OWFiYTc1MDMyMDJkZTJjOGY4N2VkOWIxOWNkNTg2NTNmZDAxYTNlNjc1ZTNhYjdiNTk2NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e628a51e1474070b38d4e5305f19f12",
+      "statement": "dispatchSafely 为不 await 的异步 dispatch 兜住异常，因为未处理 rejection 在 Node 22 上会终止整个 broker 进程、让宿主丢掉整个 MCP 会话；发送本身失败也被吞掉，因为宿主管道已断时没有可报告对象。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L197-L209",
+          "version": "repo-lines-v1:sha256:72d1fd4c419ad4d433857c4b39bd3bfe30029c6b431c2ace4750ea39e83bbb62:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwZGQ2NzBlNWYwMDg2ODgxOWM3NjA1MWNkOWRmMThhYzQwMjY0ZjI0YTcyYzQ5YmIyZGVjMTRmZTg0ODhmZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4NTA4YjZjYjA1ODlhYmE3NTAzMjAyZGUyYzhmODdlZDliMTljZDU4NjUzZmQwMWEzZTY3NWUzYWI3YjU5NjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3OWM4OTNmYTE1ZWE2MjU2YzhmMTBlN2IxNTYzYjczZDIyNDJkZGJkN2JjZmRmM2FiOWFhMzk5ZjhhYmJiYTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5a758dc96db44f3ba0091ce0d5025b3",
+      "statement": "清单漂移检测 sameToolList 同时比较工具名与 inputSchema 的 JSON 串，因为 broker 把录下的 inputSchema 交给了宿主，schema 变化即为漂移；告警只发一次且最终以真实后端清单为准。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L107-L131",
+          "version": "repo-lines-v1:sha256:4c73f8e034757c847bd107cb202ffa1c1e41172ca284886e29892f11e27971de:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0N2VhNDI3OTRhYmVkZjI5MjcxNmZkNjJkODI0MjY0ZjU4N2IyOWM3ZDFjNWI0OWVjOThkZDgwN2UzMjdlNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0ZGNhMDc5OGFlZjQxMWViYjhlYTU4MjNkNjU1NTU4MGQ5YmZhNGJiZThkMWQ1MzFkODJlZDY4YTNiZmZlYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3NTJiZjAzZGI3MzYyZGRjYjAwOWVmMzNjZTk5ZWQ0MTRiMzBiNmI5MWZlNDM2NDFhNzlmMDEyMTQ2MjVlNDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d7130fc40870458e81c7c982acb0f402",
+      "statement": "宿主断开时 handleClientEof 清空全部 deadline 定时器、取消所有在途请求并停止后端监管器，使等待中的 promise 立即以「宿主已断开」结算而不是吊到进程死亡。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L254-L260",
+          "version": "repo-lines-v1:sha256:b684abe8c27a7cfe28cad8c85713a6c2d0d4a6a79a31adbb4fa371e96fe037b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGRhMmRkZmRiNGJiOTE0ZTgwNTgyYTY5NDg5ZDgzZWJiZGNkZDJhNjg3ZTM1YjYxNDllZDkxZGRiOGNiYjVhOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTg3NGYwNTUyZTg2ZjM3MmNmMjczNGU5ODFhMzRlZTNkZDVlODI1NzdlNzc2ZDc1YmQ3ZDQzYTkzNGU2NDdjZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmQzZDBjZmQ0NjNiMThiM2E2MmU1NjFiNTg0OGYwYWRjOTg1MWQ5ZjdhZDE4MjZmZTk2ZTkxZjFhNjBjZWM2YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGFlOTIyMTFmZGUxMzdiOTEyZGExOWJmZjc5Y2U4N2QxMzIyOWI0YjU1YTQ0Y2I3Yzk1MDMwZmRkOThhYjk4OCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}

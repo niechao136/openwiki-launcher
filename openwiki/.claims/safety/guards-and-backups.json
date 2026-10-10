@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:9a2047d2b5a34dc46b6c7271dc2e428b1578743f918ee3fb457c725dedf33074",
+  "claims": [
+    {
+      "id": "claim_3b217c4957534460b3f6a3867affb008",
+      "statement": "isSystemDir 按平台取系统根（unix 九个固定目录；win32 从 SystemRoot/ProgramFiles/ProgramFiles(x86)/ProgramData 四个环境变量取值并带默认值），判定路径是否落在其中；该拒绝没有 --force 绕过。",
+      "evidence": [
+        {
+          "resource": "repo://src/guards.mjs#L13-L39",
+          "version": "repo-lines-v1:sha256:413c40b917d63799c41a857a8a0a63422f24072c18b3db4ef13957af8328cb06:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyYzg1NmRjYmZmNDg5OGRmY2Y5NGRmZjMwOTg3NjJmZmIzOGYyY2FlNDljOTkzMWE3OWRmMDdmOGU4YzJhNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyY2QzNDAyMzdiYmYwNThmMWE4Zjc3Mjk1NTliNjVhYjE4M2M2YWQyMzM1YWFmNzQ2MjU1MDhlMGMxNzA4ZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkZGEzMmZhZDRlOGEzYjU5ZWFjMjRjNzljZWZjOGRkODM5MWMyNWEwMzE5OTIzNGFmOTVlOTc5N2Y0ZmQ2YmIifQ"
+        },
+        {
+          "resource": "repo://src/guards.mjs#L86-L118",
+          "version": "repo-lines-v1:sha256:3d2f41c5f0f6e3d3917d64d8be366b0f928feb1f63bb302e106082298495c10d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyZDk0NGViMWRiZmUyMDJjMzQ0Y2FhNGQwMTY3NTMzZmYzNGM1ZmUwZWVhMjg3NDU2YTQ3YmU5MDViYmE3NzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiZTI1NGFiODhhNjg5NzI4ZTRiYmFlODRmOWQzZjhkNjk1YjY5Yzk1OGE1Y2YwMGMyNTg3YWUwN2QzNDg0MmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhYTE3ODVkMjI5ZWVmMmQ0ZjBlYzFkYjJhNmJiYmNmNTNlNzQ4YzBhZTEyNTliMzc0NGJiODMyMmEwYzQ4MGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e58ee81899bc47e69bbbd16b35c6059c",
+      "statement": "系统目录判定前有三条放行规则：home 及其之下放行（主目录另有护栏）、tmpdir 及其之下放行（macOS 的 TMPDIR 落在 /private/var 会命中 /var 规则）、文件系统根与 win32 盘根拒绝。",
+      "evidence": [
+        {
+          "resource": "repo://src/guards.mjs#L71-L118",
+          "version": "repo-lines-v1:sha256:7ae8494acec51283168bff52b11534b605af7a01962e26164e4f32ebc981f078:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4ZGQ2ZGM1MGFkZWU1OGQxZDdlNzc2MTdhMzM0NjgwZWZlNmZlYjdmMjk2MjU2NTk2OTlkZTRmMzY3NDk1ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhYTE3ODVkMjI5ZWVmMmQ0ZjBlYzFkYjJhNmJiYmNmNTNlNzQ4YzBhZTEyNTliMzc0NGJiODMyMmEwYzQ4MGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_995f8cfd846e435f9ef4f2e61ec1e8c0",
+      "statement": "isHomeDir 只判路径是否等于主目录而不判其子目录，因为该判定的语义是「用户其实想装全局却在一个项目语境里跑」，home 的所有子目录并不可疑；这一条可以用 --force 绕过。",
+      "evidence": [
+        {
+          "resource": "repo://src/guards.mjs#L120-L135",
+          "version": "repo-lines-v1:sha256:f461c9d2cb5fca60a72c04c641262483ce1244c441bf1ee9a22deb0578f44d1e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwMDAyYjUyNGM1ZWJiMzhmYWVlNTBkNDRiYmM4YTU3NTU2NDM3YTYwZDY4MjZlMGUzM2U4Y2MxNzg4ODhiZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmZjU5YTQzOTBiZTZjZjU5YmU3MzE2NmY1MzU3M2Y3ZWIzYWU5OGQ2MzExYzdjNTRkODI3MDc4NWM3MTFlODYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_56115b11ad434a7a9f728e7fa17a48e7",
+      "statement": "护栏把 process.platform、homedir()、tmpdir()、process.env 全部改为参数注入，使测试无需打桩全局即可覆盖 win32 与 unix 分支，因为这套逻辑恰恰是最容易在非 Windows 上无法测试的部分。",
+      "evidence": [
+        {
+          "resource": "repo://src/guards.mjs#L25-L39",
+          "version": "repo-lines-v1:sha256:c59f7a4627b0a2a6e488db3c6c17fe68f08a56e0ecd9d00632233c2a11f49ff8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjYjYwMDhkMmMzOTcxYzcxZDMxNWJhZTJmYWQ3N2E0OWJhYzZiNjNiMThjOWNhYjEwODI4YTVkNmM5YzE3NWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkZGEzMmZhZDRlOGEzYjU5ZWFjMjRjNzljZWZjOGRkODM5MWMyNWEwMzE5OTIzNGFmOTVlOTc5N2Y0ZmQ2YmIifQ"
+        },
+        {
+          "resource": "repo://src/guards.mjs#L5-L11",
+          "version": "repo-lines-v1:sha256:b68a367088b39082c1ddfa815f26e0406503c69ae7cbff2982f71b942ed20459:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTY3NDJlMjc4NGVhOGRjNzMyOTBjMWViYTk4NjViYTczZTI5MjgwNDQ5N2Y5NjZkODcxYWVjMjE0NjAzNjg1YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzA2NmU0MDc1MzQxNjBkYjI0NTY3ODFmOGMyMTk3ZGE1ZjY5MzQwMmY1Y2FhNTIzMzk2YjU0YTZkMGE4YzIyNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_608487e6d111409997447f3b18e03e37",
+      "statement": "路径比较前统一归一化（分隔符转 /、去尾斜杠、win32 小写），且比较时两侧都做 realpath，否则 macOS 上 /var 与 /private/var 会被判成两个不同的地方。",
+      "evidence": [
+        {
+          "resource": "repo://src/guards.mjs#L112-L117",
+          "version": "repo-lines-v1:sha256:679449ce1463de0ef19b8b34bba704b66da74431de8324570a2b7893ca8dbb7e:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzA3M2RlYTlmMzU5OGMyMjJjOWU0MGY0NDFlMjcwM2U2MWM4ZjI1Zjk4ZGNmNmUwYzY0MDU1NDgwOTJlZjY5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWE1MjQ2YWM5NWMxMzZhMWY0MzExN2IzNGQyZTE2NzEzZTQ1ZjUyOTI1NTdhOWU3ZTA0M2Y5NDU1NjAxY2NmNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODYzNjNiOTM4OWQ0YzY5NDU1NTZiN2MwZTRjZjE2OWM3ZmFiMWVkZTk5M2VmYmUxNmUyM2JkYzllMTFjY2E4NiJ9"
+        },
+        {
+          "resource": "repo://src/guards.mjs#L56-L69",
+          "version": "repo-lines-v1:sha256:368c02960d095611184952c74e8ca3b12dd4f864bf25de1dc12dc4f9558d17fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2OGY4YmY4YzM4NDZhZjZiYjI4YzQ3NWRiZjQzYmZiODA5N2QxYjM4M2FhYzhkMmFhOGUxZTY2MDcyY2I2NWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4576e382524f4d1e8f86dae0fdbc9c32",
+      "statement": "退出码 2 的含义是本次安装没有写入任何文件：runInstall 在任何写入之前检查 guarded 条目并整体中止，被拒条目在执行阶段被拦掉而不是跳过单个文件继续写别的。",
+      "evidence": [
+        {
+          "resource": "repo://src/install.mjs#L96-L107",
+          "version": "repo-lines-v1:sha256:e86408e3188972dd5edae109733ec212487b07278466192d1d6665cda9626e4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2YWM0ODRkOGZhNzhhZDZjMmYzZmY3MWZiZDFhZDY1MzkyODRmMjEyMWRhM2FmY2I2NGI2OGYxNDkwMDhlMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3ZmFkNTMxZDBkNTVmZWQ3OWE3MDEyNjZjNWM3MGU0NjBkNjY3ODFlZDhlZTM1MTUwOGI1NGQzNThkOGUxZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmM2VlOGZiYmNlNTNhZDJlZmJlNzI4NjYzZjMzM2M3OWI5ODc4MzAyMmFhY2FhMGQwMGYzYjAzMjM1NWRkY2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ef707ad62fa44c119d0d1f0593e47e10",
+      "statement": "备份文件命名为 <basename>.openwiki-launcher-backup-<ISO 时间戳> 并写在真实文件所在目录，理由是跨卷 copy 会失败且与原文件同目录便于用户查找；原本不存在的文件不产生备份文件，只记 existed 为假。",
+      "evidence": [
+        {
+          "resource": "repo://src/backup.mjs#L59-L71",
+          "version": "repo-lines-v1:sha256:cc22abb83759409ce92d424de88890931f9a3333fb8052e3e54cb1d674fa3c5a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNmUyZWY0ZDkyMzczMmUzN2YyODYwMGZiNGI5YTU2ZDlkMTZiN2JlZTBlYzQ4ZDIwYzNlMWM5ZDRkMTUyMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwZGIwYmI1MGI4ZTY4NjM5YmQzNGVlODM3ZGMwNGJiM2QwYzM1NjQ4ZjQ2Y2U2NGRiYWNkYjVlZDJhZWY1ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhZGJmNDUyNTg1MzY3OWI4MTQ3YmM4Y2U1OTQ3YmNkY2QxNWMzOGQxZjI0YTdkNmE4NmZiOTA3ZTI2MDRmMGUifQ"
+        },
+        {
+          "resource": "repo://src/backup.mjs#L6-L16",
+          "version": "repo-lines-v1:sha256:906413f1ee53b190e6237cffa6f68647ea7277f138ff79fe38b4026cc94503d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllY2VmZmFkM2UwZTA0OGJkOWIzYzJjZDg4NDU4MjQxMDVjNmIyODlmMzlmMmM3Nzk2NjhlYWIxODJlZmY2MGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmOWVlOWEzMmEzNmE5NzgxNzk4ZTZiNmJhOWY0YTQxOTU2NjU5ZWU2NzVmMWY4OWM4Y2UxMWU4MTA3ZTNiNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyOGVhMjIxM2U5MWZjNmNmMGNiNTlhNDI3MTdjNmE2MmYzMzkyZjQ0ODgyMzliMjYyN2IwYWJhYzQ4NDE4OTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c73cd94341ee4eaea45bb4ccaf42c21a",
+      "statement": "resolveRealTarget 解开符号链接得到真实路径，避免把 dotfiles 软链替换成普通文件；目标尚不存在时逐级上溯到最近的已存在祖先的 realpath 再拼余下段。",
+      "evidence": [
+        {
+          "resource": "repo://src/backup.mjs#L18-L49",
+          "version": "repo-lines-v1:sha256:1c056f11b25d9fa860618d85c3ec565e49667dffc61f9bc099f33ebb84b551f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyZGY1ZGU1Y2E2ZWUxZTI3ODY2ZjA4ODRlNzBhZmIxMmY0YzQyY2RlZTc1NGMyZmY0NmU0MDIxNGM4YWUyOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwZDJhMDhhYzZlYjJkMjE2MDJlNmU5NjVlOWU5NTY0MzliODgzMGMwNmY2OTYzMzdlOWU0MWVhYjYzNzc1NDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea033a00d7e84d69adf58ab756be4a56",
+      "statement": "rollbackAll 逐项恢复（原本存在的复制回来、原本不存在的删掉），单个失败不中断后续恢复，最后抛出汇总异常，避免用户同时失去文件被改坏与文件没恢复两件事。",
+      "evidence": [
+        {
+          "resource": "repo://src/backup.mjs#L73-L101",
+          "version": "repo-lines-v1:sha256:81ee48fea84b0fc5c65140724e4bfadae69e9084d39fe134f8e03b5251dd477c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMGIzNmFhNzRhNTliY2Y0YTg4MTg1ODM3ZjY1OGFmYWYzNjQ2ZWZmMmJiMTZjMzkyOGQwZTkzMzVlOTQ1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0MjA3NDIzYTk1ZjIzMTE1NzZiMjAwZGZkMGU5ZmVkOWY1MGQ3ZjllZjJmMWVkNWQ0OWNkOGRmNjIzNTJmZTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-10T08:12:25.306Z"
+  }
+}
