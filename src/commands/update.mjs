@@ -18,7 +18,7 @@ import { isValidVersion, versionDir, writeActiveAtomic } from "../versions.mjs";
 const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
 
 /** npm 执行器契约：所有网络与安装动作都经过它，测试由此注入假件。 */
-function defaultRunNpm(args) {
+export function defaultRunNpm(args) {
   return new Promise((resolve) => {
     const child = spawn(NPM_BIN, args, { stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
@@ -39,7 +39,7 @@ function defaultRunNpm(args) {
 }
 
 /** 交互确认的默认实现：readline 问一个是非题，只有明确的 y/yes 算同意。 */
-async function defaultConfirm(question) {
+export async function defaultConfirm(question) {
   const rl = createInterface({ input: process.stdin, output: process.stderr });
   try {
     const answer = await new Promise((resolve) => rl.question(`${question} [y/N] `, resolve));
@@ -93,6 +93,54 @@ export async function installVersion({ pkgRoot, version, runNpm, logger }) {
     return { ok: false };
   }
   return { ok: true };
+}
+
+/**
+ * 安装一个版本并为它录制快照，落盘 manifest/openwiki-<version>.json。
+ *
+ * update 与 switch 的代装流程共用这一步：装、录、写。任一步失败都带上可诊断的
+ * 阶段名，由调用方决定下一步——update 会问「仍要切换吗」，switch 直接放弃：
+ * 「现在就让 X 生效」是 switch 的明示意图，容不下一个没有快照的降级。
+ *
+ * @param {{
+ *   pkgRoot: string, version: string, runNpm: Function, logger: object,
+ *   writeSnapshot?: Function, hostId?: string,
+ * }} options
+ * @returns {Promise<
+ *   { ok: true, snapshot: object }
+ *   | { ok: false, stage: "install" }
+ *   | { ok: false, stage: "snapshot", error: Error }
+ * >}
+ */
+export async function installAndSnapshot({
+  pkgRoot,
+  version,
+  runNpm,
+  logger,
+  writeSnapshot = generateManifest,
+  hostId = "update",
+}) {
+  const installed = await installVersion({ pkgRoot, version, runNpm, logger });
+  if (!installed.ok) return { ok: false, stage: "install" };
+
+  let snapshot;
+  try {
+    snapshot = await writeSnapshot({ explicitVersion: version, hostId, pkgRoot });
+    const usable = snapshot
+      && Array.isArray(snapshot.tools) && snapshot.tools.length > 0
+      && typeof snapshot.protocolVersion === "string" && snapshot.protocolVersion.length > 0;
+    if (!usable) throw new Error("快照缺少工具清单或 protocolVersion");
+  } catch (error) {
+    return { ok: false, stage: "snapshot", error };
+  }
+
+  const snapshotPath = manifestFilePath(version, pkgRoot);
+  // manifest/ 随包发布，生产环境里一定在；但被清理过的安装没有它，
+  // 而 writeFileSync 不建父目录——没有这一行，最后一步会炸掉。
+  mkdirSync(path.dirname(snapshotPath), { recursive: true });
+  writeFileSync(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+  logger.info(`✓ 快照已生成：openwiki-${version}.json（${snapshot.tools.length} 个工具）`);
+  return { ok: true, snapshot };
 }
 
 /**
@@ -174,37 +222,20 @@ export async function runUpdateCommand({
     return 0;
   }
 
-  const installed = await installVersion({ pkgRoot, version: target, runNpm, logger });
-  if (!installed.ok) return 1;
+  const outcome = await installAndSnapshot({
+    pkgRoot, version: target, runNpm, logger, writeSnapshot, hostId: "update",
+  });
+  if (outcome.stage === "install") return 1;
 
-  // 快照：录不到不阻塞升级，问一句是否仍要切换（默认否）。
-  let snapshot = null;
-  let snapshotError = null;
-  try {
-    snapshot = await writeSnapshot({ explicitVersion: target, hostId: "update", pkgRoot });
-    const usable = snapshot
-      && Array.isArray(snapshot.tools) && snapshot.tools.length > 0
-      && typeof snapshot.protocolVersion === "string" && snapshot.protocolVersion.length > 0;
-    if (!usable) throw new Error("快照缺少工具清单或 protocolVersion");
-  } catch (error) {
-    snapshotError = error;
-  }
-
-  if (snapshotError) {
-    logger.warn(`快照生成失败：${snapshotError.message}`);
+  // 快照录不到不阻塞升级：没有快照的版本以直通模式运行，问一句是否仍要切换（默认否）。
+  if (outcome.stage === "snapshot") {
+    logger.warn(`快照生成失败：${outcome.error.message}`);
     logger.info(`openwiki@${target} 已安装但无快照，将以直通模式运行（首次工具调用等待后端启动）`);
     const proceed = await confirm(`仍要切换到 ${target} 吗？`);
     if (!proceed) {
       logger.error("已取消切换；版本已安装，可稍后重跑 update 或用 switch 切换");
       return 1;
     }
-  } else {
-    const snapshotPath = manifestFilePath(target, pkgRoot);
-    // manifest/ 随包发布，生产环境里一定在；但被清理过的安装没有它，
-    // 而 writeFileSync 不建父目录——没有这一行，升级会在最后一步炸掉。
-    mkdirSync(path.dirname(snapshotPath), { recursive: true });
-    writeFileSync(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
-    logger.info(`✓ 快照已生成：openwiki-${target}.json（${snapshot.tools.length} 个工具）`);
   }
 
   if (!noSwitch) {
@@ -220,7 +251,7 @@ export async function runUpdateCommand({
   }
 
   logger.info("提醒：宿主持有的旧会话不受影响，新连接即用新版本；可运行 openwiki-launcher warm 预热");
-  if (!snapshotError) {
+  if (outcome.ok) {
     logger.info("提醒：若 openwiki 的 skill 内容有更新，重跑 openwiki-launcher 安装器可刷新宿主技能目录");
   }
   return 0;
