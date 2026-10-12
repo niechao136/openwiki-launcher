@@ -164,6 +164,7 @@ versions/，想换版本请用上面的命令而不是 `npm install -g openwiki@
 | 安装退出码 2 | 护栏拒绝了（系统目录、或在主目录里做项目级安装），没有写入任何文件。主目录场景可加 `--force` 或改用 `--global` |
 | 想保留 openwiki 原生安装 | 加 `--no-takeover`，安装器会跳过该宿主而不是接管 |
 | Windows 上后端起不来 | 建议把 Node 与 openwiki 依赖目录加入 Microsoft Defender 排除项，冷启动会快很多 |
+| `update` 装版本时报 ECONNRESET / 缺 Python | openwiki 的新版本可能带原生模块（better-sqlite3），预编译二进制的下载源在 GitHub。用 npmmirror 镜像重试：`npm config set better_sqlite3_binary_host_mirror https://registry.npmmirror.com/-/binary/better-sqlite3`，然后重跑 `update` |
 
 环境变量：
 

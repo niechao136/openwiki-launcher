@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { runUpdateCommand } from "../src/commands/update.mjs";
+import { installVersion, runUpdateCommand, summarizeInstallFailure } from "../src/commands/update.mjs";
 import { readActive, versionDir } from "../src/versions.mjs";
 import { collectLogger } from "./helpers.mjs";
 
@@ -49,6 +49,91 @@ function plantInstalled(root, version) {
   writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version }));
   writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
 }
+
+/** 真实失败的 stderr 形状：预编译下载被重置 → gyp 回退 → 上百行 find Python → notice 收尾。 */
+const GYP_STDERR = [
+  "npm warn cleanup Failed to remove some directories [",
+  "npm warn cleanup   [Error: EPERM: operation not permitted, rmdir '...\\@azure'] { code: 'EPERM' }",
+  "npm error code 1",
+  "npm error path C:\\some\\path\\versions\\0.7.2\\node_modules\\better-sqlite3",
+  "npm error command failed",
+  "npm error command C:\\WINDOWS\\system32\\cmd.exe /d /s /c prebuild-install || node-gyp rebuild --release",
+  "npm error prebuild-install warn install read ECONNRESET",
+  "npm error gyp info it worked if it ends with ok",
+  "npm error gyp ERR! find Python",
+  "npm error gyp ERR! find Python You need to install the latest version of Python.",
+  "npm error gyp ERR! find Python **********************************************************",
+  "npm error gyp ERR! configure error",
+  "npm notice",
+  "npm notice New major version of npm available! 11.19.0 -> 12.2.0",
+  "npm notice To update run: npm install -g npm@12.2.0",
+  "npm error A complete log of this run can be found in: C:\\logs\\debug-0.log",
+].join("\n");
+
+describe("summarizeInstallFailure", () => {
+  it("surfaces the root cause and the mirror hint instead of notice noise", () => {
+    // 真实案例：摘要取 stderr 最后 3 行，显示的是 npm notice 垃圾，
+    // 真正的失败原因（gyp find Python）被淹没——用户无从下手。
+    const lines = summarizeInstallFailure(GYP_STDERR);
+    const joined = lines.join("\n");
+
+    expect(joined).toContain("ECONNRESET");
+    expect(joined).toContain("better_sqlite3_binary_host_mirror");
+    expect(joined).not.toContain("npm notice");
+    expect(joined).not.toContain("find Python");
+    expect(joined).not.toContain("A complete log");
+    expect(lines.length).toBeLessThanOrEqual(8);
+  });
+
+  it("hints at the toolchain when gyp fails without a prebuild download", () => {
+    const lines = summarizeInstallFailure(
+      ["npm error code 1", "npm error gyp ERR! find Python", "npm error gyp ERR! configure error"].join("\n"),
+    );
+    const joined = lines.join("\n");
+    expect(joined).toContain("源码编译");
+    expect(joined).toContain("better_sqlite3_binary_host_mirror");
+  });
+
+  it("hints at file locks on EPERM", () => {
+    const lines = summarizeInstallFailure(
+      ["npm error code 1", "npm warn cleanup [Error: EPERM: operation not permitted, rmdir '...']"].join("\n"),
+    );
+    expect(lines.join("\n")).toContain("杀毒");
+  });
+
+  it("falls back to the raw tail when nothing recognizable", () => {
+    const lines = summarizeInstallFailure("npm error code 1\nnpm error some other failure\nnpm error code 2");
+    expect(lines.join("\n")).toContain("some other failure");
+  });
+
+  it("says so when stderr is empty", () => {
+    expect(summarizeInstallFailure("")).toEqual(["npm install 失败，无详细错误输出"]);
+  });
+});
+
+describe("installVersion", () => {
+  const roots = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  it("surfaces the mirror hint when a native prebuild download fails", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-installv-"));
+    roots.push(root);
+    const { text, logger } = collectLogger();
+
+    const outcome = await installVersion({
+      pkgRoot: root,
+      version: "0.7.2",
+      runNpm: async () => ({ code: 1, stdout: "", stderr: GYP_STDERR }),
+      logger,
+    });
+
+    expect(outcome).toEqual({ ok: false });
+    expect(text()).toContain("better_sqlite3_binary_host_mirror");
+    expect(text()).not.toContain("npm notice");
+  });
+});
 
 describe("runUpdateCommand", () => {
   const roots = [];

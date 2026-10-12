@@ -73,14 +73,73 @@ export function parseUpdateArgs(args) {
  * @param {{ pkgRoot: string, version: string, runNpm: Function, logger: object }} options
  * @returns {Promise<{ ok: true } | { ok: false }>}
  */
+const NPM_MIRROR_HINT =
+  "预编译二进制下载失败或被网络重置：用 npmmirror 镜像重试——"
+  + "npm config set better_sqlite3_binary_host_mirror https://registry.npmmirror.com/-/binary/better-sqlite3";
+
+/**
+ * 从 npm install 的 stderr 里提炼人能看懂的原因。
+ *
+ * 原生模块（better-sqlite3 等）编译失败时，stderr 是几百行 gyp 噪声加 npm
+ * notice 收尾；取「最后几行」只会捞到 notice，真正的失败原因（预编译下载被
+ * 网络重置 → 回退源码编译 → 缺工具链）整段被淹没。这里按根因给针对性提示，
+ * 让用户第一步就走对路（通常是配镜像，而不是装 Python 工具链）。
+ *
+ * @param {string} stderr
+ * @returns {string[]} 逐行日志内容（不带 logger 前缀），总量封顶。
+ */
+export function summarizeInstallFailure(stderr) {
+  const all = String(stderr || "").split("\n").map((line) => line.trim());
+  const joined = all.join("\n");
+
+  const root = [];
+  // 根因行（预编译下载失败、文件占用）优先于泛化的 "command failed"。
+  const rootCause = /prebuild-install|ECONNRESET|ETIMEDOUT|EPERM/i;
+  for (const pass of [rootCause, /./]) {
+    for (const line of all) {
+      if (!line.startsWith("npm error")) continue;
+      // 日志文件路径与 gyp 的 find Python 扫描是纯噪声：前者不可操作，后者
+      // 一刷几百行且结论只有一个（没有工具链）——由下面的针对性提示代替。
+      if (/A complete log of this run/.test(line)) continue;
+      if (/gyp ERR! find Python|gyp info/.test(line)) continue;
+      if (root.includes(line)) continue;
+      if (!pass.test(line)) continue;
+      if (root.length < 4) root.push(line);
+    }
+  }
+
+  const hints = [];
+  const prebuildReset = /prebuild-install/i.test(joined)
+    && /ECONNRESET|ETIMEDOUT|ENOTFOUND|EAI_AGAIN/i.test(joined);
+  const gypFallback = /find Python|gyp ERR! configure/i.test(joined);
+  if (prebuildReset || gypFallback) {
+    hints.push(NPM_MIRROR_HINT);
+  }
+  if (gypFallback) {
+    hints.push(
+      "node-gyp 回退到了源码编译但缺 Python/构建工具链；配好上面的镜像让预编译直接下载成功后，无需编译",
+    );
+  }
+  if (/EPERM/.test(joined)) {
+    hints.push("部分文件被占用（常见为杀毒软件锁定），关闭占用程序后重试");
+  }
+
+  const lines = [...root, ...hints];
+  if (lines.length > 0) return lines.slice(0, 8);
+  const tail = all.filter(Boolean).slice(-1)[0];
+  return [tail || "npm install 失败，无详细错误输出"];
+}
+
 export async function installVersion({ pkgRoot, version, runNpm, logger }) {
   const dir = versionDir(pkgRoot, version);
   logger.info(`安装 openwiki@${version}（npm install --prefix ${dir}）…`);
   const result = await runNpm(["install", `openwiki@${version}`, "--prefix", dir]);
   if (result.code !== 0) {
     rmSync(dir, { recursive: true, force: true });
-    const detail = (result.stderr || "").trim().split("\n").slice(-3).join(" ");
-    logger.error(`npm install 失败（退出码 ${result.code}）：${detail}`);
+    logger.error(`npm install 失败（退出码 ${result.code}）`);
+    for (const line of summarizeInstallFailure(result.stderr)) {
+      logger.error(`  ${line}`);
+    }
     return { ok: false };
   }
   return { ok: true };
