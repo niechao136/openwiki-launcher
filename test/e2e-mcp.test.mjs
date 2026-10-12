@@ -90,7 +90,7 @@ function startHost({ env = {} } = {}) {
     return false;
   };
 
-  return { child, request, waitFor, backendPid, backendGone };
+  return { child, request, waitFor, backendPid, backendGone, pidFile };
 }
 
 describe("openwiki-launcher mcp (end to end)", () => {
@@ -104,9 +104,13 @@ describe("openwiki-launcher mcp (end to end)", () => {
       // The wall-clock bound covers this machine's process startup, not the
       // broker: Node takes seconds to launch here. The behavioural proof that
       // no backend was consulted is the server name, because the fake backend
-      // would answer "fake-openwiki".
+      // would answer "fake-openwiki". The bound is 5s (not 3s) because the
+      // broker prewarms a CPU-burning backend child during startup and vitest
+      // runs files in parallel: on a loaded machine the parent's own launch
+      // stretches. A regression that made initialize wait for the backend
+      // would cost tens of seconds and still fail this bound.
       expect(response.result.serverInfo.name).toBe("openwiki");
-      expect(Date.now() - started).toBeLessThan(3000);
+      expect(Date.now() - started).toBeLessThan(5000);
     } finally {
       host.child.stdin.end();
     }
@@ -173,6 +177,60 @@ describe("openwiki-launcher mcp (end to end)", () => {
       const response = await host.waitFor(6);
 
       expect(response.result.tools).toHaveLength(10);
+    } finally {
+      host.child.stdin.end();
+    }
+  }, 30000);
+
+  it("starts the backend in the background without waiting for a tool call", async () => {
+    const host = startHost();
+    try {
+      host.request(1, "initialize", {});
+      await host.waitFor(1);
+      host.request(2, "tools/list", {});
+      await host.waitFor(2);
+
+      // No tools/call has been sent. A lazily started backend would never
+      // spawn, so the pid file staying absent is what makes this test red
+      // before eager prewarming exists.
+      const pid = await host.backendPid(10000);
+      expect(pid).toBeGreaterThan(0);
+    } finally {
+      host.child.stdin.end();
+    }
+  }, 30000);
+
+  it("keeps the session alive when the eager backend refuses to start", async () => {
+    const host = startHost({ env: { FAKE_REFUSE: "1" } });
+    try {
+      host.request(1, "initialize", {});
+      const initialize = await host.waitFor(1);
+      expect(initialize.result.serverInfo.name).toBe("openwiki");
+
+      // The prewarm rejection lands here (spawn fails, one retry, ~1.5s). A
+      // fire-and-forget promise without a catch would take the process down
+      // as an unhandled rejection; the session must survive it and answer.
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      host.request(2, "tools/call", { name: "openwiki_search", arguments: {} });
+      const call = await host.waitFor(2, 30000);
+      expect(call.error !== undefined || call.result?.isError === true).toBe(true);
+    } finally {
+      host.child.stdin.end();
+    }
+  }, 30000);
+
+  it("does not pre-start the backend when LAUNCHER_EAGER_START=0", async () => {
+    const host = startHost({ env: { LAUNCHER_EAGER_START: "0" } });
+    try {
+      host.request(1, "initialize", {});
+      await host.waitFor(1);
+      host.request(2, "tools/list", {});
+      await host.waitFor(2);
+
+      // Well past the fixture's startup delay: with prewarming off the backend
+      // stays unspawned until the first tools/call.
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      expect(existsSync(host.pidFile)).toBe(false);
     } finally {
       host.child.stdin.end();
     }

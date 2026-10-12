@@ -132,6 +132,8 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 ## 工作方式
 
 - 宿主发来的 `initialize` 与 `tools/list` 由 `manifest/openwiki-<版本>.json` 快照即时应答，不触碰后端；
+- 连接建立时即在后台预热后端：握手与清单毫秒应答的同时，openwiki 的冷启动（Windows 30-50 秒）
+  与宿主连接后的操作重叠，首个工具调用大概率已就绪（`LAUNCHER_EAGER_START=0` 可关闭，恢复懒启动）；
 - `tools/call` 在后端未就绪时排队（默认上限 120 秒），就绪后透传；
 - 没有匹配快照的 openwiki 版本会自动降级为直通模式：不再即时应答，改为等待真实后端，
   宁可慢也不给宿主一份对不上的工具清单；
@@ -142,7 +144,7 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 | 现象 | 处理 |
 | --- | --- |
 | 宿主仍报 `-32001` | 先跑 `openwiki-launcher warm` 预热，再让宿主重连 |
-| 首次调用很慢 | 正常：那是 openwiki 自己的导入时间。之后调用是透传。安装时的自动预热只能让 OS 文件缓存热着，隔了几小时就指望不上 |
+| 首次调用很慢 | 连接时的后台预热没盖住：调用会排队等后端就绪，耗时是 openwiki 自己的导入时间，之后调用是透传。安装时的自动预热只能让 OS 文件缓存热着，隔了几小时就指望不上 |
 | 预热超时/失败但安装成功 | 预热是优化不是安装的一部分，不影响退出码；可单独跑 `openwiki-launcher warm`（上限 60 秒） |
 | `doctor` 报清单差异 | 按提示运行 `npm run manifest`（或在本仓库 `node scripts/gen-manifest.mjs`）重新生成快照 |
 | `doctor` 报「MCP 命令指向」不一致 | 你升级过 node，配置里存的是旧绝对路径。重跑 `openwiki-launcher` 即可 |
@@ -157,6 +159,7 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 | `LAUNCHER_DEBUG=1` | 打印详细诊断（stderr） |
 | `LAUNCHER_REAL_SMOKE=1` | 启用真实后端冒烟测试 |
 | `LAUNCHER_BACKEND_CLI` | 覆盖后端入口，仅供测试与排障使用 |
+| `LAUNCHER_EAGER_START=0` | 关闭连接时的后台预热，恢复懒启动（首个工具调用才启动后端） |
 
 ## 当前范围
 
