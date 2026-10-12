@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c76913c61d5b428cc1ded255780612a2feaefc6296f2107da10eab978a1da7f8",
+  "pageVersion": "sha256:905f34b8467b1f01f8507a9be267d41893dc726ad2da65434e0932080383ac33",
   "claims": [
     {
       "id": "claim_f451860d2cba4f2490fd7079582e0dc4",
@@ -11,18 +11,18 @@
           "version": "repo-lines-v1:sha256:3558251c9470b6305dc59a80d57107cf77d38a459db136e842589c08867e2caf:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU5YzQ3ODcyYjcxZjEyNTg5OTQyODkyNDY0ZTc2NGMwZGIzNTBjMjBiNzIyMjg2NDU2MTVjYzM2ZTBhMDcyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRiMzZmZDE4MjAxZTVhMWNiZjlkY2FiNTA5OTZjNDA5NWE4NTQzNmY0NDhlNzk4NzgxZWU2NGQwNTVlMTBjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         },
         {
-          "resource": "repo://src/cli.mjs#L75-L152",
-          "version": "repo-lines-v1:sha256:8c8805612fba84299cc3700ec6272171e5426e43e5f67f63d6d4ae09ebbf20e5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxNzMwNDljOTU0MjE5NTEzMDY0NTFmNDBkZDkxOGU5NTRhNzI0MGRjYWE0MjZlMTMyNDNmODQxYTRhMDdiMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3MDY1NWM1ZjM2MTg2YjhiZGY5ODRkMmFiOTUxODRmY2U5MDVmZmJkODQzNGZkYjY4OGJhYjQ4YjlhZjE5MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOTE4NjZlY2Y1MDk3OWM5MzljZWM5NDlkNDVjNmVlM2U3YmVkYTk5ZjA1YjEwNmVlYTZiMTYxNDA0MzYwMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+          "resource": "repo://src/cli.mjs#L82-L90",
+          "version": "repo-lines-v1:sha256:e0ccd1dc24d0b98ea3f1fac04de4ee40efbcc94cbcc527c78e38ad8aa75bb3db:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjE3MzA0OWM5NTQyMTk1MTMwNjQ1MWY0MGRkOTE4ZTk1NGE3MjQwZGNhYTQyNmUxMzI0M2Y4NDFhNGEwN2IwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTNhZjI5OTYxN2E1YWEwMTIwNTBmNmQ3ZDM4MjkyYmYyYmEzZWRiZjc5MTdlNGQ5YWJkYTRlMDc5Y2UwNzQwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzM5MTg2NmVjZjUwOTc5YzkzOWNlYzk0OWQ0NWM2ZWUzZTdiZWRhOTlmMDViMTA2ZWVhNmIxNjE0MDQzNjAwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2UzOWQwN2I0Mjc5MmY1Zjc0NTBiMzUzNTkwZDYyMWQwMWYwYzBiZjNjODg2ZmRhMTUxMDk5NzRlZTE0ZjJlNCJ9"
         }
       ]
     },
     {
       "id": "claim_c11c9bd93eb64175ab2e91c8206986e1",
-      "statement": "main 按固定顺序分发：help/version 先于 Node 版本闸门返回 0，随后 Node 版本闸门在任何子命令之前拦截并返回 1，再依次分派 mcp、warm、doctor、install/uninstall，裸用法（以 - 开头的任意参数）走安装，未知命令打印帮助并返回 1。",
+      "statement": "main 按固定顺序分发：help/version 先于 Node 版本闸门返回 0，随后 Node 版本闸门在任何子命令之前拦截并返回 1，再依次分派 mcp、warm、doctor、install/uninstall、check、update、switch、versions，裸用法（以 - 开头的任意参数）走安装，未知命令打印帮助并返回 1。",
       "evidence": [
         {
-          "resource": "repo://src/cli.mjs#L83-L152",
-          "version": "repo-lines-v1:sha256:afd141c13ac0032620cd9919504bbf157699ea2b1aeb7962487b097e898d7c19:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzYWYyOTk2MTdhNWFhMDEyMDUwZjZkN2QzODI5MmJmMmJhM2VkYmY3OTE3ZTRkOWFiZGE0ZTA3OWNlMDc0MDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3MDY1NWM1ZjM2MTg2YjhiZGY5ODRkMmFiOTUxODRmY2U5MDVmZmJkODQzNGZkYjY4OGJhYjQ4YjlhZjE5MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkMGFkMDYzMjY0YjNiZWY3MWEwOWQyYzdiNWU3MTFiM2E2YjRjMTY2ODI3ZDU1NWMxMWQyN2E3ZjY4Njk4ZGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+          "resource": "repo://src/cli.mjs#L90-L201",
+          "version": "repo-lines-v1:sha256:8240e99f922504a360ec0107602552660f325b1681e57b931a0ae3ec42f44df3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5M2FmMjk5NjE3YTVhYTAxMjA1MGY2ZDdkMzgyOTJiZjJiYTNlZGJmNzkxN2U0ZDlhYmRhNGUwNzljZTA3NDA3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlMjJmYWE1MzViZDJlYTNkNTJlNzQxZWQ0NTQ0MzViN2ZlNDllODM1ODZlOTQzZDk4ZDgyYmJmYjI0ZDFmNWM1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3ZDBhZDA2MzI2NGIzYmVmNzFhMDlkMmM3YjVlNzExYjNhNmI0YzE2NjgyN2Q1NTVjMTFkMjdhN2Y2ODY5OGRkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNjlmMGViYzcxMGY3M2FlNTkxNTZkZTZjM2RmOWJjMWI4ODYxZGEwZTE4NzlmN2E2Y2IzMGQ0MDJjYTcxYTAwIn0"
         }
       ]
     },
@@ -31,26 +31,22 @@
       "statement": "mcp 命令的 --host 取值必须匹配 /^[a-z0-9-]{1,64}$/u，缺值、以 - 开头或含非法字符直接报错返回 1；该标识的唯一用途是原样透传给后端的 spawn 参数，只用于在 openwiki 侧标记宿主身份。",
       "evidence": [
         {
-          "resource": "repo://src/cli.mjs#L11-L11",
+          "resource": "repo://src/cli.mjs#L16-L16",
           "version": "repo-lines-v1:sha256:70256aef3db7392584f6f22d86a61f611aca00e5c248924576819a6f9c2d974d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzAyNTZhZWYzZGI3MzkyNTg0ZjZmMjJkODZhNjFmNjExYWNhMDBlNWMyNDg5MjQ1NzY4MTlhNmY5YzJkOTc0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzAyNTZhZWYzZGI3MzkyNTg0ZjZmMjJkODZhNjFmNjExYWNhMDBlNWMyNDg5MjQ1NzY4MTlhNmY5YzJkOTc0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWU2MWRiY2ViN2Q2N2Y5YWZjNTg4MWFjNTMwZDhiYzIzNjFmMGRhMWUwMGMxMTYwYmU0MzFlNmI4NGRiOTQxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWVjZjUwOTc1ODNhM2U2NjNmYzc1MDliZTRmYjE2ZWNhN2Q5MzhmNjRkZWViZDM3ZDdkY2IyYmEwODAwMmJlYSJ9"
         },
         {
-          "resource": "repo://src/cli.mjs#L39-L65",
+          "resource": "repo://src/cli.mjs#L46-L72",
           "version": "repo-lines-v1:sha256:496724abc2df3377592f69abea3d99a1e70c940e1301d34f9c876a27a086787d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NTAzNWU5ZmFiOTkzYWRmOWFjMTE4MDE0MDBjZjM3N2VlM2IyYjVmNmRmZjA4OTM3Yzg0YmQzZTdjYjg0ZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjNDFkMjAzZWY0YmY0YmE2ZDUxZTMyOWVkNzlhYzU2NjJkOTk2MjlhZjA2MjkxYWQ4YmVhYzg3ODg4ZDM0NTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiMDliMWJjMGNkYTE2MzI2MjYyMTRiMzNlMjhiYTdiZTlmMTRlOGE5ZTdmYmFmNGQ3MTNlNDIyYTYyODVlMmUifQ"
         }
       ]
     },
     {
       "id": "claim_ae4045f0268f44cc981774353fc2e7cd",
-      "statement": "install/uninstall 的参数解析采用白名单：仅接受 --global、--uninstall、--force、--no-takeover、--bootstrap 五个布尔标志与 --tool，任何其他以 - 开头的参数都返回错误而不是被静默忽略；uninstall 子命令被翻译成在参数尾部追加 --uninstall 后走同一套解析。",
+      "statement": "install/uninstall 的参数解析采用白名单：仅接受 --global、--uninstall、--force、--no-takeover、--bootstrap、--no-warm 六个布尔标志与 --tool，任何其他以 - 开头的参数都返回错误而不是被静默忽略；uninstall 子命令被翻译成在参数尾部追加 --uninstall 后走同一套解析。",
       "evidence": [
         {
-          "resource": "repo://src/commands/install.mjs#L16-L16",
-          "version": "repo-lines-v1:sha256:63c013beeb2df9a61ebdea150b210ad1621e816ed57c92857bb36c7bcd3a2fc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNjMDEzYmVlYjJkZjlhNjFlYmRlYTE1MGIyMTBhZDE2MjFlODE2ZWQ1N2M5Mjg1N2JiMzZjN2JjZDNhMmZjOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNjMDEzYmVlYjJkZjlhNjFlYmRlYTE1MGIyMTBhZDE2MjFlODE2ZWQ1N2M5Mjg1N2JiMzZjN2JjZDNhMmZjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2E1YTE0NDQ5NDEwNjU1YWQwY2NjNjUzZjNiMzc5NWZjZjliNDE1MDIxMjhmYzZkZWNkOTcxZmM0ZTgxOWQyZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTNkMzc2NjQyYTg2MjViNjFhYWQwNTJkZTFmZWM4YjM2NGFlYzAxNGQ5ZGM2OTc4NzFlMzc0MDM1MWQxMWU0ZSJ9"
-        },
-        {
-          "resource": "repo://src/commands/install.mjs#L26-L65",
-          "version": "repo-lines-v1:sha256:340f4c827148655fb8be96c0bd9ded8ea6952033483ba4d32a2dd5e7478e6fc5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMjU1MjU3OWQxOGU3ZjkyODY4NjUxMTU0YTk1MzdlMmY0MzJkODViMTQzM2QwODdjNzQzOTliZTRhMDU5OWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1NDE3MzhiZTIxNmQ0M2E5ODU3M2U1NWViMmYzYWQ4MGE1Y2QxODE4MmZmMzgxMGM5ZjdkODk0ZTJlYjQ1OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMmIyODY3ZmEyNDYyODBhMDI4OWRkODBjNTNmYjU4Nzk4MWVjYWVmY2RjOTcyZTU2YTk3OGI2ZWRkMGIyMTIifQ"
+          "resource": "repo://src/commands/install.mjs#L17-L72",
+          "version": "repo-lines-v1:sha256:a8394faa7fadda7fe39e4a39eeb16c3672365937287283550bb32e053ce5569f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NGMxZmY5MjZiOTE0MTMyZDkwNzc2ZmE1ZGUwNWM3ZDlhMTI3NzYwZGNlNWRlMzEwYzA2N2JhM2I2ZGZlMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkYjEwMWQ2NmI5ZDE5ODFkZTkwOTJjODRiZGY4NWVjZjJlODc0OGE1MTI2M2M2OGUwODljOWY1YjBjYTJiNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMmIyODY3ZmEyNDYyODBhMDI4OWRkODBjNTNmYjU4Nzk4MWVjYWVmY2RjOTcyZTU2YTk3OGI2ZWRkMGIyMTIifQ"
         }
       ]
     },
@@ -59,11 +55,11 @@
       "statement": "退出码 2 只在 runInstall 于所有写入之前发现任一 entry 被护栏拒绝时返回，此时一个字节都不会写；退出码 1 覆盖未知宿主、无宿主、作用域不支持与执行失败回滚。",
       "evidence": [
         {
-          "resource": "repo://src/install.mjs#L110-L113",
+          "resource": "repo://src/install.mjs#L111-L114",
           "version": "repo-lines-v1:sha256:7cb1718897c816441adee7363f31eedaf1dca7e8b91fb7dc7c65093cc381beed:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODE1OTE5MWE3NTY4MGJiOTE4NGE4MjYwNWE5MjZlOWZjNDBiNGFiOWE1OGZmZTg5OTgzZmIxNmViODVkYTU4OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzk2MmJhOWViYmMzOTEyOTAwMTQ5NTBjNGFmNGUyMmRlMmY0ZTdhOTI4ZTdjODQ0NmRkNjg4M2FmODAyN2VlYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTY1YTUxZDIyMDQ1YWQ5YzAyMjk4ZWQxOTU2OTk2OTM5NzJkYTBkMWI2NjhkY2Q3N2YxNDkyYjkzMzYxYzQwZCJ9"
         },
         {
-          "resource": "repo://src/install.mjs#L96-L107",
+          "resource": "repo://src/install.mjs#L97-L108",
           "version": "repo-lines-v1:sha256:e86408e3188972dd5edae109733ec212487b07278466192d1d6665cda9626e4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2YWM0ODRkOGZhNzhhZDZjMmYzZmY3MWZiZDFhZDY1MzkyODRmMjEyMWRhM2FmY2I2NGI2OGYxNDkwMDhlMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3ZmFkNTMxZDBkNTVmZWQ3OWE3MDEyNjZjNWM3MGU0NjBkNjY3ODFlZDhlZTM1MTUwOGI1NGQzNThkOGUxZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmM2VlOGZiYmNlNTNhZDJlZmJlNzI4NjYzZjMzM2M3OWI5ODc4MzAyMmFhY2FhMGQwMGYzYjAzMjM1NWRkY2QifQ"
         }
       ]
@@ -73,8 +69,8 @@
       "statement": "doctor 采用严重性分级：manifest 缺失或工具清单漂移只 warn 并返回 0（因为 launcher 会降级为直通模式、安装仍可用），只有 Node 版本不达标、openwiki 依赖解析失败或与真实后端握手失败才返回 1；finally 中必定 supervisor.stop()。",
       "evidence": [
         {
-          "resource": "repo://src/commands/doctor.mjs#L130-L202",
-          "version": "repo-lines-v1:sha256:35c7870d6c48301ba6894ae4f08f272ac91e5a428258a27fa83fd60217871de2:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZjNkNjhiMzIyYzQwYjIyN2E0NGRmODY1OTI4N2MxNzExMDY1NGRjY2I5Y2EzOWYyZDIzMmFiMzY5YzQwNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyNmRlNjFiYjJkOWVjYzZjMDMzZjE4YjMzYjE1ZTI1OGFmNWNiZTVhM2VjYTM5Njk5MmM3NDdlMmZiYzZiODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://src/commands/doctor.mjs#L254-L315",
+          "version": "repo-lines-v1:sha256:76f655f7794ad2c9504d1ae300b0a18df6e4785f02494cf086abfa7abd99196b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlOGIxZTAwZDRiZGU4MDBhZGJjZWM0OGMyYzFkNDUzN2VhZGM0NTc3ZmQ5ZWI0MzYxMWU0YjU3YTBiZmRiNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNDI0OTU2YWRjOWFlMzA5MGMzM2E2OTM4N2IzYjVmMDY2ZDRmY2EwNmY2NDA1ODg5YTcyNjMzNTk5YTU0NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -83,18 +79,18 @@
       "statement": "doctor 通过读回各宿主配置里的 command 与 args[0] 并与当前 node 绝对路径和本包 bin 路径比对，检查已写入的 MCP 命令是否过期，专门暴露 node 升级后配置里存的旧绝对路径这一宿主只会报连接错误的原因；缺 baseDir/nodeCommand/selfBin 时静默跳过该项。",
       "evidence": [
         {
-          "resource": "repo://src/commands/doctor.mjs#L38-L70",
-          "version": "repo-lines-v1:sha256:2953204464933dd80621d283ecc6689591abd83a4ab986e7ba9e4805fc9b1c74:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2OGJlMDExM2EwYTUzMTM5N2YxNzNjODVjYjM2YTNhYmI2N2FhYjkwNzg0ZThjNjk1YjQwMWNiYTM2MThiMGMifQ"
+          "resource": "repo://src/commands/doctor.mjs#L43-L97",
+          "version": "repo-lines-v1:sha256:2aea71369ee72b0291b7c917594a4db72c1da0fd808cb2379f4ffab26b495f4f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2OGJlMDExM2EwYTUzMTM5N2YxNzNjODVjYjM2YTNhYmI2N2FhYjkwNzg0ZThjNjk1YjQwMWNiYTM2MThiMGMifQ"
         }
       ]
     },
     {
       "id": "claim_8e4f89727a2f41fa89ef64db2be51400",
-      "statement": "doctor 把实际解析到的 openwiki 版本与写死的 0.6.0 比对，不一致只告警而不失败，因为版本不匹配时 launcher 降级为直通模式仍然可用。",
+      "statement": "doctor 的锁版核对读取本包 package.json 的依赖声明而不是写死的常量：声明是范围而非精确锁版、或当前版本来自 versions/ 指针时跳过核对并说明原因，避免永远在报警的误报。",
       "evidence": [
         {
-          "resource": "repo://src/commands/doctor.mjs#L72-L84",
-          "version": "repo-lines-v1:sha256:61faa403f5fb394f2f2531b1f87bc95d6758ff0f0426e56e87ccdb68685dd6ea:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMmE0ZTE5MmU3OTJkMTc5M2JiYzhhMWUxOGMxYWVhMWZiNDVlZWRjNGQwMThjNzdjODRmNmRhYzVhN2VkMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZDllN2RiYzZmYmJjODI0Y2ViYzE1OTBiMjEwYzZkNjk0OWJiNGRhZWRjZTU2NDU2MDE0YTg2Zjg4MDMwYWUifQ"
+          "resource": "repo://src/commands/doctor.mjs#L99-L127",
+          "version": "repo-lines-v1:sha256:88dabb37d34f87743a217c0efdf673953decfb5d6a7f622cba959b642cd8c873:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMmE0ZTE5MmU3OTJkMTc5M2JiYzhhMWUxOGMxYWVhMWZiNDVlZWRjNGQwMThjNzdjODRmNmRhYzVhN2VkMzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiNzczMGQ4NDRlNmUwMmVjMTYxZGM5ZmQzNzIyOGJlMjM0Y2M0ODA5MjY5Zjk3NDc5ZWI5ODIxMzg5NjI0ZWYifQ"
         }
       ]
     },
@@ -103,11 +99,11 @@
       "statement": "doctor 用 diffTools 比对 manifest 与真实后端的工具清单，把只在实况侧出现的工具列为 \"+ name\"、只在快照侧存在的列为 \"- name\"，清单一致时报告工具数量。",
       "evidence": [
         {
-          "resource": "repo://src/commands/doctor.mjs#L178-L193",
+          "resource": "repo://src/commands/doctor.mjs#L291-L306",
           "version": "repo-lines-v1:sha256:be79b592d337c0b36a4aed254fed9ddba01a825c335d7c53bf46266bb7beb0c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwMjYyMGU1N2UzZmUzOWJkNGI3NTk1YzM2OWJiNDhmYWU0OThkMjc2OWE4N2UzNTQ5N2E1MjVlNjk1Y2U0NmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmM2I5ZTcyYjA0M2NlYzc2ZDAyOGM1MmNmOTcyZWFkYjJmOTYzMTI0NDRhMzViNTIyYjhkMjZjM2U1NjZmNTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNTllYzBlNDdmY2NmZDQ1OGU5YTA0MDI3ZjQyN2M2MjkxYjFmMTJkM2UwZTdkM2M5M2NmZDY5YzE4N2MyNGUifQ"
         },
         {
-          "resource": "repo://src/commands/doctor.mjs#L86-L105",
+          "resource": "repo://src/commands/doctor.mjs#L191-L210",
           "version": "repo-lines-v1:sha256:c541402c081dce3b386255db352c022ddafcefbd16c02a5b0c33d89891aac8b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5YWJiN2QyY2ZlMGZmM2Y0ZGQ5NzIwZDI2ZTUyMzBlM2RiYzg0NmI4MGVkMWI5ZWI3Y2ZjYWM2OGYwOTkwNTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3YjZhZWRmNjczZmY1M2M3NDE1MDFkZGQxYjY4NjUxZjU1YzU4ZTA1OWViOTE2YjZiNWY5ZGQzYzA5MDQ5Y2QifQ"
         }
       ]
@@ -127,18 +123,22 @@
       "statement": "mcp 命令的收尾是幂等的：stdin/stdout 的 error 事件只记 debug 不抛，end、close、SIGTERM、SIGINT 共用一个带 closed 闸门的 finish（先 parser.end() 冲刷无换行尾包再 handleClientEof），exit 时兜底调用 supervisor.stop()。",
       "evidence": [
         {
-          "resource": "repo://src/commands/mcp.mjs#L61-L87",
+          "resource": "repo://src/commands/mcp.mjs#L77-L103",
           "version": "repo-lines-v1:sha256:6d4259b837514c950bcccc208f03f654c73b4c7f1bfdffe213c48cfc46d51438:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNjdhNWQ1ZTllMWNiYjNjOTVlOThjOWVjNTM4N2JjMDM5ZGYyNGZkNGY3M2E3NzZiOTdmMGU4YzhhNTQwNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMmMwY2I1MTlhZWNlNzFiODNhNmY0ODExOTJkOWJlOTE5NjQxMTE1MjIwOTAwN2VmNzNiYzk4NWQ3OGVkZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
     {
       "id": "claim_060f08699cb3480bbf0f4a8b5a7bd51b",
-      "statement": "warm 命令在 ensureReady 成功后立刻停止后端，finally 中确保停止，把 openwiki 的冷导入代价挪到用户第一次工具调用之前。",
+      "statement": "warm 命令在 ensureReady 成功后立刻停止后端（finally 中确保停止，失败路径也停），把 openwiki 的冷导入代价挪到用户第一次工具调用之前；预热有 60 秒超时上限，超时或失败返回 1。",
       "evidence": [
         {
-          "resource": "repo://src/commands/warm.mjs#L18-L52",
-          "version": "repo-lines-v1:sha256:ba9247e9278c7c29295f32ded9b3285d0449d99ea6c72c0c9983cc9c0f7b23f8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OGYzOGI1YmY4NjBhMDJlYjg4MWI1NDhmM2M3MDcxMTUzZTliMGY4NWY4OWQ1NDQ0OGRlZDRkNTFmZjMzZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyNmRlNjFiYjJkOWVjYzZjMDMzZjE4YjMzYjE1ZTI1OGFmNWNiZTVhM2VjYTM5Njk5MmM3NDdlMmZiYzZiODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://src/commands/warm.mjs#L4-L27",
+          "version": "repo-lines-v1:sha256:a258dc6873356de74ff7ee2e7d51cdd670b604102778eb4429d29a8be3b4df1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxMzNkMTMyNTZkMzQ1OGM3M2EwYTE2YjE1YTY2NTA5NzYyMjRlMWNkNTA2YzVkZWZhNWNlZGQwNWVmZmQ5ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwY2E5ZDQ3Njk3NzA4YWFlOGFhMTA4ZDI0YWIxMzJjODllYTU5Yjc1MzQyYjFiMzJiM2Y3MDRhYzBiODQwNmUifQ"
+        },
+        {
+          "resource": "repo://src/commands/warm.mjs#L44-L79",
+          "version": "repo-lines-v1:sha256:610670c4117390b3270ab3411d813161a5fab857a3971d4e5f7158283fc984eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OGYzOGI1YmY4NjBhMDJlYjg4MWI1NDhmM2M3MDcxMTUzZTliMGY4NWY4OWQ1NDQ0OGRlZDRkNTFmZjMzZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyNmRlNjFiYjJkOWVjYzZjMDMzZjE4YjMzYjE1ZTI1OGFmNWNiZTVhM2VjYTM5Njk5MmM3NDdlMmZiYzZiODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -151,14 +151,64 @@
           "version": "repo-lines-v1:sha256:5f49d9b9b9e028046d5009b667dd69ce174e10e63d1ba1b520b02779ed72b587:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNjODYyZWNhM2YzOGYxYTI4ODhlN2QzMWY1ZWY2NTQ2ZjliY2UwZjc3MDhjZTJlN2I5ODA1MDBlMzc3NDgzNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA3OGUzYzJhYjFiOGVmMjc2ZDI1NjljNTg2YzRhY2VmZjE2ZmY2ZTliNDRhNTQwZGQ0NmQwNTMxMDllOWUyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDdjNThhNzQyNzVlNWRlNWFiOGQ2MjE3YmQ4YWY1MzM0NGY1MTZmZTg2YjU2MGY5MjU5MTRjYzRjMjIyYjlkNyJ9"
         },
         {
-          "resource": "repo://src/commands/warm.mjs#L33-L38",
+          "resource": "repo://src/commands/warm.mjs#L60-L65",
           "version": "repo-lines-v1:sha256:c46da1cf0946d80d57ce9613f16ad261baa3d93686f66882a5a546a28dbe4db7:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNjODYyZWNhM2YzOGYxYTI4ODhlN2QzMWY1ZWY2NTQ2ZjliY2UwZjc3MDhjZTJlN2I5ODA1MDBlMzc3NDgzNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA3OGUzYzJhYjFiOGVmMjc2ZDI1NjljNTg2YzRhY2VmZjE2ZmY2ZTliNDRhNTQwZGQ0NmQwNTMxMDllOWUyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDhhZDJiY2NlMDQ3Y2YwNTYxMTBlZWQ3YjMyMmEyMTE5NjRhYzU0OWU5ZmJjNjQ4ZDUzNjg5NWQ3ZWY1OWIwMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_486f5c6f01a34780b934cf79387496b0",
+      "statement": "doctor 会报告 versions/active.json 版本指针的三种状态并各给一个用户动作：与生效版本一致（继续用）、损坏已回退出厂依赖（重跑 switch 或删除该文件）、未设置（当前跑的是出厂依赖）。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/doctor.mjs#L129-L154",
+          "version": "repo-lines-v1:sha256:cc43e5af05e1abfce05e3dc08e9efbc3d9c62fba4466b13b39bde945b441d6f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkMzc3ZDBlNzkzNTFjYzhkMGQzMDY1NGE0N2EzNzFhMGYwZWM5ZmExYTNkOTkwOWQwZjg4NTdmNWRjYjhmYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImViNzQ3Nzg3ZjlkMmJiMWY3NzQyOGZlNjQxODI4YTFmODU0MjA1MDRkZWQyOTYzMGQxYTBlZjVlNDc4Njc2ZjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b70ab73359104a2daea17e7063922f15",
+      "statement": "doctor 通过 npm root -g 探测全局安装的 openwiki 并告警它不参与 launcher 解析（解析只认包根下的 versions/ 与 node_modules），直接回应「装了新版却没生效」的困惑；探测失败时静默跳过，不让 doctor 变成第二个故障源。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/doctor.mjs#L156-L189",
+          "version": "repo-lines-v1:sha256:1e4f475aaeb284999ce4669ad5de9fe75735a83d6cd62de7bf34692e2d7fd901:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2N2U4NmM0NWQ5NzIxMzIyNjEyOTA2MmU0YWRhZGVkN2Q5YzYxZDQ2NjY1NTRhM2FmMmQzMWE0NzMxYWYwMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxNzEwNDYwOTUyNzE2ZDRkZGJlYmYwYzBhODk1ZWQ1OWM5ZjIxZTQ0NjhhZmQ1ZjVhODk2MDEzMmE1NmM4MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZDllN2RiYzZmYmJjODI0Y2ViYzE1OTBiMjEwYzZkNjk0OWJiNGRhZWRjZTU2NDU2MDE0YTg2Zjg4MDMwYWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f0233e041b684e4f8bd7c3b0a71819ba",
+      "statement": "doctor 比对已写入 MCP 命令时路径比较走 normalizeForCompare 而不是逐字符比较，因为 win32 路径不分大小写且正反斜杠混写等价，逐字符比较会把自己刚写好的条目报成不一致，形成「重跑 install → 再报不一致」的误报循环。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/doctor.mjs#L43-L63",
+          "version": "repo-lines-v1:sha256:cc86d12cf7dc462605e4c8a7e331809051c9aa7e403612e2a30f3d494ebe9255:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4NzQ1OTRmMDA5ZDEzZTIzY2IzYzQwZjM3ZGEyNGJiOThjMDI4YjI1NTliM2FlMTU1NzQxOTZjZThjZTRkNzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_13ca28cbf0be4830ada3b2a4d54e9b4a",
+      "statement": "Node 版本闸门逐段数字比较且缺段补 0，因此 \"22.22\" 与 \"22.22.0\" 都判定为达标；该逻辑由 CLI 与 doctor 共用。",
+      "evidence": [
+        {
+          "resource": "repo://src/node-version.mjs#L12-L23",
+          "version": "repo-lines-v1:sha256:233b8d4f8b8271922716804b809ee943e72fdd2584a4398bd0eee7bbd6ea3e43:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkZGU1N2VlZjRmNmIwNGQwNWZlMDRmYjcyMjRjNTc5YWJiOWI5YzA1ZmNiOWM4MTkxOTVmNjM3ODJkNjViMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhOWQ1MzQ4Y2U0YTFiNTJkMWViNjIzZGJjMDBmMTc1ODMzODhiMTliZGQwMzk4YTkzNTgwNTJhNGU3OWZmOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4856fdf302864dc18229176bea5b35d0",
+      "statement": "LAUNCHER_EAGER_START=0 可关闭 mcp 连接建立时的后台预热，恢复懒启动；默认预热失败只告警，首个工具调用到达时会排队重试。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/mcp.mjs#L57-L71",
+          "version": "repo-lines-v1:sha256:dea1c11592aa2e67db68b115c124e0576193c0d8a43a7f4799e447a850fe570b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0NmRlZGQ1NDcwNmI2NzE3MTJkZWI3OGU1YzJjYzk3ZGIxNDA4YTdkNjExMWM2MzZkZDBjOGRhNTBjZGM1ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2Mjc3NWE5ZThlZGMzMmE3ZjA5MTcyY2YzYzE5ODk2ZTliNGFiMDU2Yzc3NzljY2E0YzRhYzlkNDMzOGM3ZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjNjRiMWZiNjczMmRjNzkyMWNlY2YxZGJkMjM0MTNmMDE4NjQyZTM3YjY4YzZlY2QxMzFiOGQxNjRhMGJlMWUifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.0",
-    "at": "2026-10-10T08:12:25.306Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T05:45:32.864Z"
   }
 }

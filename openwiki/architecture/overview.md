@@ -1,20 +1,26 @@
 ---
 type: architecture
 title: 系统总览：为什么需要 broker 代理
-description: openwiki-launcher 解决的问题、两段会话架构、模块职责地图与贯穿全局的设计不变量。
-tags: [architecture, mcp, broker, design-invariants]
+description: openwiki-launcher 解决的问题、两段会话架构、端到端时序、模块职责地图、openwiki 版本管理子系统的位置，以及贯穿全局的设计不变量。
+tags: [architecture, mcp, broker, version-management, design-invariants]
 verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 sources:
   - id: openwiki-source-cf7067276199e27e6324cc91
     resource: repo://bin/openwiki-launcher.mjs
+  - id: openwiki-source-fe7152fb81d635ad49dfb127
+    resource: repo://scripts/gen-manifest.mjs
   - id: openwiki-source-814aeea6bc63a6d45d6c643a
     resource: repo://src/backend.mjs
   - id: openwiki-source-28b2a16f94b60fe1e536f6c6
     resource: repo://src/broker.mjs
   - id: openwiki-source-0cd1bc275c3f60f8f2c8999c
     resource: repo://src/cli.mjs
+  - id: openwiki-source-322237c20df0e9b998d722ac
+    resource: repo://src/commands/mcp.mjs
+  - id: openwiki-source-4ace6d5c885a3cfa1a8c5685
+    resource: repo://src/gen-manifest.mjs
   - id: openwiki-source-c346a3d078823ecde57ba108
     resource: repo://src/guards.mjs
   - id: openwiki-source-74a5034640883b216f98ee8d
@@ -31,7 +37,9 @@ sources:
     resource: repo://src/skill-install.mjs
   - id: openwiki-source-94ff95c1f11b8b7df6ddb6c1
     resource: repo://src/uninstall.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+  - id: openwiki-source-96d987ff5f91a05f973f4bfd
+    resource: repo://src/versions.mjs
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
 ---
 
 # 系统总览：为什么需要 broker 代理
@@ -61,8 +69,8 @@ AI 宿主 ──stdio(JSON-RPC)──> openwiki-launcher(broker) ──spawn(nod
 ## 端到端时序
 
 1. 宿主启动配置里指向的进程：`node <abs>/bin/openwiki-launcher.mjs mcp --host <id>`。
-2. `runMcpCommand` 解析 openwiki 运行时，加载匹配版本的快照；快照缺失则不创建 broker，直接把宿主管道直通给真实后端。
-3. broker 接管 stdin/stdout：解析 JSON-RPC 行，应答 `initialize`（用快照），应答 `tools/list`（用快照，且仅在后端尚未启动时）。
+2. `runMcpCommand` 用 `resolveOpenwikiRuntime` 解析 openwiki 运行时——解析顺序是 `versions/active.json` 指针优先，指针缺失或损坏时回退包内出厂依赖；加载匹配版本的快照，快照缺失则不创建 broker，直接把宿主管道直通给真实后端。
+3. broker 接管 stdin/stdout：解析 JSON-RPC 行，应答 `initialize`（用快照），应答 `tools/list`（用快照，且仅在后端尚未启动时）。连接建立时即后台预热后端（`LAUNCHER_EAGER_START=0` 可关闭）。
 4. 宿主第一次 `tools/call`：broker 调用 `supervisor.ensureReady()`，监管器用 `process.execPath` 加绝对 `cli.js` 拉起后端，等待 `initialize` 握手完成。
 5. 后端就绪后调用透传；期间排队超过上限则返回明确的中文工具错误。
 6. 宿主关闭 stdin：`handleClientEof` 清掉所有定时器、取消在途请求、`supervisor.stop()` 终止后端。
@@ -80,8 +88,20 @@ AI 宿主 ──stdio(JSON-RPC)──> openwiki-launcher(broker) ──spawn(nod
 | `src/broker.mjs` | 宿主请求代理：快路径、排队、错误映射 |
 | `src/backend.mjs` | openwiki 后端子进程会话 + 多宿主共享的监管器 |
 | `src/manifest.mjs` | 按版本选取快照；缺失返回 `null` |
-| `src/paths.mjs` | 解析被锁版本的 openwiki 依赖与 CLI 入口 |
+| `src/paths.mjs` | 解析当前生效的 openwiki 依赖与 CLI 入口（指针 > 出厂依赖） |
 | `src/commands/mcp.mjs` / `warm.mjs` | 以 MCP 服务器身份运行 / 预热后端 |
+
+**openwiki 版本管理（0.3.0 新增）**
+
+| 文件 | 职责 |
+| --- | --- |
+| `src/versions.mjs` | 版本目录布局、`active.json` 生效指针与已装清单的唯一权威 |
+| `src/paths.mjs` | 在指针与出厂依赖之间做运行时解析（显式版本 > 指针 > 出厂） |
+| `src/npm-runner.mjs` | npm 子进程调用与 registry 稳定版挑选 |
+| `src/commands/check.mjs` | 版本状态一屏总览：当前生效、已装清单、registry 最新版 |
+| `src/commands/update.mjs` | 升级编排：装依赖 → 录快照 → 切指针 |
+| `src/commands/switch.mjs` | 已装版本间的毫秒级切换（可秒回滚） |
+| `src/commands/versions.mjs` | 版本目录管理（目前只有 `remove`） |
 
 **安装器（宿主接入面）**
 
@@ -101,30 +121,44 @@ AI 宿主 ──stdio(JSON-RPC)──> openwiki-launcher(broker) ──spawn(nod
 
 | 文件 | 职责 |
 | --- | --- |
-| `bin/openwiki-launcher.mjs` | 4 行入口，只设置 `process.exitCode` |
+| `bin/openwiki-launcher.mjs` | 4 行入口，只把 `main()` 的返回值赋给 `process.exitCode` |
 | `src/cli.mjs` | 命令分发、参数校验、依赖装配 |
 | `src/commands/install.mjs` | `install` / `--uninstall` 的参数与运行时解析 |
 | `src/commands/doctor.mjs` | 环境、快照、已写入配置与真实后端的自检 |
+| `src/gen-manifest.mjs` | 快照录制核心（连接真实后端问 `initialize` 与 `tools/list`），`update` 与 `switch` 代装时复用 |
+| `scripts/gen-manifest.mjs` | `npm run manifest` 的 CLI 包装，被直接运行时才动手 |
 | `src/self-path.mjs` / `node-version.mjs` | 自身 bin 路径、node 路径、Node 版本闸门 |
+
+## openwiki 版本管理在架构中的位置
+
+0.3.0 起，launcher 对 openwiki 的依赖从「package.json 里钉死的一个版本」变成可管理的多版本：
+
+- 各 openwiki 版本 side-by-side 装在 launcher 包根的 `versions/<x.y.z>/` 下，`versions/active.json` 指针决定当前生效版本；
+- 运行时解析（broker 启动、warm、doctor、版本命令）都走同一条 `resolveOpenwikiRuntime` 路径：显式版本 > `active.json` 指针 > 包内出厂 `node_modules/openwiki`；
+- `check` / `update` / `switch` / `versions` 四条命令是对这条链路的运维入口。
+
+细节见 [openwiki 版本目录与生效指针](../versions/version-store.md) 与 [版本命令](../versions/version-commands.md)。
 
 ## 贯穿全局的设计不变量
 
 **stdout 只属于 MCP 协议。** 日志工厂把 `info` / `warn` / `error` / `debug` 全部写到 stderr，stdout 上多一个字节就会破坏线协议。`LAUNCHER_DEBUG=1` 才放开 debug 输出。
 
-**绝不裸调 `openwiki` 可执行文件。** 后端始终用 `process.execPath` 加绝对 `cli.js` 路径 spawn——Windows 上 nvm 生成的 `openwiki.exe` shim 不转发 stdio，表现和挂死一模一样。解析 openwiki 依赖也只走 Node 模块解析，解析不到就抛 `OpenwikiNotFoundError`，**绝不猜测全局安装路径**：猜错会启动错误的后端或干脆不启动，用户看到的仍然是超时而不是诊断信息。
+**绝不裸调 `openwiki` 可执行文件。** 后端始终用 `process.execPath` 加绝对 `cli.js` 路径 spawn——Windows 上 nvm 生成的 `openwiki.exe` shim 不转发 stdio，表现和挂死一模一样。解析 openwiki 依赖只认本包根下的 `versions/` 与 `node_modules`，解析不到就抛 `OpenwikiNotFoundError`，**绝不猜测全局安装路径，也绝不向上遍历目录树**：全局装的 openwiki 恰好在本包上一层，一次向上查找就会在出厂依赖缺失时被悄悄采纳，版本报告从此开始说谎。
 
 **配置里不写要靠 PATH 解析的东西。** 写进宿主 MCP 配置的是 node 的绝对路径（`process.execPath`）与本包 bin 的绝对路径，两者都由 `self-path.mjs` 从 `import.meta.url` 推导，不依赖 `process.argv[1]`——全局安装时那是 npm shim 路径，同样存在 stdio 丢失风险。
 
-**决策与 IO 分离。** `plan.mjs`、`targets.mjs`、`guards.mjs`、`ownership.mjs`、`node-version.mjs` 都是不碰文件系统的纯函数，所有隐式全局（platform、homedir、tmpdir、env）都改成入参。这既让决策可独立测试，也让护栏能在真正写入前一次性否决整次安装。
+**决策与 IO 分离。** `plan.mjs`、`targets.mjs`、`guards.mjs`、`ownership.mjs`、`node-version.mjs` 都是不碰文件系统的纯函数；版本命令通过注入 `runNpm` / `confirm` / `writeSnapshot` / `resolveRuntime` 获得同样的可测试性，所有隐式全局（platform、homedir、tmpdir、env）都是入参。这既让决策可独立测试，也让护栏能在真正写入前一次性否决整次安装。
 
-**宁慢不假。** 快照缺失就降级直通；配置读不出来就不当作空配置；退出前能自己诊断就写 stderr。
+**宁慢不假。** 快照缺失就降级直通；配置读不出来就不当作空配置；显式版本解析不到就明说，绝不用出厂依赖冒名顶替（否则录出的快照自称 A 版本、内容是 B 版本）；退出前能自己诊断就写 stderr。
 
-**只删自己写过的东西。** 安装写收据与逐文件 sha256，卸载要全匹配才删，用户手改过就跳过并说明。
+**只删自己写过的东西。** 安装写收据与逐文件 sha256，卸载要全匹配才删，用户手改过就跳过并说明；版本删除同样有护栏——当前激活版本拒删，manifest 快照保留。
 
 ## 相关页面
 
 - [MCP 请求代理（broker）](../runtime/mcp-broker.md)
 - [openwiki 后端会话与监管](../runtime/backend-supervisor.md)
 - [工具清单快照（manifest）](../runtime/tool-manifest.md)
+- [openwiki 版本目录与生效指针](../versions/version-store.md)
+- [版本命令：check / update / switch / versions](../versions/version-commands.md)
 - [安装决策器与安装编排](../installer/install-plan.md)
 - [快速上手](../quickstart.md)

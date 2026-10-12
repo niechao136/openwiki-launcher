@@ -3,17 +3,19 @@ type: subsystem
 title: 安装决策器与安装编排
 description: planInstall 作为纯函数决策器如何为每个宿主算出 skill 与 MCP 动作，以及 runInstall 的编排顺序、护栏一票否决、写入、备份与回滚。
 tags: [installer, plan, orchestration, rollback]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
+  - id: openwiki-source-f2765e03ab3c44ffdd8995a7
+    resource: repo://src/commands/install.mjs
   - id: openwiki-source-b995d49faa81ab47b4496f9b
     resource: repo://src/install.mjs
   - id: openwiki-source-25b67ca644bd99d29a60497f
     resource: repo://src/plan.mjs
   - id: openwiki-source-82ad0bac05d48ab1a24b4e91
     resource: repo://src/targets.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # 安装决策器与安装编排
@@ -108,6 +110,7 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 8. **逐 entry 执行**：先 skill（`installSkill`），后 MCP 配置（先 `createBackup` 再写）。
 9. **任一失败 → 回滚**。
 10. 报告，并在 win32 上提示 Defender 排除项。
+11. **安装成功后自动预热一次。** 这一步在命令层（`src/commands/install.mjs`）完成，且只在 `exitCode === 0` 且不是卸载时触发；`--no-warm` 跳过并提示手动命令。预热是**优化不是安装的一部分**：失败只告警，退出码仍然是安装的结果；测试用注入的 `warmFn` 替掉真实预热。
 
 ### 为什么检测快照必须先算完
 
@@ -133,9 +136,21 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 
 `manual` 宿主会打印一段可直接粘贴到宿主 MCP 设置里的 JSON（`mcpServers.openwiki` 指向 `node <绝对路径>` 与本包 bin）。`none` 宿主明确说明「只安装 skill，openwiki 的 SKILL.md 自带降级路径」。
 
+## 安装后的自动预热
+
+预热挂在命令层而不是 `runInstall` 内部，原因写在 `src/commands/install.mjs` 的注释里：`runInstall` / `runUninstall` 是同步函数（28 家 e2e、回滚逻辑与纯函数决策面都依赖这个契约），不能为了一个 async 的预热改签名。
+
+行为要点：
+
+- 触发条件：安装退出码为 0、非卸载、未给 `--no-warm`；
+- 复用 `warm` 命令（60 秒超时上限），宿主标识为 `warm`；
+- 失败只打告警「不影响本次安装结果」，退出码不变；
+- 预热已自报耗时，成功时不再重复提示；只有 `--no-warm` 时才提示手动跑 `openwiki-launcher warm`。
+
 ## 相关页面
 
 - [宿主注册表](./host-registry.md)
 - [Skill 目录安装、收据与完整性校验](./skill-install.md)
 - [卸载与归属判定](./uninstall.md)
 - [安全护栏、备份与回滚](../safety/guards-and-backups.md)
+- [命令行接口与 doctor 自检](../commands/cli-and-doctor.md)

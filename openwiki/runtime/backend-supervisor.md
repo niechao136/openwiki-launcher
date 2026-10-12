@@ -3,15 +3,19 @@ type: subsystem
 title: openwiki 后端会话与监管
 description: launcher 如何拉起并监管 openwiki 后端子进程：spawn 形式、就绪握手、请求 id 关联、单飞启动、重试退避、崩溃重启、stderr 诊断与孤儿进程防御。
 tags: [backend, supervisor, process, lifecycle]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-814aeea6bc63a6d45d6c643a
     resource: repo://src/backend.mjs
+  - id: openwiki-source-322237c20df0e9b998d722ac
+    resource: repo://src/commands/mcp.mjs
+  - id: openwiki-source-ae090dd614b550bc566d7b91
+    resource: repo://src/commands/warm.mjs
   - id: openwiki-source-5cde29df2913f42519f02937
     resource: repo://src/paths.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # openwiki 后端会话与监管
@@ -27,7 +31,9 @@ spawnFn(process.execPath, [cliJs, "mcp", "--host", hostId], {
 });
 ```
 
-**始终用 node 的绝对路径加 CLI 的绝对路径**，而不是直接执行 `openwiki`。原因很具体：Windows 上 nvm 生成的 `openwiki.exe` shim **不转发 stdio**——对宿主来说，后端看起来和挂死一模一样。同理，解析 openwiki 依赖也只走 Node 模块解析（`require.resolve`），解析不到就抛 `OpenwikiNotFoundError`，**绝不猜测全局安装路径**：猜错会启动错误的后端或干脆不启动，用户看到的仍然是超时而不是诊断信息。
+**始终用 node 的绝对路径加 CLI 的绝对路径**，而不是直接执行 `openwiki`。原因很具体：Windows 上 nvm 生成的 `openwiki.exe` shim **不转发 stdio**——对宿主来说，后端看起来和挂死一模一样。同理，解析 openwiki 依赖只认本包根下的 `versions/` 与 `node_modules`（见[版本目录与生效指针](../versions/version-store.md)），解析不到就抛 `OpenwikiNotFoundError`，**绝不猜测全局安装路径，也绝不向上遍历目录树**：猜错会启动错误的后端或干脆不启动，用户看到的仍然是超时而不是诊断信息。
+
+会话层**不做任何依赖解析**：`cliJs` 是入参。谁创建 supervisor，谁负责先用 `resolveOpenwikiRuntime` 把它算出来——因此后端跑的是 `versions/active.json` 指针指向的版本，指针缺失或损坏时是包内出厂依赖。`LAUNCHER_BACKEND_CLI` 可覆盖这个入参，`mcp` 与 `warm` 两个命令都支持；它存在的意义是测试（`test/fixtures/fake-openwiki.mjs`）与排障，生产路径不应依赖它。
 
 三个 stdio 管道，`env` 在 `process.env` 之上叠加传入的覆盖项。
 
@@ -35,7 +41,7 @@ spawnFn(process.execPath, [cliJs, "mcp", "--host", hostId], {
 
 ### 就绪握手
 
-会话创建后立即发起 `initialize`（`protocolVersion: "2024-11-05"`，`clientInfo: { name: "openwiki-launcher" }`），成功后补发 `notifications/initialized`，整个 promise 就是 `ready`。默认 120 秒（`callReadyTimeoutMs`）超时，超时则 `child.kill()`——一个永远不 ready 的后端不如早点杀掉。
+会话创建后立即发起 `initialize`（`protocolVersion: "2024-11-05"`；`clientInfo` 的 `name` 固定为 `openwiki-launcher`，`version` 取自本包 package.json——openwiki 会把它写进 run metadata，写死的旧版本号会让排查的人先怀疑 openwiki 的数据），成功后补发 `notifications/initialized`，整个 promise 就是 `ready`。默认 120 秒（`callReadyTimeoutMs`）超时，超时则 `child.kill()`——一个永远不 ready 的后端不如早点杀掉。
 
 ### 请求 id 关联
 
@@ -89,12 +95,22 @@ if (starting) return starting;
 
 `BackendUnavailableError` 携带 `stderrTail`。这个字段是给调用方的诊断通道——`warm` 与 `doctor` 都会在报错时把它打出来。
 
-## 后端入口覆盖
+## 监管器的三个使用方
+
+同一个 `createBackendSupervisor` 被三处复用，`cliJs` 都来自 `resolveOpenwikiRuntime`：
+
+| 使用方 | 行为 |
+| --- | --- |
+| `mcp` 命令（broker） | `ensureReady()` 由 broker 在首个 `tools/call` 或连接预热时调用；崩溃后 `onSessionExit` 通知 broker |
+| `warm` 命令 | `ensureReady()` 成功即 `stop()`，外面再包一层 60 秒超时（`withTimeout`），失败返回 1 |
+| `doctor` 命令 | `ensureReady()` 后请求 `tools/list` 与 manifest 比对，`finally` 中必定 `stop()` |
 
 `LAUNCHER_BACKEND_CLI` 可覆盖 `cliJs`，`mcp` 与 `warm` 两个命令都支持。它存在的意义是测试（`test/fixtures/fake-openwiki.mjs`）与排障，生产路径不应依赖它。
 
 ## 相关页面
 
 - [MCP 请求代理（broker）](./mcp-broker.md)
+- [openwiki 版本目录与生效指针](../versions/version-store.md)
+- [版本命令：check / update / switch / versions](../versions/version-commands.md)
 - [系统总览](../architecture/overview.md)
 - [测试体系与关键不变量](../testing/test-suite.md)

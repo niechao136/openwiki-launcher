@@ -3,9 +3,6 @@ type: testing
 title: "测试体系与关键不变量"
 description: 测试文件如何按子系统分组、依赖注入与 fake-openwiki 夹具如何让后端可控、真实冒烟的门控方式，以及钉住关键设计决策的代表性测试。
 tags: [testing, vitest, fixtures, invariants]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-061deed2c572dd7f339694b5
     resource: repo://scripts/run-smoke.mjs
@@ -13,6 +10,8 @@ sources:
     resource: repo://test/backend-supervisor.test.mjs
   - id: openwiki-source-8811fdd0e09f3c0f41c221fc
     resource: repo://test/broker.test.mjs
+  - id: openwiki-source-f973fbec0f65ed08b502faca
+    resource: repo://test/check.test.mjs
   - id: openwiki-source-cb98301bb5637a4169123f5f
     resource: repo://test/e2e-install.test.mjs
   - id: openwiki-source-084b13589c3f1907c3912cfb
@@ -31,9 +30,18 @@ sources:
     resource: repo://test/real-openwiki.test.mjs
   - id: openwiki-source-eeafa5f4e26a0f6cb0f64f0e
     resource: repo://test/release.test.mjs
+  - id: openwiki-source-0a647dbc54ab48e02f605a62
+    resource: repo://test/switch.test.mjs
+  - id: openwiki-source-8e15784c3ae326b60cd4f6bd
+    resource: repo://test/update.test.mjs
+  - id: openwiki-source-0c8da0fcedff086895cf9b5d
+    resource: repo://test/versions.test.mjs
   - id: openwiki-source-e776cd98f7ae253841c76ad7
     resource: repo://vitest.config.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # 测试体系与关键不变量
@@ -47,10 +55,20 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 | 协议与 broker | `broker.test.mjs`、`jsonrpc.test.mjs` |
 | 后端 | `backend-session.test.mjs`、`backend-supervisor.test.mjs`、`warm.test.mjs` |
 | 安装器 | `install.test.mjs`、`e2e-install.test.mjs`、`cli-install.test.mjs`、`skill-install.test.mjs`、`uninstall.test.mjs`、`plan.test.mjs`、`guards.test.mjs`、`mcp-config.test.mjs`、`backup.test.mjs`、`paths.test.mjs` |
-| 注册表与发布 | `registry.test.mjs`、`manifest.test.mjs`、`release.test.mjs` |
+| openwiki 版本管理 | `versions.test.mjs`、`versions-command.test.mjs`、`update.test.mjs`、`switch.test.mjs`、`check.test.mjs` |
+| 注册表与发布 | `registry.test.mjs`、`manifest.test.mjs`、`release.test.mjs`、`pkg.test.mjs` |
 | 诊断与 CLI | `doctor.test.mjs`、`cli.test.mjs` |
 | 端到端 | `e2e-mcp.test.mjs`、`real-openwiki.test.mjs` |
 | 其他 | `log.test.mjs` |
+
+## 版本管理测试：临时 pkgRoot + 注入 npm
+
+0.3.0 的版本管理测试有两个共同约定：
+
+- **pkgRoot 指向 `mkdtemp` 临时目录**，不碰真实包根。`versions.test.mjs` 还带一个 `plantVersion` 助手，在临时目录里造出「可解析的已安装版本」（`package.json` + `dist/cli/cli.js`）与可选的 manifest 快照，让「目录在但入口不全 = 装坏了」这类状态可以精确构造；
+- **不碰真实网络与真实后端**：`runNpm` 注入成脚本化应答（失败形态、prerelease 版本表都可控），`confirm` 注入成固定的 y/N，`writeSnapshot` 注入成可成功可失败的替身。
+
+覆盖点举例：`update.test.mjs` 钉住「装 → 录快照 → 切指针」主链路（已装跳过下载只补快照、快照失败不阻塞升级但默认不切、`--no-switch`、`--version` 缺值报错而非滑进交互）、npm 失败时删除半成品目录、以及 `summarizeInstallFailure` 按根因给镜像/工具链/文件占用提示；`switch.test.mjs` 钉住「毫秒级指针改写、装不好就原样放弃、坏目录拒绝并指路清理」；`versions-command.test.mjs` 钉住拒删激活版本与快照保留；`check.test.mjs` 钉住 registry 查询失败只降级提示、不拒绝报告本地状态。
 
 ## 两把测试杠杆
 
@@ -122,6 +140,8 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 
 ## 相关页面
 
+- [openwiki 版本目录与生效指针](../versions/version-store.md)
+- [版本命令：check / update / switch / versions](../versions/version-commands.md)
 - [MCP 请求代理（broker）](../runtime/mcp-broker.md)
 - [openwiki 后端会话与监管](../runtime/backend-supervisor.md)
 - [MCP 配置文件读写](../installer/mcp-config-writer.md)

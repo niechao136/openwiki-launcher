@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:817455e222ddb721c171c576ea2b73a7c97ed6b6382be0fbb273d6ef4e1e091f",
+  "pageVersion": "sha256:0c9d6f68d4d304d0e5fe619dc64ad3dfdb1ef4ac65cc3670f13c965922e47a4f",
   "claims": [
     {
       "id": "claim_912bf95251804acaaf8504f5f5e07c82",
@@ -60,15 +60,15 @@
     },
     {
       "id": "claim_25f92333edcc4308bc7eb42d49b08242",
-      "statement": "测试 answers initialize from the manifest without starting the backend 断言快路径完全不 spawn 后端，钉住毫秒级握手这一核心设计；端到端版本断言在后端就绪之前很久就完成 initialize 并列出 10 个工具。",
+      "statement": "测试 answers initialize from the manifest without starting the backend 断言快路径完全不 spawn 后端，钉住毫秒级握手这一核心设计；端到端版本断言 initialize 在 5 秒内应答（应答者名字是 openwiki 而非 fake-openwiki）并列出 10 个工具。",
       "evidence": [
         {
           "resource": "repo://test/broker.test.mjs#L82-L107",
           "version": "repo-lines-v1:sha256:6b8f4a3034c3f8b2d9b40c0dd90a3ae218a05c2715c0a27749f12ccc860f53d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmZjMzgxNDY4NmJmMThiMzU4YjAxMzIxNjkzYzJkMWJhYTdkOWVlODNkYWJiZjA1ZjdmYjAxNzBhYjJhMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjNWE0NmVjOTljYTAxZmNhZTcwMDQ5NmRlYTBjNDcwOTI0MjM0NjlmNzNlNjFiZDhjYWVjNGIyY2U1ZjUyYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMTZhOGRlNWQzZGI3ZDkwZWYyYzRkZTA5NDE5NzYzMzQ5MWQyODRhYTUyOTkwZmEwZGZmMDUxYzAwMWZmMjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMmNjOGMyOGRmZGM3ZTYzNzEwNGU4NTVmNjQwNzI4ZTNiNWQxMjU3NTA3MGY5MzcwZDVhZjQxN2MwOTM2MzkifQ"
         },
         {
-          "resource": "repo://test/e2e-mcp.test.mjs#L97-L131",
-          "version": "repo-lines-v1:sha256:1f9e0733a0626a90419754d118b6a99dc5a3c06aa50c8467a4f6a65cf005dcc2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViYTE2M2VmMDYzOGZjMGUxMzcyMTZjMGRmNmU5OWM1ZTI2NGM5Zjk2MjgwNjI4YjU0ZTAzMWVhMTFkZjUxZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhMjg5YTRmZmI4YTA0Mjg2ZTBlZTM5MTY0YmIwZTFiYjU0YWY5ZDk5MWFkYjM3NDMzOGU4NmU3MDA5MDk4M2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1NGZjMGVjNjExMjE5M2EzZWQ4MTBlYWVlNzdlNGZjYzJjOTUxZWUzODE5YmUxZDk4ODczNDg0NzNjMjljZGIifQ"
+          "resource": "repo://test/e2e-mcp.test.mjs#L97-L134",
+          "version": "repo-lines-v1:sha256:8d7f8590fff01a4a3c4be87bc3d265f61bc62589a0899104dbef67a6f925e29a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViYTE2M2VmMDYzOGZjMGUxMzcyMTZjMGRmNmU5OWM1ZTI2NGM5Zjk2MjgwNjI4YjU0ZTAzMWVhMTFkZjUxZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGI2OWIxMjMxZTc1MDMzNWQ5ZGQxZjc5ZDc4NmVjOGQzMjEzZTQ2MDRmMzRhMGExMmRjZTRjMDM0ZTBlYTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhMjg5YTRmZmI4YTA0Mjg2ZTBlZTM5MTY0YmIwZTFiYjU0YWY5ZDk5MWFkYjM3NDMzOGU4NmU3MDA5MDk4M2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0MDc1MjBmYWY5NWQ0OTM2NzFhZTc2ZWU4ZmM5M2Q0YzZlNTIzYzg5Y2MxODFmMTI3OTk2MDNkYzE1NTQ5MGYifQ"
         }
       ]
     },
@@ -97,7 +97,7 @@
       "statement": "测试 exits and leaves no backend behind when the host closes stdin 从 pid 文件读出后端 pid，断言退出码 0 且该进程已从进程表消失，端到端地钉住孤儿进程防御。",
       "evidence": [
         {
-          "resource": "repo://test/e2e-mcp.test.mjs#L147-L162",
+          "resource": "repo://test/e2e-mcp.test.mjs#L151-L166",
           "version": "repo-lines-v1:sha256:d5b7c50f101f7dc23472d18e6e0a5b531aa198302eda386ad84adf0945eb2be5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4YzA1Yjg1YjQxMjM3YjViZGMxYTk0OGY5NDJlY2U1NWI0OGVlNTA0MTBhODk5OTQ2ZWVhYzczYjA1ZTQ5ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0MzcxNzBkNGM0MmVlMmZmZTcxMTA2MTA1Zjk3Y2QzM2ZkNGNlOGI4Zjg1MzY2MDAzYzNkYjg1MDgyODVlNDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwNWRkMDQ0OTk5ZTRkNDY3NTA2ODdjNjE1NDA0NDQyZWZjYWQ2NGZjZjZhZjE1ODg0MTdjOGI3NDU5N2ViOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzZWFlMzc0OTgxYmZjN2U1M2Q1N2Y1NmM0MTVlMTdiZDdiM2YzZTZmNTNkYWIwYjg4YTVkYTkzYmRhOWNkNjkifQ"
         }
       ]
@@ -135,10 +135,44 @@
           "version": "repo-lines-v1:sha256:22c17ad6329f0013c39ff6b5bfe547dbaf1e4f3d46d80124703469790c35dc5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTg2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyN2FjODk3MzFmZjQwMzVkMjNhMmVhNzI1YzljOTY3NWNjMTY3N2ZiYjA4ZjE0NGUwMjlmYTg5NGM0MWJhMDFkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlNjU0MzJjOTNlODA2ZDExY2NmZjYzODUyN2Y1ZDc5OGRiYzFhODhiZTcxZjUyMzI4Yjg3MmRiMDk1ZWE5Zjk3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiODhhODM1YTY0NWJiOTc0OTg0MzQxNDA5N2I2MTYyMWM3MjBlOWJlMjA0MjdiODY2YjU1NDBhOTBhOTA3NjFkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwOThiYjU0ZDdhNjBiMTA0NDhhM2Y2NjllODllODliNmFhOTZmMjdkMTMxZDZhZjdjMzZhMTQwZWY4YmVlMWJjIn0"
         }
       ]
+    },
+    {
+      "id": "claim_0fe1980be6b1485ca5f442f8920a9e8d",
+      "statement": "版本管理测试用 mkdtemp 临时目录做 pkgRoot，versions.test.mjs 的 plantVersion 助手在临时目录里构造可解析的已安装版本（package.json + dist/cli/cli.js）与可选 manifest 快照，让「目录在但入口不全」这类状态可精确构造。",
+      "evidence": [
+        {
+          "resource": "repo://test/versions.test.mjs#L15-L29",
+          "version": "repo-lines-v1:sha256:b2af3bca8ba568a14c96cb167dcf349faff75bd2ffb3d3244b8dacff53a8472f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNzk5YWEyMDU4MzVmMTlkMmY2NGMxM2MzZDE4YzNjY2NhODk5NjQ0YmQ2MDcwODlkMjQ1MDAyMzdjMDhlZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhNDQ0Njg1MjIzMzA1ZTQyZjBmNmI0NzJjNzAwMjhkY2Y3MTE4YzA4MmUzZmVmYWUwZGIyMjBhMWU3NDRmNWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzM2E1OWYyYzk1MjAxMWY4ZjZhOTIxZTIwNWM4ZjM5M2JhMzg4ODM4M2U4ODVmMjJhZTA2YjU0OGIwOTM2NmYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_81c2146b643247fca22a7b315a5d7372",
+      "statement": "update/switch/check/versions 命令测试全部注入 runNpm、confirm、writeSnapshot，不碰真实网络与真实后端；update.test.mjs 覆盖装→录→切主链路、半成品目录清理、失败根因提示与 --no-switch，switch.test.mjs 覆盖代装失败时指针不动与坏目录拒绝。",
+      "evidence": [
+        {
+          "resource": "repo://test/switch.test.mjs#L56-L151",
+          "version": "repo-lines-v1:sha256:dd3514e00eae79d37b029a52ba5f18c53b177746e9a5798509aec7915bbc3fb3:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MDRiNDQxMjA1YTRmMzdmNGZlYzZmYjI5MWYzYmM3YWMyMDAxMjJmODg4NDM0ZDBjMDY5YmViN2M0MGExNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzNzE4OTU1YjE4N2FjNDVlMDJlY2I1ODQ4ZjAyM2EwNTQ1ZmZiMzhiNTM4ZTM0ZmQzYzcwNDRiOWZkNWFhNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwNGZhM2U5ODgzNmZhNmI1NWQ4NjIyYWE5ZWQ5YzFlNWE2NTZkYzlmNjM2NTA4ZjYwM2FhMjE4Mjg0ZWJkNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3ZGQ1OGRiNTM1ZGU4Y2I4NDlhYTMyZjYwODU4NTM1ZmEwM2VlYmQ2MzcyOGQzZjI3NmRjY2I2YjgzOWEzM2UifQ"
+        },
+        {
+          "resource": "repo://test/update.test.mjs#L163-L407",
+          "version": "repo-lines-v1:sha256:4e58646491db69c094ef1e282b9aaf718c91c8f1ed6cc8c5570e304d69eba25e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQ1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3Yjk2MTMxYjc5MDk3YWZkNzdhMDQwMTFhY2Y1Y2E2MTYxNDY2YzM2MDMzMmI5ZWE0Zjg2ZjBhYzIyMjc2YTkyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3ZWI3MDI1NzU5M2RhMDZmNjgyYTNkZGRhNTRhOWQyNjBkNGZjNTE0ZjY0NTIzN2Y1Y2E3NGIwOGY4ZGE2MWE2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhZTY5NWQ0YzE2MWViMjk3OTdhYTJiOGVkYzQxZDExNDBmZTQzNjBmNWQ1ZmJkMTA1MWYzZTJmOGRlY2ZlYmM0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNjQ5NDFiMzc4YmE1NTAyYTQxY2UwNmFlYWJmN2E4ZTVhZDM1MWY3ZjVhZWIwNmNjNzkxYzNhMGFiOGFjYWY2In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_94fe9a78212b4b9b91e1a6e7f27383e7",
+      "statement": "check 命令的测试钉住 registry 查询失败只降级提示、不拒绝报告本地状态，因为该命令的存在意义是把状态讲清楚。",
+      "evidence": [
+        {
+          "resource": "repo://test/check.test.mjs#L22-L84",
+          "version": "repo-lines-v1:sha256:71cdcd9751b85078dc5379b2426e6c71517008ee2b3ce393f989fc8c6ffaa7c8:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlOWZhZjk1Nzg1MTkzYzM3OGJkZTY1ODRlZTlkZmI3NGRhYzc3YjYxNjRhODI3ZTJjMmUxYWMwZTVmMGYzNjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOWVmNzA1NDM1YjJmY2QzMGI1ODVkMzVkYzVhOWM3ODU1OWE2NzA4NWU2ZDZjZjU0ZTQwZTBkMjZjMGYwN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNGE5ZjVmMTJiYjI4MDcxZmI4ODcxNDIxZDJjOTE3OGZkMmU1NTk3MTI5NDViZWU1YzRhNTY0YzM5MDU1MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzOWQwNzYxMGZjMGM2ZjNmNThkMGM0MzhmNjhmYWVlNTBmMjJmMGZmZGU5ODZmYmU4NDI1YmEwZjFhMjBhZGEifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.0",
-    "at": "2026-10-10T08:12:25.306Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T05:45:32.864Z"
   }
 }

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:85dfed8715842b32580712ab7a529e632da58d9ff56c72e70a7d4fdc581eb57a",
+  "claims": [
+    {
+      "id": "claim_1aba638f5e024b42bd205d772963f66b",
+      "statement": "src/versions.mjs 是版本目录布局与「当前生效指针」的唯一权威：版本目录、manifest 目录、出厂 node_modules 都挂在 launcherPackageRoot() 下，各模块默认值统一从这里取，所有函数接受 pkgRoot 参数以便测试用临时目录。",
+      "evidence": [
+        {
+          "resource": "repo://src/versions.mjs#L5-L31",
+          "version": "repo-lines-v1:sha256:cd6392c4aa19d1b6267f2e5c3c12aab30992730f292da3492e2c98bd886d10ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkY2JiM2ViZjhmZTQyOWUzNmZlNjM3NmZjZmQ4MzI5MDQxZGRlYTA0OWFkMjg1ODdhMWIxNzM3ZWMyMThjNjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxNmIzNGFmOTMwZWIzZjRiMjEzNzg3YTY5NTcxN2RkMjdiYjA2YmVhYTYwOWE2ZTIxNjVmM2Q0MDhhZGZmOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhNTVhYTZhMDU1ODE4NDQ5ZjljZWJhOWZkOTcyNTUwNTk0YTYxNzlhNTAzZmZiMzkxY2Y0ZWFhNzQyMzJiN2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cffd10b66a1c4a289688986d9da504c8",
+      "statement": "versions/active.json 用纯文本 JSON 指针而不是 symlink，因为 Windows 上创建符号链接需要管理员权限或开发者模式；写入先写 .tmp 再 rename，Windows rename 覆盖抛 EPERM/EACCES/EEXIST 时删掉目标重试一次。",
+      "evidence": [
+        {
+          "resource": "repo://src/versions.mjs#L101-L125",
+          "version": "repo-lines-v1:sha256:9f439364489bc2627a194c45fae704a62e5b91eda2e0fb355b44f2d5ee7586fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUzMjY3YzhiZGIyZThmNzYxZWI5MGY2YjE4OTI0YjhkYWE2YTMxNjRkNzE1NTMwYTRiODkzYzc1ZTY2MTBmZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkN2U4ODk3YjM3NmRmMDU0YmUwZmY3MmMyZjllOTRiZDY3MjYzOTdmY2RmY2RlODljOTUxYzkxOWI5NWUwNWUifQ"
+        },
+        {
+          "resource": "repo://src/versions.mjs#L7-L10",
+          "version": "repo-lines-v1:sha256:1444f2ded09257dceb150c339fb403369d3d853adfc8d0fc1fede9bae8b8321e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTIwYmVhODNjYjVhN2ViZDgwNjMyZjNhMGRiMTQxMjE0M2RjODBmOWUxNzIwMWU2YTY4M2UzZjg1ODg2MWUzZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFkNDYwZjc1NjhmM2MxYWM5MTVhZTVmYTRiYjQ0YjM1ODRlMTU0YmM4ODU3MmYzYWQ4OWY1MGY0Y2JiYTcwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjk0NGMwYWY4NzA4MDU0MTBkOWJkZmU1NGNjYWVjZmZkYjBlMzRmYjEwNzIwZDFkZjA3MWYyODYyOWJhMzkwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGY0YTM1ZmIzMWQyNWY3ZGNiZGJkOGE2NGJiZTgxY2QyY2ZiY2VmZTZjYzc1N2MxZjliZmI1NWJlYjM2NDJjYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_99a68a63c7674dbfa01fdd76c0734649",
+      "statement": "readActive 在指针缺失、JSON 损坏或内容不是合法版本名时都返回 null（算无指针），调用方回退出厂依赖；损坏不抛错——broker 不能因为一个指针文件起不来。",
+      "evidence": [
+        {
+          "resource": "repo://src/versions.mjs#L80-L100",
+          "version": "repo-lines-v1:sha256:7b73ad6c7050ad0ff812bc3ec9ab1d4c0c6eabc93d775434eedb7b70a904fcc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMzQ0YjFhMTc1N2FlM2FiNjEzNWZlZjliMTZiN2ZmN2E5MDU0MGMwY2YxNDY2YjhmNzJiZDJhY2YyOTczZDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViMWY1YjVmYTJmODU5OGFlODgwNjYwZTJiN2E4M2FlYjI4NzYzMzkyMTljMDJiNDkyNDdkOWI1MWMxZTAyODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7ff23f4f58da4c08af4cca36a11856e0",
+      "statement": "版本名必须匹配 /\\d+\\.\\d+\\.\\d+/：目录名直接拼进路径，宽松一毫秒就是路径穿越；versionDir 对非法名直接抛错，测试用 ../../etc、换行、v 前缀等输入钉住。",
+      "evidence": [
+        {
+          "resource": "repo://src/versions.mjs#L30-L61",
+          "version": "repo-lines-v1:sha256:ea4c3949cc2881c07d7d86a81263d2554f5908159fec96637c178aea7ac82033:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiZWQ5MjU1ZmQ1ZDJiOWFkYWEyN2FjODM4Mjk2MzZhMmE4Y2ZjMzIzNzBhNTc5YzZlYTAxMDU0YTlmZmRhODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiOWI4YzI1MGE4YzVmNWYzZjc5YzZkN2NjZGEyNGY1MGUwODBmYzhhNGEwMzdlYzVmNmQ4YjQ4ZTQ3NzRjZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5MTUzMGVmNjczMTQ2MDAyNGJhYjc1NTBiYzI3M2RiOTM2Zjg2MDNhYzJjYTJhZDA5NGM3YjRlYzM3NDc3YWIifQ"
+        },
+        {
+          "resource": "repo://test/versions.test.mjs#L43-L53",
+          "version": "repo-lines-v1:sha256:76ca16a87118e6f46d1f73e0b99afcb689dbecb4c2626a8d13be91faba49794c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNTc5Zjg0N2VmNmU4MmFhOWE4ZmM5OTJlNmQxYTJjN2FmOWNkZDU2ZTE5ZjRkMGUyYjc5OTVmM2I3YzFmMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOGI2OWIxMjMxZTc1MDMzNWQ5ZGQxZjc5ZDc4NmVjOGQzMjEzZTQ2MDRmMzRhMGExMmRjZTRjMDM0ZTBlYTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc3YmJkNzc3NWNhMmUwYWVjN2ZhZWI2ZGU3MDIzNTAwNGIzNWZjZDIzZDIxM2VhYTdhYmU3MTc5ZmJhNTZjM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhNWJlODNhYTE2OGFhNGY4ODg4MjhmMzIyYzNiYjBhNGQ0MDc1NDVhZDM1ZTVlZTU0ODgzYzVkMmJhMWViNzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bcde2bd668ce4f9cb15de99165cba8b0",
+      "statement": "isInstalled 的判定门槛是 versions/<v>/node_modules/openwiki 下同时存在 package.json 与 dist/cli/cli.js；目录在但入口不全是装坏的半成品，该清理而不是该切换，switch 与 update 共用这一条判定。",
+      "evidence": [
+        {
+          "resource": "repo://src/versions.mjs#L63-L78",
+          "version": "repo-lines-v1:sha256:a62bbff7f7d3110e501eea1346cba3ec32a7f2478831646a400e3c037da0402d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3YWJmNmViNjczYTM0MWI1YWRiZmUwNjMwZjZlNGRkODU5NjIzYTg1NTczODE4MzQ0ZjJkYjIzMzRiZTU3MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2ODg5MzRlNTBhMGMzMTVmNTNmNzU5NmZjMDE4YmI0MjZiMDI5ZjY5MjA4NTViZDllZDc5MjQwNjQ2NmIzYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_49414a85c710422c9714759f5ccbab3f",
+      "statement": "listInstalled 返回 semver 升序的已装版本列表并标注各版快照有无与磁盘占用（读不出按 0 计），目录名不匹配版本模式的条目过滤；removeVersion 拒绝删除当前激活版本、未安装与非法版本名，删除时快照保留。",
+      "evidence": [
+        {
+          "resource": "repo://src/versions.mjs#L127-L172",
+          "version": "repo-lines-v1:sha256:2512d2198fb592add84098cfc86f9fc38b187227c4f4a6b16eb85fe5b78a1c8f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjMGNiZWYxNzU1MDNiNDBlNDQzNjQ3YmIwMGM2NTEyYTM2ODAyMTkyOWNjODAwMzE3MTMxMmU5OTYxYTdjOTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5764af01f9054ebfb66f5cf13487596a",
+      "statement": "resolveOpenwikiRuntime 的解析顺序固定为：显式版本（解析不到即抛错不回退，避免快照自称 requested 版本内容是出厂版）> versions/active.json 指针（损坏或指向未安装版本时回退出厂依赖并告警）> 包内出厂 node_modules；入口判定统一是 package.json + dist/cli/cli.js 的存在性，版本号从 package.json 读出。",
+      "evidence": [
+        {
+          "resource": "repo://src/paths.mjs#L69-L121",
+          "version": "repo-lines-v1:sha256:1b5a9f68914ea435db4fbad8d170c60270f977115e5bca33a868123ab5a6104e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwNTU4YzhiOGE0MjRhOTg1Yjg4NzJkNmE2ZWJjYjFkYTNmZDg5ZmQ5NjAwYmYyYzYzNjZiZmUyNGZlYjEyYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlNzBiNTAwZThmZTMwNTg5N2QwYzRkMmViZjJkODc0NDY2OWQ1OGNjODk4YWNlNDg2MjNiYWFlNDAzZGIzMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a7e89b2999cd4929b567f741eb327ce8",
+      "statement": "运行时解析只认本包根下的 versions/ 与 node_modules，绝不向上遍历目录树：全局安装的 openwiki 恰好在本包上一层，向上查找会在出厂依赖缺失时被悄悄采纳，此后每个版本报告都在说谎。",
+      "evidence": [
+        {
+          "resource": "repo://src/paths.mjs#L48-L57",
+          "version": "repo-lines-v1:sha256:8a2b08157ffa8e2b47704fdd4aab47281c27aec3afc514c87efc4d1198428c2e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkNjhjYjBkZmFlOTUwYjM1ZWFjZTQ4MTgwOTA2NTdlZTFhNWQ3MGJkNTc4NmUyZTIyYjFlN2Y1YWQ4NjAzOWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3ZTRkNjFmZjJjN2QzNGU2MDE4YmU2MWRhYjE5MTg0MTFhNzhhNTk4MDE1YWRkNGNhMWM5MDNjMDRmMWFhMGQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T05:45:32.864Z"
+  }
+}

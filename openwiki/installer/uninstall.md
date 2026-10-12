@@ -3,9 +3,6 @@ type: subsystem
 title: 卸载与归属判定
 description: 卸载如何做到只删自己写过的东西：归属判定优先用收据中当时写入的 command、sha256 不匹配即跳过、共享目录只移除本家记录，以及不做顺手清理的设计边界。
 tags: [uninstall, ownership, receipt, safe-removal]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-a4f5a4545f8074c813e8e76f
     resource: repo://src/skill-install.mjs
@@ -14,6 +11,9 @@ sources:
   - id: openwiki-source-94ff95c1f11b8b7df6ddb6c1
     resource: repo://src/uninstall.mjs
 generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # 卸载与归属判定

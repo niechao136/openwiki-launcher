@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:dcf4a4497b23baa8e405b4ed78020f341631b971cab78003b799024f6f15e780",
+  "pageVersion": "sha256:d8656a566e51b8419e454a9fe9747378d6517034426a2b0e7397ae05d007dd42",
   "claims": [
     {
       "id": "claim_0a3d8d2a054545e1abf8ce3a3db2515f",
@@ -98,15 +98,15 @@
     },
     {
       "id": "claim_badb1c55f5dc460c954bcd0f32dc096d",
-      "statement": "isOursEntry 由 install、uninstall、plan、doctor 四处共用，必须口径一致：它认 opencode-json 的 command 数组形态、codex-toml 的纯文本包含判断与 json 的严格比对三种形态，口径分叉会导致误报接管且加 --no-takeover 后无法再更新条目。",
+      "statement": "isOursEntry 由 install、uninstall、plan、doctor 四处共用，必须口径一致：它认 opencode-json 的 command 数组形态、codex-toml 的 args 字面量抽取后逐元素比较与 json 的严格比对三种形态，路径统一走 normalizeForCompare；口径分叉会导致误报接管且加 --no-takeover 后无法再更新条目。",
       "evidence": [
         {
-          "resource": "repo://src/ownership.mjs#L1-L8",
-          "version": "repo-lines-v1:sha256:3ee866d3940f8ba5c3ccb901db7f051dee89b905c9d7bccf6c52895f090c1ad7:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjMzY2YyOGFhZWRkZmI1MmZkOTRmNjVjNmM2M2NiMDI4Mzc2NDVhMmYyYmU0ZGMyNDE3ZjVkMmY3YTI2YTA4MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjExNGU3ZTk2ZjA3NWFkYmY0OTQwMzBlNGQzYzM3ZjQwZGI5N2IwYjc4YzVjNjNjNWJiNmQ1MGQ3OTkxYzcyNiJ9"
+          "resource": "repo://src/ownership.mjs#L1-L10",
+          "version": "repo-lines-v1:sha256:7fd39c9942dd4d1f3a6bd417abaab5eb3e28a03a73367c1ef3f27f400f7ab061:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExZWRiYWI0YWUwMTVjNWRiZmJlNzgyZjFkZGVlNzk0ZDQ5MjdlNjYzYTBjN2M3MTUwNGRkYWFmMzYyNTMxNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkYjU0NGE1ODg2MzQzNTBjMTkxNjlhODI0M2I1MzFiZjMwOTVlYjU3YzhmYjAzZTQ0ODM2OTQzZjA4MTY4ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxMTRlN2U5NmYwNzVhZGJmNDk0MDMwZTRkM2MzN2Y0MGRiOTdiMGI3OGM1YzYzYzViYjZkNTBkNzk5MWM3MjYifQ"
         },
         {
-          "resource": "repo://src/ownership.mjs#L30-L59",
-          "version": "repo-lines-v1:sha256:09d4559e00a2410247c6ec0a58b881b86179c22a3f7bb062c69b4fea089a1cf3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyYzE2YWZmMjVjOGE4YjdkNmEwM2FlYmY1OTgxNTQ4MWQ2NjQxOWQ3ZWE1ZmViYTYzYjNiZGFjZWI2MWU2NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://src/ownership.mjs#L49-L94",
+          "version": "repo-lines-v1:sha256:c18726295c8aeac7445733bd2425782a9e8390ee5234d9a8504544b33678fbdd:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2NjQxOWQyN2Y0ZDMxNjEwODJmMDM4N2Q5Y2E5ODExYTIwODI2YzliOWUzZjllZWRjY2U2MTdmYzIwNTEyZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -115,7 +115,7 @@
       "statement": "skillsDirFor 在用户作用域下按平台选目录，win32 优先取 globalDirWin（Crush 与 Reasonix 的 Windows 全局路径与 unix 不同构），不做这个选择会把 skill 装到宿主根本不扫的目录。",
       "evidence": [
         {
-          "resource": "repo://src/ownership.mjs#L10-L28",
+          "resource": "repo://src/ownership.mjs#L12-L30",
           "version": "repo-lines-v1:sha256:42d47cc872c9e53d0a7148b46e8bced429e14cad6abe418af4747e003e097a83:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjMDFhOTYxYTNkODAwYjlkNTI4MjU3MWM5NTM0NzMwMDFiOTNmMzM1ZWQzMmRiY2FkOWQwOTkyNTM1MTQwZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxYjA4NDkwNmM0NDAxYWI5ODg5NTEwNjY1ZTc2ODQwZTQyZGQ1NjNkNDgxMzllODE1OGM1NWVlZWE2OTJlNWYifQ"
         }
       ]
@@ -129,10 +129,30 @@
           "version": "repo-lines-v1:sha256:f1a1653ea28689192e941e4cef60cd92918a4c67f9d731d0a5009700959b94b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkMDU3MWJhNmYzNTdmMzQ0NjZkNWRhZTE0ZDRlMjg0NWM2MWJkNTRjMGNlNzZkZDFmODMzNDM5ZGRjYzIwYjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwMjE5NmFjYThlMTlhNzNkYzA5OWY4MDUxZGI1ZmNhOGMwYzVlMmNmYmU0N2ZkMDMzNTM0MGY1ZTUxZTdlMWQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_0243d712c2a24195a9a4df5034db19e3",
+      "statement": "codex-toml 的归属判定不能退化成「块里含 bin 路径」的包含判断：那会让 --host cursor 的块被当成 claude 的；正确做法是用正则抽出 args 字面量（还原 toml 的 \\\\ 转义）后与 json 同一套逐元素比较。",
+      "evidence": [
+        {
+          "resource": "repo://src/ownership.mjs#L81-L88",
+          "version": "repo-lines-v1:sha256:5bd3135fa265a409e245a9f415497a320232414260d25e78a49d75e75a14bebf:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNkNzkwMDhhZmQ0NmNiMjExNzdjOGEyN2MxMGMzOTg2NjQ5MzZkNTQ5YTg1ZGM0YTRhYTcyODFkZjJiYmU3OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTVmZDVjYWE1YmM1MjZhOTlhNmFjY2ZiMjlmZjk1MzhiMjEwNjdhN2JjZjlmMzZmZjNiOTljNDc5ODJmZDBmZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTgzNDQxZTFkZTk5ZTJkZWI5YzdlMTM0YTRkMDg1YThkZTlhZDA2ZGY3ZGYzNzZkNmFlY2ViOGExNTUyMGM4YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f444ad9ed7844b29b4d0feb613a29456",
+      "statement": "MCP 条目归属判定的路径比较走 normalizeForCompare 而不是逐字符比较：Windows 路径不分大小写、正反斜杠混写等价，逐字符比较会让 uninstall 退出码 0 却留下删不掉的残留，plan 会对同一条目反复报接管。",
+      "evidence": [
+        {
+          "resource": "repo://src/ownership.mjs#L57-L61",
+          "version": "repo-lines-v1:sha256:4759069897e54a6e026f72a41103cb569bf0a0da6a68cd2afc7512700cd454b6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmM5ZDJiOTg0N2Q4ZjVjNmEwNzk4OWI5ZTQxMmQ0MWQwZmQyNzY5YTVhODQ0NGU2MzVhODhiMTQ5MGEzZWYyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M1ODM5NDBkZTFmZjJjYjY1NzE4ZjQxMTcwMDhiNzk5YzRiNzg2OGZmMGNhOTJkMDBjNTMyNzA2YWI0ZTdhZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2I1ZjdlNjJlYWM5YzA0OGE0NzY0YTg1NjQwMGU0N2ExNjkzYWM5ZjY5MTI5Yjk0YWExY2IxNzdjMzMwYTFhOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmUzOTAwMmE3MjNmOTA5OTMxMDllODFmODExMmZkZjFjNWIyNDRmMWE2YjY0Mjk4ZjQ5MzkzYTMwZGYyYTgyMiJ9"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.0",
-    "at": "2026-10-10T08:12:25.306Z"
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-12T05:45:32.864Z"
   }
 }

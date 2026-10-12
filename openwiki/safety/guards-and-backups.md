@@ -3,9 +3,6 @@ type: subsystem
 title: "安全护栏、备份与回滚"
 description: guards.mjs 的系统目录与主目录拒绝规则，以及 backup.mjs 的同目录备份、符号链接解析与逐项回滚。
 tags: [guards, backup, rollback, safety]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-d0f4b9f3d483074f247655a4
     resource: repo://src/backup.mjs
@@ -13,7 +10,10 @@ sources:
     resource: repo://src/guards.mjs
   - id: openwiki-source-b995d49faa81ab47b4496f9b
     resource: repo://src/install.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # 安全护栏、备份与回滚
@@ -42,7 +42,7 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 
 ### 归一化与 realpath
 
-`normalizeForCompare` 把分隔符统一成 `/`、去掉尾斜杠、win32 下再小写。不做这层归一化，同一条路径写成 `C:\Windows` 还是 `C:/Windows` 会得出不同结论。
+`normalizeForCompare` 把分隔符统一成 `/`、去掉尾斜杠、win32 下再小写。不做这层归一化，同一条路径写成 `C:\Windows` 还是 `C:/Windows` 会得出不同结论。它被导出为**全项目路径比较的唯一约定**：MCP 条目归属判断（`ownership.mjs`、`doctor.mjs`）复用同一套约定，不能护栏一套、归属判断另一套。
 
 `safeRealpath` 在解析失败时退化成绝对路径。**比较时两侧都做 realpath**：系统根也必须解析，否则 macOS 上 `/var/...` 与 `/private/var/...` 会被判成两个不同的地方（代码注释标注为实测踩到）。
 

@@ -3,9 +3,6 @@ type: subsystem
 title: Skill 目录安装、收据与完整性校验
 description: skill bundle 的白名单安全边界、.openwiki-launcher.json 收据的内容与用途、逐文件 sha256 校验，以及共享技能目录下多宿主共存的处理。
 tags: [skill-install, receipt, sha256, allowlist, ownership]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-fe0e8939c28a8252895f4e54
     resource: repo://src/ownership.mjs
@@ -13,7 +10,10 @@ sources:
     resource: repo://src/skill-install.mjs
   - id: openwiki-source-82ad0bac05d48ab1a24b4e91
     resource: repo://src/targets.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # Skill 目录安装、收据与完整性校验
@@ -96,9 +96,11 @@ codex、antigravity、bob 三家的技能目录都是 `.agents/skills`，即多�
 
 | 形态 | 判定 |
 | --- | --- |
-| `opencode-json`（command 是数组） | `command[0] === node 路径` 且 `command.slice(1)` 与 args 全等 |
-| `codex-toml`（args 是纯文本） | command 全等且 args **包含** bin 路径（只能退化成包含判断） |
-| `json`（command + args） | command 与 args 都全等 |
+| `opencode-json`（command 是数组） | `command[0] === node 路径` 且 `command.slice(1)` 与 args 逐元素归一化后全等 |
+| `codex-toml`（args 是块文本） | 抽出 args 字面量后与 json 同一套**逐元素比较**——不能退化成包含判断，否则 `--host cursor` 的块会被当成 claude 的 |
+| `json`（command + args） | command 与 args 都逐元素归一化后全等 |
+
+三种形态的路径比较统一走 `normalizeForCompare`，**不许逐字符比较**：Windows 路径不分大小写、正反斜杠混写是同一条路径，逐字符比较会让条目被当成用户的——uninstall 退出码 0 却留下永远删不掉的残留，plan 则会对同一条目反复报「接管」。
 
 它被 install、uninstall、plan、doctor **四处共用**，口径必须一致。模块头部的注释写明了后果：如果 plan 与 uninstall 各写一份，opencode 的条目（command 是数组形态）会在 plan 里被判成「用户手写的」而误报接管，在 uninstall 里却能正确认出。用户会看到「已接管」这种错误结论，**而且加 `--no-takeover` 后再也无法更新自己的条目**。
 

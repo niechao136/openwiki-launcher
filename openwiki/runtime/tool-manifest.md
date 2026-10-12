@@ -3,9 +3,6 @@ type: subsystem
 title: "工具清单快照（manifest）"
 description: manifest 快照的生成、按版本选取、缺失降级直通与漂移检测。
 tags: [manifest, snapshot, tools-list, drift]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-ad4f149d1c4da0ecd886141d
     resource: repo://manifest/openwiki-0.6.0.json
@@ -17,9 +14,18 @@ sources:
     resource: repo://src/commands/doctor.mjs
   - id: openwiki-source-322237c20df0e9b998d722ac
     resource: repo://src/commands/mcp.mjs
+  - id: openwiki-source-ae3c8de10526e7697cd4507e
+    resource: repo://src/commands/update.mjs
+  - id: openwiki-source-4ace6d5c885a3cfa1a8c5685
+    resource: repo://src/gen-manifest.mjs
   - id: openwiki-source-841777335cd5bf0a6754a1d9
     resource: repo://src/manifest.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+  - id: openwiki-source-5cde29df2913f42519f02937
+    resource: repo://src/paths.mjs
+generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-12T05:45:32.864Z
 ---
 
 # 工具清单快照（manifest）
@@ -30,15 +36,23 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 
 ## 生成：连接真实后端
 
-`scripts/gen-manifest.mjs`（`npm run manifest`）做的事情很直接：
+核心实现在 `src/gen-manifest.mjs`；`scripts/gen-manifest.mjs` 只是 `npm run manifest` 的 CLI 包装（被直接运行时才动手），因为 `update` 与 `switch` 代装时也要复用同一段录制逻辑。
 
-1. `resolveOpenwikiRuntime()` 解析出被锁版本的 openwiki；
+`generateManifest({ hostId?, timeoutMs?, explicitVersion?, pkgRoot? })` 做的事情很直接：
+
+1. `resolveOpenwikiRuntime()` 解析出要录的 openwiki（默认当前生效版本）；
 2. 以 `process.execPath` 加绝对 `cliJs` 路径 spawn 后端（与运行时同一套 spawn 纪律）；
 3. `initialize` → `notifications/initialized` → `tools/list`，超时 600 秒（冷启动本来就慢）；
-4. 把三段应答组装成快照形状；
+4. 把三段应答组装成快照形状（`openwikiVersion` / `protocolVersion` / `serverInfo` / `instructions` / `tools`）；
 5. `finally` 里 `clearTimeout` 加 `stdin.end()` 加 `kill()`，不留后端进程。
 
 后端在返回清单前退出时，报错信息里带上 stderr 最后 800 字节。
+
+## 给未激活的版本录快照
+
+0.3.0 起 `generateManifest` 接受 `explicitVersion`：`update` 装好新版本后要**先录快照、后切指针**，此时新版本还不是生效版本。显式版本解析**解析不到就直接抛错，绝不回退出厂依赖**——否则录出的快照会自称 requested 版本、内容却是出厂版，一份对不上的工具清单正是快照机制要消灭的东西。
+
+落盘由 `update` / `switch` 代装共用的 `installAndSnapshot` 负责：装依赖（已装且可解析则跳过下载，只补录快照）→ 录快照 → 校验可用性（`tools` 非空且 `protocolVersion` 非空才算数）→ 建好父目录后写入 `manifest/openwiki-<version>.json`。任一步失败都带阶段名返回，由调用方决定下一步。
 
 ## 运行时选取
 
@@ -67,5 +81,7 @@ generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
 ## 相关页面
 
 - [MCP 请求代理（broker）](./mcp-broker.md)
+- [openwiki 版本目录与生效指针](../versions/version-store.md)
+- [版本命令：check / update / switch / versions](../versions/version-commands.md)
 - [命令行接口与 doctor 自检](../commands/cli-and-doctor.md)
 - [系统总览](../architecture/overview.md)
