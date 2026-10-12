@@ -62,7 +62,13 @@ export function parseUpdateArgs(args) {
     if (arg === "--no-switch") {
       flags.noSwitch = true;
     } else if (arg === "--version") {
-      flags.version = args[i + 1] ?? null;
+      const value = args[i + 1];
+      // 缺值不能当成「没给版本」：那会静默滑进交互模式，脚本调用时卡在一个
+      // 看不见的提示上。宁可报错。
+      if (!value || value.startsWith("-")) {
+        return { flags, error: "--version 需要一个 x.y.z 形式的三段数字版本名" };
+      }
+      flags.version = value;
       i += 1;
     } else if (arg.startsWith("--version=")) {
       flags.version = arg.slice("--version=".length);

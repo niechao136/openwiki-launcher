@@ -1,8 +1,10 @@
 import path from "node:path";
-import { readFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { main } from "../src/cli.mjs";
+import { readActive, versionDir, writeActiveAtomic } from "../src/versions.mjs";
 
 function createCapture() {
   const lines = [];
@@ -83,6 +85,122 @@ describe("main", () => {
 
     expect(code).toBe(0);
     expect(lines.join("\n")).toContain(HELP_LINE);
+  });
+
+  it("routes check to the check command", async () => {
+    const { lines, logger } = createCapture();
+
+    const code = await main(["check"], {
+      logger,
+      resolveRuntime: async () => ({ version: "0.6.0", source: "bundled", cliJs: "/fake/cli.js" }),
+      runNpm: async () => ({ code: 0, stdout: '["0.6.0"]', stderr: "" }),
+    });
+
+    expect(code).toBe(0);
+    expect(lines.join("\n")).toContain("当前生效版本");
+  });
+
+  it("routes update and forwards --version", async () => {
+    const { lines, logger } = createCapture();
+    const root = mkdtempSync(path.join(tmpdir(), "ow-cli-update-"));
+    const calls = [];
+    try {
+      const code = await main(["update", "--version", "0.6.3"], {
+        logger,
+        pkgRoot: root,
+        runNpm: async (args) => {
+          calls.push(args);
+          return { code: 0, stdout: "", stderr: "" };
+        },
+        confirm: async () => true,
+        resolveRuntime: async () => ({ version: "0.6.0", source: "bundled", cliJs: "/fake/cli.js" }),
+        writeSnapshot: async () => ({
+          openwikiVersion: "0.6.3",
+          protocolVersion: "2024-11-05",
+          tools: [{ name: "openwiki_a" }],
+        }),
+      });
+
+      expect(code).toBe(0);
+      expect(calls.find((args) => args[0] === "install")).toContain("openwiki@0.6.3");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("routes switch with its version argument", async () => {
+    const { lines, logger } = createCapture();
+    const root = mkdtempSync(path.join(tmpdir(), "ow-cli-switch-"));
+    try {
+      const pkg = path.join(versionDir(root, "0.6.0"), "node_modules", "openwiki");
+      mkdirSync(path.join(pkg, "dist", "cli"), { recursive: true });
+      writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version: "0.6.0" }));
+      writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
+      writeActiveAtomic(root, "0.7.0");
+
+      const code = await main(["switch", "0.6.0"], {
+        logger,
+        pkgRoot: root,
+        resolveRuntime: async () => ({ version: "0.7.0", source: "versions", cliJs: "/fake/cli.js" }),
+      });
+
+      expect(code).toBe(0);
+      expect(readActive(root).version).toBe("0.6.0");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects switch without a version", async () => {
+    const { lines, logger } = createCapture();
+
+    const code = await main(["switch"], { logger, pkgRoot: mkdtempSync(path.join(tmpdir(), "ow-cli-switch-b-")) });
+
+    expect(code).toBe(1);
+    expect(lines.join("\n")).toContain("x.y.z");
+  });
+
+  it("routes versions remove", async () => {
+    const { lines, logger } = createCapture();
+    const root = mkdtempSync(path.join(tmpdir(), "ow-cli-versions-"));
+    try {
+      for (const version of ["0.6.0", "0.7.0"]) {
+        const pkg = path.join(versionDir(root, version), "node_modules", "openwiki");
+        mkdirSync(path.join(pkg, "dist", "cli"), { recursive: true });
+        writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version }));
+        writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
+      }
+      writeActiveAtomic(root, "0.7.0");
+
+      const code = await main(["versions", "remove", "0.6.0"], { logger, pkgRoot: root });
+
+      expect(code).toBe(0);
+      expect(existsSync(versionDir(root, "0.6.0"))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps the version command for the launcher itself", async () => {
+    const { lines, logger } = createCapture();
+
+    const code = await main(["--version"], { logger });
+
+    expect(code).toBe(0);
+    expect(lines.join("\n")).toContain("openwiki-launcher ");
+  });
+
+  it("help lists the four new commands", async () => {
+    const { lines, logger } = createCapture();
+
+    const code = await main(["help"], { logger });
+
+    expect(code).toBe(0);
+    const out = lines.join("\n");
+    expect(out).toContain("check");
+    expect(out).toContain("update");
+    expect(out).toContain("switch");
+    expect(out).toContain("versions remove");
   });
 
   it("prints the package version", async () => {

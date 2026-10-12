@@ -251,6 +251,28 @@ describe("runUpdateCommand", () => {
     expect(text()).toContain("x.y.z");
   });
 
+  it("rejects --version without a value instead of falling back to interactive mode", async () => {
+    // `update --version` 缺值若被当成「没给版本」，会静默进入交互模式——
+    // 用户在脚本里调 update 时就卡在了一个看不见的提示上。
+    const root = freshRoot();
+    const { runNpm, calls } = fakeNpm();
+    const { text, logger } = collectLogger();
+
+    const code = await runUpdateCommand({
+      logger, pkgRoot: root, args: ["--version"],
+      runNpm,
+      confirm: async () => {
+        throw new Error("must not prompt");
+      },
+      resolveRuntime: async () => bundledRuntime,
+      writeSnapshot: async () => okSnapshot,
+    });
+
+    expect(code).toBe(1);
+    expect(calls).toHaveLength(0);
+    expect(text()).toContain("--version");
+  });
+
   it("installs an explicit --version without prompting", async () => {
     const root = freshRoot();
     const { runNpm, calls } = fakeNpm();

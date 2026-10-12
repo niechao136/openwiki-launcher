@@ -43,6 +43,10 @@ export async function runSwitchCommand({
   writeSnapshot = generateManifest,
   install = installAndSnapshot,
 }) {
+  if (version === undefined) {
+    logger.error("switch 需要一个版本名（x.y.z），例如: openwiki-launcher switch 0.6.0");
+    return 1;
+  }
   if (!isValidVersion(version)) {
     logger.error(`版本名必须是 x.y.z 形式的三段数字，收到: ${JSON.stringify(version)}`);
     return 1;

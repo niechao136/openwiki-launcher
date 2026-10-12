@@ -127,6 +127,10 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 | `openwiki-launcher mcp [--host <id>]` | 作为 MCP 服务器运行，宿主配置指向这里 |
 | `openwiki-launcher warm` | 启动一次后端到就绪后退出，用于预热 |
 | `openwiki-launcher doctor` | 检查 Node、openwiki、快照、真实后端与已写入的 MCP 命令 |
+| `openwiki-launcher check` | 查看本地 openwiki 版本状态：当前生效版本、已装版本与快照、registry 最新版 |
+| `openwiki-launcher update [--version <v>]` | 升级 openwiki：列出可选版本交互确认后安装、生成快照并切换（`--no-switch` 只装不切） |
+| `openwiki-launcher switch <version>` | 切换当前生效的 openwiki 版本（已装版本间毫秒级，可秒回滚） |
+| `openwiki-launcher versions remove <v>` | 删除一个已安装的 openwiki 版本（快照保留，拒删当前激活版本） |
 | `openwiki-launcher help` / `version` | 帮助与版本 |
 
 ## 工作方式
@@ -139,6 +143,13 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
   宁可慢也不给宿主一份对不上的工具清单；
 - 后端崩溃会自动重启一次，在途调用收到明确错误而不是无声挂起。
 
+版本管理（0.3.0 新增）：openwiki 各版本 side-by-side 装在 launcher 自己的
+`versions/<版本>/` 下，`versions/active.json` 指针决定生效版本——`check` 看状态、
+`update` 交互确认式升级、`switch` 毫秒切换、`versions remove` 清理磁盘。解析顺序为
+指针优先，指针缺失或损坏时回退出厂依赖（package.json 里钉的那个）并告警；
+**全局安装的 openwiki 不参与解析**——launcher 只认自己包根下的 node_modules 与
+versions/，想换版本请用上面的命令而不是 `npm install -g openwiki@x`。
+
 ## 故障排查
 
 | 现象 | 处理 |
@@ -148,6 +159,8 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 | 预热超时/失败但安装成功 | 预热是优化不是安装的一部分，不影响退出码；可单独跑 `openwiki-launcher warm`（上限 60 秒） |
 | `doctor` 报清单差异 | 按提示运行 `npm run manifest`（或在本仓库 `node scripts/gen-manifest.mjs`）重新生成快照 |
 | `doctor` 报「MCP 命令指向」不一致 | 你升级过 node，配置里存的是旧绝对路径。重跑 `openwiki-launcher` 即可 |
+| `doctor` 报版本指针损坏 | `versions/active.json` 解析不了，已自动回退出厂依赖。重跑 `switch <版本>` 或删掉该文件 |
+| `check` 显示已装版本但快照 ✗ | 该版本没有快照，会以直通模式运行（首次工具调用等后端启动）。重跑 `update --version <该版本>` 或等下次升级补录 |
 | 安装退出码 2 | 护栏拒绝了（系统目录、或在主目录里做项目级安装），没有写入任何文件。主目录场景可加 `--force` 或改用 `--global` |
 | 想保留 openwiki 原生安装 | 加 `--no-takeover`，安装器会跳过该宿主而不是接管 |
 | Windows 上后端起不来 | 建议把 Node 与 openwiki 依赖目录加入 Microsoft Defender 排除项，冷启动会快很多 |

@@ -4,9 +4,14 @@ import { runDoctorCommand } from "./commands/doctor.mjs";
 import { runMcpCommand } from "./commands/mcp.mjs";
 import { runWarmCommand } from "./commands/warm.mjs";
 import { runInstallCommand, parseInstallArgs } from "./commands/install.mjs";
+import { runCheckCommand } from "./commands/check.mjs";
+import { runUpdateCommand } from "./commands/update.mjs";
+import { runSwitchCommand } from "./commands/switch.mjs";
+import { runVersionsCommand } from "./commands/versions.mjs";
 import { resolveSelfBin } from "./self-path.mjs";
 import { nodeVersionSupported } from "./node-version.mjs";
 import { launcherVersion } from "./pkg.mjs";
+import { launcherPackageRoot } from "./versions.mjs";
 
 const HOST_ID = /^[a-z0-9-]{1,64}$/u;
 
@@ -23,6 +28,10 @@ const HELP = [
   "  openwiki-launcher mcp [--host <id>]      作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
   "  openwiki-launcher warm                    预热 openwiki 后端后退出",
   "  openwiki-launcher doctor                  检查环境、manifest 与已写入的 MCP 命令",
+  "  openwiki-launcher check                   查看本地 openwiki 版本状态（当前/已装/registry）",
+  "  openwiki-launcher update [--version <v>]  升级 openwiki（交互确认；--no-switch 只装不切）",
+  "  openwiki-launcher switch <version>        切换当前生效的 openwiki 版本",
+  "  openwiki-launcher versions remove <v>     删除一个已安装的 openwiki 版本",
   "  openwiki-launcher help                    显示本帮助",
   "  openwiki-launcher version                 显示版本",
 ].join("\n");
@@ -133,6 +142,47 @@ export async function main(argv, deps = {}) {
       return 1;
     }
     return runInstallCommand(parsed.flags, cliDeps(deps, logger));
+  }
+
+  if (command === "check") {
+    return runCheckCommand({
+      logger,
+      pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
+      resolveRuntime: deps.resolveRuntime,
+      runNpm: deps.runNpm,
+    });
+  }
+
+  if (command === "update") {
+    return runUpdateCommand({
+      logger,
+      pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
+      args: rest,
+      runNpm: deps.runNpm,
+      confirm: deps.confirm,
+      resolveRuntime: deps.resolveRuntime,
+      writeSnapshot: deps.writeSnapshot,
+    });
+  }
+
+  if (command === "switch") {
+    return runSwitchCommand({
+      logger,
+      pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
+      version: rest[0],
+      runNpm: deps.runNpm,
+      confirm: deps.confirm,
+      resolveRuntime: deps.resolveRuntime,
+      writeSnapshot: deps.writeSnapshot,
+    });
+  }
+
+  if (command === "versions") {
+    return runVersionsCommand({
+      logger,
+      pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
+      args: rest,
+    });
   }
 
   // 裸用法：`openwiki-launcher` 或 `openwiki-launcher --tool claude` 都走安装
