@@ -1,7 +1,18 @@
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { resolveOpenwikiRuntime } from "../src/paths.mjs";
+import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../src/paths.mjs";
+import { writeActiveAtomic } from "../src/versions.mjs";
+
+/** 在指定相对目录种一个可解析的假 openwiki；返回其 cli.js 绝对路径。 */
+function plantFakeOpenwiki(root, relDir, version) {
+  const pkg = path.join(root, relDir);
+  mkdirSync(path.join(pkg, "dist", "cli"), { recursive: true });
+  writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version }));
+  writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
+  return path.join(pkg, "dist", "cli", "cli.js");
+}
 
 describe("resolveOpenwikiRuntime", () => {
   it("resolves the pinned openwiki package and its CLI entry", async () => {
@@ -16,5 +27,100 @@ describe("resolveOpenwikiRuntime", () => {
     const runtime = await resolveOpenwikiRuntime();
 
     expect(existsSync(path.join(runtime.packageRoot, "package.json"))).toBe(true);
+  });
+
+  it("prefers the version the active pointer names", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      const cliJs = plantFakeOpenwiki(root, path.join("versions", "0.7.0", "node_modules", "openwiki"), "0.7.0");
+      writeActiveAtomic(root, "0.7.0");
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root });
+
+      expect(runtime.version).toBe("0.7.0");
+      expect(runtime.source).toBe("versions");
+      expect(runtime.cliJs).toBe(cliJs);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("falls back to the bundled dependency when no pointer exists", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      plantFakeOpenwiki(root, path.join("node_modules", "openwiki"), "0.6.0");
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root });
+
+      expect(runtime.version).toBe("0.6.0");
+      expect(runtime.source).toBe("bundled");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("falls back with a warning when the pointer is corrupted", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      plantFakeOpenwiki(root, path.join("node_modules", "openwiki"), "0.6.0");
+      mkdirSync(path.join(root, "versions"), { recursive: true });
+      writeFileSync(path.join(root, "versions", "active.json"), "not json");
+      const warnings = [];
+      const logger = { warn: (message) => warnings.push(message) };
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root, logger });
+
+      expect(runtime.source).toBe("bundled");
+      expect(warnings).toHaveLength(1);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("falls back when the pointed version is not installed", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      plantFakeOpenwiki(root, path.join("node_modules", "openwiki"), "0.6.0");
+      writeActiveAtomic(root, "9.9.9");
+      const warnings = [];
+      const logger = { warn: (message) => warnings.push(message) };
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root, logger });
+
+      expect(runtime.source).toBe("bundled");
+      expect(runtime.version).toBe("0.6.0");
+      expect(warnings).toHaveLength(1);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("resolves an explicit version without consulting the pointer", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      plantFakeOpenwiki(root, path.join("versions", "0.6.0", "node_modules", "openwiki"), "0.6.0");
+      const cliJs = plantFakeOpenwiki(root, path.join("versions", "0.7.0", "node_modules", "openwiki"), "0.7.0");
+      writeActiveAtomic(root, "0.6.0");
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root, explicitVersion: "0.7.0" });
+
+      expect(runtime.version).toBe("0.7.0");
+      expect(runtime.cliJs).toBe(cliJs);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("never resolves an openwiki found by walking up the tree", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      // 模拟 npm 全局根：openwiki 装在 pkgRoot 的父目录里。
+      plantFakeOpenwiki(path.dirname(root), path.join("node_modules", "openwiki"), "9.9.9");
+
+      await expect(resolveOpenwikiRuntime({ pkgRoot: root })).rejects.toThrow(OpenwikiNotFoundError);
+    } finally {
+      rmSync(path.join(path.dirname(root), "node_modules"), { recursive: true, force: true });
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });

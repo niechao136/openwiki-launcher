@@ -14,6 +14,16 @@ import { fileURLToPath } from "node:url";
 
 const PACKAGE_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
+/**
+ * launcher 包根。版本目录、manifest 目录、出厂 node_modules 都挂在它下面；
+ * 各模块默认值统一从这里取，不再各自推导一遍。
+ *
+ * @returns {string}
+ */
+export function launcherPackageRoot() {
+  return PACKAGE_ROOT;
+}
+
 /** 指针文件名。版本目录与 manifest 目录之间只隔这一层语义。 */
 const ACTIVE_FILE = "active.json";
 

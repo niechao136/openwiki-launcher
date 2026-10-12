@@ -1,4 +1,6 @@
+import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import path from "node:path";
 import { createBackendSupervisor } from "../backend.mjs";
 import { loadManifest } from "../manifest.mjs";
 import { MIN_NODE, nodeVersionSupported } from "../node-version.mjs";
@@ -8,6 +10,7 @@ import { HOSTS } from "../registry.mjs";
 import { readJsonEntry, readTomlBlock } from "../mcp-config.mjs";
 import { collectMcpSnapshot } from "../targets.mjs";
 import { declaredOpenwikiRange, exactPinnedVersion } from "../pkg.mjs";
+import { launcherPackageRoot, readActive, versionsRoot } from "../versions.mjs";
 
 const ENTRY_KEY = "openwiki";
 const AUTO_KINDS = ["json", "codex-toml", "opencode-json"];
@@ -100,11 +103,17 @@ function checkInstalledMcpCommands({ logger, scope, baseDir, platform, nodeComma
  * 定义成「openwiki 升级后的一条命令核对流程」，而写死的版本号在第一次升版后就会永远
  * 报「不符」—— 一个永远在报警的 doctor 等于没有 doctor。
  *
- * 声明不是精确锁版时跳过核对并说明原因：拿范围当版本号去比，报出来的结论是假的。
+ * 声明不是精确锁版、或当前版本来自 versions/ 指针时跳过核对并说明原因：拿范围当版本号
+ * 去比，报出来的结论是假的；而指针切换是版本管理命令的正常产物，拿出厂锁版去报「安装
+ * 来源被污染」同样是在误报。
  *
- * @param {{ logger: object, runtimeVersion: string, declared: string }} options
+ * @param {{ logger: object, runtimeVersion: string, declared: string, source?: string }} options
  */
-function checkOpenwikiPin({ logger, runtimeVersion, declared }) {
+function checkOpenwikiPin({ logger, runtimeVersion, declared, source }) {
+  if (source === "versions") {
+    logger.info(`✓ openwiki 版本由指针管理（${runtimeVersion}），跳过 package.json 锁版核对`);
+    return;
+  }
   const pinned = exactPinnedVersion(declared);
   if (pinned === null) {
     logger.info(`! 依赖声明 openwiki@${declared || "(缺失)"} 是范围而非精确锁版，已跳过版本核对`);
@@ -115,6 +124,75 @@ function checkOpenwikiPin({ logger, runtimeVersion, declared }) {
     return;
   }
   logger.warn(`! 依赖 openwiki@${runtimeVersion} 与锁定的 ${pinned} 不符，请检查安装来源`);
+}
+
+/**
+ * 版本指针状态。
+ *
+ * 指针是 check/update/switch 唯一的生效途径，doctor 必须把它的状态讲清楚：
+ * 生效中、损坏回退、未设置，三种状态对应三种用户动作（继续用 / 重跑 switch / 知道现在
+ * 跑的是出厂版本）。
+ *
+ * @param {{ logger: object, pkgRoot: string, runtime: { version: string, source: string } }} options
+ */
+function checkVersionPointer({ logger, pkgRoot, runtime }) {
+  const active = readActive(pkgRoot);
+  const pointerFile = path.join(versionsRoot(pkgRoot), "active.json");
+  if (active && runtime.source === "versions" && active.version === runtime.version) {
+    logger.info(`✓ 版本指针：${active.version}（versions）`);
+    return;
+  }
+  if (existsSync(pointerFile) && !active) {
+    logger.warn("! 版本指针损坏，已回退出厂依赖；修复：重跑 switch 或删除 versions/active.json");
+    return;
+  }
+  if (!active) {
+    logger.info("✓ 版本指针：未设置，使用出厂依赖（bundled）");
+    return;
+  }
+  logger.info(`! 版本指针：${active.version}，当前生效 ${runtime.version}（${runtime.source}）`);
+}
+
+/** win32 上裸 npm 名字起不来，shell 拼不出带空格的路径；用 .cmd 最稳。 */
+const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
+
+/**
+ * 全局 openwiki 根目录。查不到（npm 不在 PATH、命令失败）时返回 null——
+ * 这项提示是锦上添花，不该把 doctor 变成第二个故障源。
+ *
+ * @returns {Promise<string | null>}
+ */
+function defaultGlobalRoot() {
+  return new Promise((resolve) => {
+    const child = spawn(NPM_BIN, ["root", "-g"], { stdio: ["ignore", "pipe", "ignore"] });
+    let out = "";
+    child.stdout.on("data", (chunk) => {
+      out += chunk.toString();
+    });
+    child.on("error", () => resolve(null));
+    child.on("close", (code) => resolve(code === 0 && out.trim() ? out.trim() : null));
+  });
+}
+
+/**
+ * 全局安装的 openwiki 不参与 launcher 解析（paths.mjs 只认包根与 versions/）。
+ * 「全局装了新版却发现没生效」是最容易产生的一类困惑；检测到就说出来。
+ *
+ * @param {{ logger: object, resolveGlobalRoot: () => Promise<string | null> }} options
+ */
+async function checkGlobalOpenwiki({ logger, resolveGlobalRoot }) {
+  let globalRoot;
+  try {
+    globalRoot = await resolveGlobalRoot();
+  } catch {
+    return;
+  }
+  if (!globalRoot) return;
+  if (existsSync(path.join(globalRoot, "openwiki", "package.json"))) {
+    logger.warn(
+      `! 检测到全局 openwiki（${globalRoot}），launcher 不使用它；请用 check/update/switch 管理版本`,
+    );
+  }
 }
 
 /**
@@ -159,6 +237,8 @@ export function diffTools(expected, actual) {
  *   nodeCommand?: { command: string, warning: string | null },
  *   selfBin?: string,
  *   declaredOpenwiki?: string,
+ *   pkgRoot?: string,
+ *   resolveGlobalRoot?: () => Promise<string | null>,
  * }} options
  * @returns {Promise<number>} Exit code.
  */
@@ -175,6 +255,8 @@ export async function runDoctorCommand({
   nodeCommand,
   selfBin = "",
   declaredOpenwiki = declaredOpenwikiRange(),
+  pkgRoot = launcherPackageRoot(),
+  resolveGlobalRoot = defaultGlobalRoot,
 }) {
   if (!nodeVersionSupported(nodeVersion)) {
     logger.error(
@@ -194,7 +276,9 @@ export async function runDoctorCommand({
   }
   logger.info(`✓ openwiki ${runtime.version}：${runtime.cliJs}`);
 
-  checkOpenwikiPin({ logger, runtimeVersion: runtime.version, declared: declaredOpenwiki });
+  checkVersionPointer({ logger, pkgRoot, runtime });
+  await checkGlobalOpenwiki({ logger, resolveGlobalRoot });
+  checkOpenwikiPin({ logger, runtimeVersion: runtime.version, declared: declaredOpenwiki, source: runtime.source });
 
   // 没有给 baseDir / nodeCommand 时静默跳过这两项：doctor 可能被只想检查后端的用户调用，
   // 那时它对「装到哪儿了」一无所知，报告一堆「不一致」反而是噪声。

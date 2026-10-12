@@ -229,6 +229,97 @@ describe("doctor 的安装配置核对（新增两项）", () => {
   });
 });
 
+describe("doctor 的版本指针与全局安装提示", () => {
+  function tempPkgRoot() {
+    return mkdtempSync(join(tmpdir(), "ow-doc-p-"));
+  }
+
+  it("指针生效时展示指针与来源，并跳过 package.json 锁版核对", async () => {
+    // 指针把运行时切到 0.7.0 而 package.json 仍锁 0.6.0——这是合法的指针切换，
+    // 不是「安装来源被污染」。拿锁版去报「不符」的 doctor 会在第一次 switch 后
+    // 开始永远误报，用户从此不再相信它的任何结论。
+    const root = tempPkgRoot();
+    try {
+      mkdirSync(join(root, "versions"), { recursive: true });
+      writeFileSync(join(root, "versions", "active.json"), JSON.stringify({ version: "0.7.0" }));
+      const { lines, logger } = collectLogger();
+      const code = await runDoctorCommand({
+        logger, nodeVersion: "24.21.0",
+        resolveRuntime: async () => ({ ...RUNTIME, version: "0.7.0", source: "versions" }),
+        createSupervisor: supervisorWith([]),
+        pkgRoot: root,
+        resolveGlobalRoot: async () => null,
+      });
+      expect(code).toBe(0);
+      const out = lines.join("\n");
+      expect(out).toContain("✓ 版本指针：0.7.0（versions）");
+      expect(out).not.toContain("不符，请检查安装来源");
+      expect(out).toContain("跳过");
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
+
+  it("指针损坏时报出损坏与修复方式，并说明已回退出厂依赖", async () => {
+    const root = tempPkgRoot();
+    try {
+      mkdirSync(join(root, "versions"), { recursive: true });
+      writeFileSync(join(root, "versions", "active.json"), "not json");
+      const { lines, logger } = collectLogger();
+      const code = await runDoctorCommand({
+        logger, nodeVersion: "24.21.0",
+        resolveRuntime: async () => ({ ...RUNTIME, source: "bundled" }),
+        createSupervisor: supervisorWith([]),
+        pkgRoot: root,
+        resolveGlobalRoot: async () => null,
+      });
+      expect(code).toBe(0);
+      const out = lines.join("\n");
+      expect(out).toContain("版本指针损坏");
+      expect(out).toContain("switch");
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
+
+  it("无指针时说明使用出厂依赖", async () => {
+    const root = tempPkgRoot();
+    try {
+      const { lines, logger } = collectLogger();
+      const code = await runDoctorCommand({
+        logger, nodeVersion: "24.21.0",
+        resolveRuntime: async () => ({ ...RUNTIME, source: "bundled" }),
+        createSupervisor: supervisorWith(loadManifest("0.6.0").tools),
+        pkgRoot: root,
+        resolveGlobalRoot: async () => null,
+      });
+      expect(code).toBe(0);
+      expect(lines.join("\n")).toContain("✓ 版本指针：未设置，使用出厂依赖（bundled）");
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
+
+  it("检测到全局 openwiki 时明确告知 launcher 不使用它", async () => {
+    const root = tempPkgRoot();
+    const globalRoot = tempPkgRoot();
+    try {
+      mkdirSync(join(globalRoot, "openwiki"), { recursive: true });
+      writeFileSync(join(globalRoot, "openwiki", "package.json"), "{}");
+      const { lines, logger } = collectLogger();
+      const code = await runDoctorCommand({
+        logger, nodeVersion: "24.21.0",
+        resolveRuntime: async () => ({ ...RUNTIME, source: "bundled" }),
+        createSupervisor: supervisorWith(loadManifest("0.6.0").tools),
+        pkgRoot: root,
+        resolveGlobalRoot: async () => globalRoot,
+      });
+      expect(code).toBe(0);
+      const out = lines.join("\n");
+      expect(out).toContain("检测到全局 openwiki");
+      expect(out).toContain("launcher 不使用它");
+      expect(out).toContain("check/update/switch");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+      rmSync(globalRoot, { recursive: true, force: true });
+    }
+  });
+});
+
 describe("installedEntryMatches", () => {
   const nodeCommand = { command: "D:\\Hub\\node\\node.exe", warning: null };
   const selfBin = "D:\\Hub\\launcher\\bin\\openwiki-launcher.mjs";

@@ -1,38 +1,112 @@
-import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import {
+  isValidVersion,
+  launcherPackageRoot,
+  readActive,
+  versionDir,
+  versionsRoot,
+} from "./versions.mjs";
 
 /**
  * Raised when the openwiki dependency cannot be located.
  *
  * The launcher never guesses a global installation path: a wrong guess starts
- * the wrong backend, or none at all, and the host sees a timeout instead of a
- * diagnosis.
+ * the wrong backend, or none at all, and the host sees a timeout instead of
+ * a diagnosis.
  */
 export class OpenwikiNotFoundError extends Error {}
 
-/**
- * Resolves the pinned openwiki dependency and the CLI entry the broker spawns.
- *
- * Resolution goes through Node module resolution from this package, so the
- * absolute path may contain spaces and never depends on PATH, on an nvm shim,
- * or on a globally installed openwiki.
- *
- * @returns {Promise<{ packageRoot: string, version: string, cliJs: string }>}
- * Absolute package root, declared version, and absolute CLI entry path.
- */
+const silentLogger = { warn() {} };
 
-export async function resolveOpenwikiRuntime() {
-  const require = createRequire(import.meta.url);
-  let packageJsonPath;
-  let cliJs;
+/**
+ * 解析一个候选 openwiki 包目录；package.json 与 CLI 入口不全时返回 null。
+ *
+ * @param {string} dir 候选 openwiki 包目录。
+ * @returns {{ packageJson: string, cliJs: string } | null}
+ */
+function resolveEntry(dir) {
+  const packageJson = path.join(dir, "package.json");
+  const cliJs = path.join(dir, "dist", "cli", "cli.js");
+  if (!existsSync(packageJson) || !existsSync(cliJs)) return null;
+  return { packageJson, cliJs };
+}
+
+/**
+ * @param {string} packageJson package.json 路径。
+ * @returns {string | null} version 字段；读不出或不是字符串时为 null。
+ */
+function readDeclaredVersion(packageJson) {
   try {
-    packageJsonPath = require.resolve("openwiki/package.json");
-    cliJs = require.resolve("openwiki/dist/cli/cli.js");
-  } catch (error) {
-    throw new OpenwikiNotFoundError(`cannot resolve openwiki dependency: ${error.message}`);
+    const { version } = JSON.parse(readFileSync(packageJson, "utf8"));
+    return typeof version === "string" ? version : null;
+  } catch {
+    return null;
   }
-  const packageRoot = path.dirname(packageJsonPath);
-  const { version } = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-  return { packageRoot, version, cliJs };
+}
+
+/**
+ * Resolves the openwiki the launcher should run, and where it came from.
+ *
+ * Resolution order: an explicit version (used while recording a snapshot for a
+ * version that is not active yet), then the active pointer under versions/,
+ * then the bundled dependency. The bundled fallback only ever looks inside
+ * this package's own node_modules — never up the directory tree. A globally
+ * installed openwiki sits one level above a global install of this package,
+ * so a walk-up would silently adopt it whenever the bundled dependency went
+ * missing, and every version report would start lying.
+ *
+ * A missing or damaged pointer is never fatal: the caller gets the bundled
+ * dependency and a warning, so the broker keeps serving.
+ *
+ * @param {{
+ *   explicitVersion?: string,
+ *   pkgRoot?: string,
+ *   logger?: { warn(message: string): void },
+ * }} [options]
+ * @returns {Promise<{ packageRoot: string, version: string, cliJs: string, source: "versions" | "bundled" }>}
+ */
+export async function resolveOpenwikiRuntime({
+  explicitVersion,
+  pkgRoot = launcherPackageRoot(),
+  logger = silentLogger,
+} = {}) {
+  if (explicitVersion !== undefined && !isValidVersion(explicitVersion)) {
+    throw new OpenwikiNotFoundError(
+      `非法的 openwiki 版本名: ${JSON.stringify(explicitVersion)}（应为 x.y.z）`,
+    );
+  }
+
+  const active = readActive(pkgRoot);
+  if (explicitVersion === undefined && existsSync(path.join(versionsRoot(pkgRoot), "active.json")) && !active) {
+    logger.warn("versions/active.json 损坏或内容非法，回退出厂依赖");
+  }
+
+  /** @type {{ dir: string, source: "versions" | "bundled", pointerMiss?: string }[]} */
+  const candidates = [];
+  if (explicitVersion !== undefined) {
+    candidates.push({
+      dir: path.join(versionDir(pkgRoot, explicitVersion), "node_modules", "openwiki"),
+      source: "versions",
+    });
+  } else if (active) {
+    candidates.push({
+      dir: path.join(versionDir(pkgRoot, active.version), "node_modules", "openwiki"),
+      source: "versions",
+      pointerMiss: `版本指针指向 ${active.version}，但该版本未安装或入口缺失，回退出厂依赖`,
+    });
+  }
+  candidates.push({ dir: path.join(pkgRoot, "node_modules", "openwiki"), source: "bundled" });
+
+  for (const candidate of candidates) {
+    const entry = resolveEntry(candidate.dir);
+    if (entry) {
+      const version = readDeclaredVersion(entry.packageJson);
+      if (version) {
+        return { packageRoot: candidate.dir, version, cliJs: entry.cliJs, source: candidate.source };
+      }
+    }
+    if (candidate.pointerMiss) logger.warn(candidate.pointerMiss);
+  }
+  throw new OpenwikiNotFoundError(`cannot resolve openwiki dependency under ${pkgRoot}`);
 }
