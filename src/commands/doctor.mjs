@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { createBackendSupervisor } from "../backend.mjs";
@@ -11,6 +10,7 @@ import { readJsonEntry, readTomlBlock } from "../mcp-config.mjs";
 import { collectMcpSnapshot } from "../targets.mjs";
 import { declaredOpenwikiRange, exactPinnedVersion } from "../pkg.mjs";
 import { launcherPackageRoot, readActive, versionsRoot } from "../versions.mjs";
+import { runNpm } from "../npm-runner.mjs";
 
 const ENTRY_KEY = "openwiki";
 const AUTO_KINDS = ["json", "codex-toml", "opencode-json"];
@@ -153,8 +153,7 @@ function checkVersionPointer({ logger, pkgRoot, runtime }) {
   logger.info(`! 版本指针：${active.version}，当前生效 ${runtime.version}（${runtime.source}）`);
 }
 
-/** win32 上裸 npm 名字起不来，shell 拼不出带空格的路径；用 .cmd 最稳。 */
-const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
+/** win32 上裸 npm 名字起不来，shell 拼不出带空格的路径；npm 的 JS 入口见 npm-runner。 */
 
 /**
  * 全局 openwiki 根目录。查不到（npm 不在 PATH、命令失败）时返回 null——
@@ -163,15 +162,9 @@ const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
  * @returns {Promise<string | null>}
  */
 function defaultGlobalRoot() {
-  return new Promise((resolve) => {
-    const child = spawn(NPM_BIN, ["root", "-g"], { stdio: ["ignore", "pipe", "ignore"] });
-    let out = "";
-    child.stdout.on("data", (chunk) => {
-      out += chunk.toString();
-    });
-    child.on("error", () => resolve(null));
-    child.on("close", (code) => resolve(code === 0 && out.trim() ? out.trim() : null));
-  });
+  return runNpm(["root", "-g"]).then((result) =>
+    result.code === 0 && result.stdout.trim() ? result.stdout.trim() : null,
+  );
 }
 
 /**

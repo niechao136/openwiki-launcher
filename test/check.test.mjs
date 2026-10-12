@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { runCheckCommand } from "../src/commands/check.mjs";
+import { OpenwikiNotFoundError } from "../src/paths.mjs";
 import { versionDir } from "../src/versions.mjs";
 import { collectLogger } from "./helpers.mjs";
 
@@ -143,5 +144,55 @@ describe("runCheckCommand", () => {
     const out = text();
     expect(out).toContain("版本指针损坏");
     expect(out).toContain("switch");
+  });
+
+  it("queries the registry through the default npm runner when none is injected", async () => {
+    // 不注入 runNpm：cli 在生产里传的是 undefined，默认执行器接不上时
+    // registry 行会以「runNpm is not a function」的形式恒死——一个 wiring bug
+    // 被伪装成网络故障。registry 真的挂了也只该降级，不该报这句话。
+    const { text, logger } = collectLogger();
+    const root = freshRoot();
+
+    const code = await runCheckCommand({
+      logger,
+      pkgRoot: root,
+      resolveRuntime: async () => bundledRuntime,
+    });
+
+    expect(code).toBe(0);
+    expect(text()).not.toContain("is not a function");
+  }, 30000);
+
+  it("shows the registry latest stable version, ignoring prereleases", async () => {
+    const { text, logger } = collectLogger();
+    const root = freshRoot();
+
+    await runCheckCommand({
+      logger,
+      pkgRoot: root,
+      resolveRuntime: async () => bundledRuntime,
+      runNpm: registryOk(["0.6.0", "0.7.0-beta.1", "0.6.3"]),
+    });
+
+    expect(text()).toContain("registry 最新版本：0.6.3");
+  });
+
+  it("reports a failed runtime resolution instead of crashing", async () => {
+    // check 是用户出问题时第一个跑的命令；node_modules 被清掉时它该说人话，
+    // 而不是以一截栈跟踪收场。
+    const { text, logger } = collectLogger();
+    const root = freshRoot();
+
+    const code = await runCheckCommand({
+      logger,
+      pkgRoot: root,
+      resolveRuntime: async () => {
+        throw new OpenwikiNotFoundError("cannot resolve openwiki dependency under /x");
+      },
+      runNpm: registryOk(),
+    });
+
+    expect(code).toBe(1);
+    expect(text()).toContain("未找到 openwiki");
   });
 });

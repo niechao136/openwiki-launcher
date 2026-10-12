@@ -61,6 +61,23 @@ export function versionDir(pkgRoot, version) {
 }
 
 /**
+ * 某个版本是否已安装且可解析。
+ *
+ * switch 的「已安装」判定与 update 的「跳过下载」共用这一条：目录在但入口
+ * 不全不算装好——那是个装坏了的半成品，该清理而不是该切换。
+ *
+ * @param {string} pkgRoot launcher 包根。
+ * @param {string} version 三段数字版本名。
+ * @returns {boolean}
+ */
+export function isInstalled(pkgRoot, version) {
+  if (!isValidVersion(version)) return false;
+  const pkg = path.join(versionsRoot(pkgRoot), version, "node_modules", "openwiki");
+  return existsSync(path.join(pkg, "package.json"))
+    && existsSync(path.join(pkg, "dist", "cli", "cli.js"));
+}
+
+/**
  * 读取当前生效指针。
  *
  * 指针缺失、JSON 损坏、或内容不是一个合法版本名，都算「无指针」：
@@ -155,7 +172,7 @@ export function removeVersion(pkgRoot, version) {
 }
 
 /** 三段数字逐段数值比较；等长对齐，预发布号不在词汇表里。 */
-function compareVersions(a, b) {
+export function compareVersions(a, b) {
   const pa = a.split(".").map(Number);
   const pb = b.split(".").map(Number);
   for (let i = 0; i < 3; i += 1) {

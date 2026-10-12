@@ -1,11 +1,11 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
 import { manifestFilePath } from "../manifest.mjs";
 import { generateManifest } from "../gen-manifest.mjs";
-import { isValidVersion, versionDir, writeActiveAtomic } from "../versions.mjs";
+import { compareVersions, isValidVersion, isInstalled, versionDir, writeActiveAtomic } from "../versions.mjs";
+import { pickLatestStable, runNpm } from "../npm-runner.mjs";
 
 /**
  * openwiki 升级：装新版本 → 录快照 → 切换指针，任何一步失败当前版本都不受影响。
@@ -15,27 +15,12 @@ import { isValidVersion, versionDir, writeActiveAtomic } from "../versions.mjs";
  * 直通模式运行，那是设计好的兜底，比回滚一个装好的版本更合理。
  */
 
-const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
-
-/** npm 执行器契约：所有网络与安装动作都经过它，测试由此注入假件。 */
+/**
+ * npm 执行器：install 的进度条在 stderr 上，原样透传——几百 MB 的依赖树
+ * 要装几分钟，静默会让用户以为卡死了。
+ */
 export function defaultRunNpm(args) {
-  return new Promise((resolve) => {
-    const child = spawn(NPM_BIN, args, { stdio: ["ignore", "pipe", "pipe"] });
-    let stdout = "";
-    let stderr = "";
-    // install 的进度条在 stderr 上，原样透传——几百 MB 的依赖树要装几分钟，
-    // 静默会让用户以为卡死了。
-    child.stdout.on("data", (chunk) => {
-      stdout += chunk.toString();
-    });
-    child.stderr.on("data", (chunk) => {
-      const text = chunk.toString();
-      stderr += text;
-      process.stderr.write(text);
-    });
-    child.on("error", (error) => resolve({ code: -1, stdout, stderr: error.message }));
-    child.on("close", (code) => resolve({ code: code ?? -1, stdout, stderr }));
-  });
+  return runNpm(args, { onStderr: (text) => process.stderr.write(text) });
 }
 
 /** 交互确认的默认实现：readline 问一个是非题，只有明确的 y/yes 算同意。 */
@@ -126,8 +111,14 @@ export async function installAndSnapshot({
   writeSnapshot = generateManifest,
   hostId = "update",
 }) {
-  const installed = await installVersion({ pkgRoot, version, runNpm, logger });
-  if (!installed.ok) return { ok: false, stage: "install" };
+  // 已经装好且可解析的版本不重下：几百 MB 白下载一次，网络一失败还会把
+  // 原本可以 switch 回去的完好版本删掉。缺的只是快照。
+  if (isInstalled(pkgRoot, version)) {
+    logger.info(`openwiki@${version} 已安装，跳过下载，仅补录快照`);
+  } else {
+    const installed = await installVersion({ pkgRoot, version, runNpm, logger });
+    if (!installed.ok) return { ok: false, stage: "install" };
+  }
 
   let snapshot;
   try {
@@ -209,14 +200,20 @@ export async function runUpdateCommand({
       logger.error("registry 返回的版本列表为空，无法决定升级目标");
       return 1;
     }
-    const latest = versions[versions.length - 1];
+    // 版本表按发布顺序排列且混有 prerelease：取末位前先滤出稳定版并按
+    // semver 排序，否则 0.7.0-beta.1 会当成升级目标，随后被版本名校验打掉。
+    const latest = pickLatestStable(versions);
+    if (latest === null) {
+      logger.error("registry 没有可用的稳定版本（只有 prerelease）");
+      return 1;
+    }
     if (latest === current) {
       logger.info(`已是最新版本（${current}），无需更新`);
       return 0;
     }
     logger.info(`当前生效版本：${current}（${currentLabel}）`);
     logger.info(`registry 最新版本：${latest}`);
-    logger.info(`最近版本：${versions.slice(-10).reverse().join("、")}`);
+    logger.info(`最近版本：${versions.filter(isValidVersion).sort(compareVersions).slice(-10).reverse().join("、")}`);
     const proceed = await confirm(`安装 openwiki@${latest} 并切换为当前版本？`);
     if (!proceed) {
       logger.info("已取消，未做任何改动");

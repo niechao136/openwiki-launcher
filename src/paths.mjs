@@ -82,14 +82,23 @@ export async function resolveOpenwikiRuntime({
     logger.warn("versions/active.json 损坏或内容非法，回退出厂依赖");
   }
 
+  // explicitVersion 是「给还没激活的版本录快照」的入口：解析不到就明说，
+  // 绝不回退出厂依赖——否则录出来的快照会自称 requested 版本、内容是出厂版，
+  // 一份对不上的工具清单正是规格要避免的。
+  if (explicitVersion !== undefined) {
+    const entry = resolveEntry(path.join(versionDir(pkgRoot, explicitVersion), "node_modules", "openwiki"));
+    const version = entry && readDeclaredVersion(entry.packageJson);
+    if (!version) {
+      throw new OpenwikiNotFoundError(
+        `versions/${explicitVersion} 下找不到可解析的 openwiki（package.json 或 dist/cli/cli.js 缺失）`,
+      );
+    }
+    return { packageRoot: path.dirname(entry.packageJson), version, cliJs: entry.cliJs, source: "versions" };
+  }
+
   /** @type {{ dir: string, source: "versions" | "bundled", pointerMiss?: string }[]} */
   const candidates = [];
-  if (explicitVersion !== undefined) {
-    candidates.push({
-      dir: path.join(versionDir(pkgRoot, explicitVersion), "node_modules", "openwiki"),
-      source: "versions",
-    });
-  } else if (active) {
+  if (active) {
     candidates.push({
       dir: path.join(versionDir(pkgRoot, active.version), "node_modules", "openwiki"),
       source: "versions",

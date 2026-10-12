@@ -123,4 +123,20 @@ describe("resolveOpenwikiRuntime", () => {
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it("refuses to fall back to the bundled dependency for an explicit version", async () => {
+    // explicitVersion 是「给这个还没激活的版本录快照」的入口。解析不到时若
+    // 静默回退出厂版，录出来的快照会自称 9.9.9、内容是 0.6.0——一份对不上的
+    // 工具清单正是规格要避免的。宁可不录。
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      plantFakeOpenwiki(root, path.join("node_modules", "openwiki"), "0.6.0");
+
+      await expect(
+        resolveOpenwikiRuntime({ pkgRoot: root, explicitVersion: "9.9.9" }),
+      ).rejects.toThrow(OpenwikiNotFoundError);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });

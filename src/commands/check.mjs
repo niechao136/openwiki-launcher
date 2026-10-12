@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { resolveOpenwikiRuntime } from "../paths.mjs";
+import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
+import { pickLatestStable, runNpm } from "../npm-runner.mjs";
 import { listInstalled, readActive, versionsRoot } from "../versions.mjs";
 
 /**
@@ -14,17 +15,30 @@ import { listInstalled, readActive, versionsRoot } from "../versions.mjs";
  *   logger: object,
  *   pkgRoot: string,
  *   resolveRuntime?: Function,
- *   runNpm: (args: string[]) => Promise<{ code: number, stdout: string, stderr: string }>,
+ *   runNpm?: (args: string[]) => Promise<{ code: number, stdout: string, stderr: string }>,
  * }} options
- * @returns {Promise<number>} 恒 0：只读命令，查不到 registry 也不是错误。
+ * @returns {Promise<number>} 恒 0（registry 查询失败除外）；运行时解析失败为 1。
  */
 export async function runCheckCommand({
   logger,
   pkgRoot,
   resolveRuntime = resolveOpenwikiRuntime,
-  runNpm,
+  runNpm: runNpmDep = runNpm,
 }) {
-  const runtime = await resolveRuntime({ pkgRoot });
+  let runtime;
+  try {
+    runtime = await resolveRuntime({ pkgRoot });
+  } catch (error) {
+    // check 是用户出问题时第一个跑的命令：node_modules 被清掉时它该说人话，
+    // 而不是以一截栈跟踪收场。
+    if (error instanceof OpenwikiNotFoundError) {
+      logger.error(`✗ 未找到 openwiki 依赖：${error.message}`);
+      logger.error("  openwiki-launcher 自带 openwiki 依赖，请重新安装本包。");
+    } else {
+      logger.error(`✗ 解析 openwiki 运行时失败: ${error.message}`);
+    }
+    return 1;
+  }
   const sourceLabel = runtime.source === "versions" ? "versions 指针" : "出厂依赖";
   logger.info(`当前生效版本：${runtime.version}（${sourceLabel}）`);
 
@@ -49,15 +63,18 @@ export async function runCheckCommand({
   }
 
   try {
-    const result = await runNpm(["view", "openwiki", "versions", "--json"]);
+    const result = await runNpmDep(["view", "openwiki", "versions", "--json"]);
     if (result.code !== 0) {
       throw new Error(result.stderr?.trim() || `npm 退出码 ${result.code}`);
     }
-    const versions = JSON.parse(result.stdout);
-    const latest = Array.isArray(versions) ? versions[versions.length - 1] : versions;
-    logger.info(`registry 最新版本：${latest}`);
-    if (latest === runtime.version) {
-      logger.info("（当前已是最新版本）");
+    const latest = pickLatestStable(JSON.parse(result.stdout));
+    if (latest === null) {
+      logger.info("registry 没有可用的稳定版本");
+    } else {
+      logger.info(`registry 最新版本：${latest}`);
+      if (latest === runtime.version) {
+        logger.info("（当前已是最新版本）");
+      }
     }
   } catch (error) {
     logger.warn(`registry 查询失败：${error.message}（不影响本地版本状态）`);

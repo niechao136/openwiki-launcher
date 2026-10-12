@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
-import { isValidVersion, versionDir, writeActiveAtomic } from "../versions.mjs";
+import { isValidVersion, isInstalled, versionDir, writeActiveAtomic } from "../versions.mjs";
 import { generateManifest } from "../gen-manifest.mjs";
 import { defaultConfirm, defaultRunNpm, installAndSnapshot } from "./update.mjs";
 
@@ -12,13 +12,6 @@ import { defaultConfirm, defaultRunNpm, installAndSnapshot } from "./update.mjs"
  * 回滚不应该再走一遍「装依赖 + 录快照」。没装过的版本可以顺手代装，但装不好
  * 就原样放弃：switch 的语义是「现在就让 X 生效」，容不下没有快照的降级。
  */
-
-/** 版本目录里有可解析的 openwiki 入口，才算「已安装」。 */
-function isInstalled(pkgRoot, version) {
-  const pkg = path.join(versionDir(pkgRoot, version), "node_modules", "openwiki");
-  return existsSync(path.join(pkg, "package.json"))
-    && existsSync(path.join(pkg, "dist", "cli", "cli.js"));
-}
 
 /**
  * @param {{

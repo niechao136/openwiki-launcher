@@ -13,12 +13,18 @@ function tempRoot() {
 }
 
 /** npm 执行器假件：view 返回版本表，install 按配置成败；记录全部调用。 */
-function fakeNpm({ installCode = 0 } = {}) {
+function fakeNpm({ installCode = 0, versions = REGISTRY_VERSIONS, plantPartial = false } = {}) {
   const calls = [];
   const runNpm = async (args) => {
     calls.push(args);
-    if (args[0] === "view") return { code: 0, stdout: REGISTRY_VERSIONS, stderr: "" };
+    if (args[0] === "view") return { code: 0, stdout: versions, stderr: "" };
     if (args[0] === "install") {
+      // 模拟一个装了一半的版本目录：npm 退出非 0 时它必须被清掉。
+      if (plantPartial) {
+        const prefix = args[args.indexOf("--prefix") + 1];
+        mkdirSync(path.join(prefix, "node_modules", "openwiki"), { recursive: true });
+        writeFileSync(path.join(prefix, "node_modules", "openwiki", "partial.txt"), "half installed");
+      }
       return installCode === 0
         ? { code: 0, stdout: "", stderr: "" }
         : { code: 1, stdout: "", stderr: "npm ERR! fake install failure" };
@@ -135,8 +141,7 @@ describe("runUpdateCommand", () => {
 
   it("cleans up the version directory when npm install fails", async () => {
     const root = freshRoot();
-    plantInstalled(root, "0.7.0");
-    const { runNpm } = fakeNpm({ installCode: 1 });
+    const { runNpm } = fakeNpm({ installCode: 1, plantPartial: true });
     const { text, logger } = collectLogger();
 
     const code = await runUpdateCommand({
@@ -150,6 +155,48 @@ describe("runUpdateCommand", () => {
     expect(code).toBe(1);
     expect(existsSync(versionDir(root, "0.7.0"))).toBe(false);
     expect(readActive(root)).toBeNull();
+  });
+
+  it("ignores prereleases when choosing the latest version", async () => {
+    // npm view 的版本表按发布顺序排列且混有 prerelease：直接取末位会把
+    // 0.7.0-beta.1 当升级目标，随后版本名校验抛错——用户看到一截栈跟踪。
+    const root = freshRoot();
+    plantInstalled(root, "0.6.3");
+    const { runNpm, calls } = fakeNpm({ versions: '["0.6.0","0.6.3","0.7.0-beta.1"]' });
+    const { text, logger } = collectLogger();
+
+    const code = await runUpdateCommand({
+      logger, pkgRoot: root, args: [],
+      runNpm,
+      confirm: async () => true,
+      resolveRuntime: async () => bundledRuntime,
+      writeSnapshot: async () => ({ ...okSnapshot, openwikiVersion: "0.6.3" }),
+    });
+
+    expect(code).toBe(0);
+    expect(calls.find((args) => args[0] === "install")).toBeUndefined();
+    expect(readActive(root).version).toBe("0.6.3");
+  });
+
+  it("skips the download when the target version is already installed", async () => {
+    // 重装一个完好版本，网络一失败就把它删了——一次无关的抖动销毁回滚目标。
+    const root = freshRoot();
+    plantInstalled(root, "0.7.0");
+    const { runNpm, calls } = fakeNpm();
+    const { text, logger } = collectLogger();
+
+    const code = await runUpdateCommand({
+      logger, pkgRoot: root, args: [],
+      runNpm,
+      confirm: async () => true,
+      resolveRuntime: async () => bundledRuntime,
+      writeSnapshot: async () => okSnapshot,
+    });
+
+    expect(code).toBe(0);
+    expect(calls.find((args) => args[0] === "install")).toBeUndefined();
+    expect(readActive(root).version).toBe("0.7.0");
+    expect(existsSync(path.join(root, "manifest", "openwiki-0.7.0.json"))).toBe(true);
   });
 
   it("keeps the version but does not activate it when snapshot generation fails", async () => {
