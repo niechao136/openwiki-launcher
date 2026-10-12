@@ -58,7 +58,7 @@ openwiki 发新版后，launcher 侧的手工流程是四步：升 `package.json
 
 1. 读 `versions/active.json` 得到候选版本 `v`；
 2. `v` 通过版本名校验（`/^\d+\.\d+\.\d+$/`），且 `versions/<v>/node_modules/openwiki` 能解析出 `package.json` 与 `dist/cli/cli.js` → 返回 `{ packageRoot, version, cliJs, source: "versions" }`；
-3. 任一环节不满足 → 打警告，回退出厂依赖（现有 `require.resolve` 逻辑），`source: "bundled"`；
+3. 任一环节不满足 → 打警告，**显式**回退出厂依赖（只解析 launcher 自己包根下的 `node_modules`，用 `require.resolve` 的 `paths` 选项限定根，或直接拼接路径后校验，**禁止 Node 向上查找**——全局安装的 openwiki 恰好在 npm 全局根下，向上查找会在依赖缺失时意外命中它），`source: "bundled"`；
 4. 指针损坏（JSON 解析失败、目录缺失、入口缺失）走第 3 条路径，**不抛异常**。
 
 返回值新增 `source` 字段（`"versions" | "bundled"`），供 `doctor` / `check` 展示。
@@ -160,7 +160,7 @@ broker 后端启动（`src/commands/mcp.mjs`）、`gen-manifest`、`doctor`、`s
 | --- | --- |
 | `src/paths.mjs` | `resolveOpenwikiRuntime` 加指针解析、`source` 字段、可选 `explicitVersion` 参数；`OpenwikiNotFoundError` 语义不变 |
 | `src/commands/mcp.mjs` | 无逻辑改动（自动跟随解析）；直通模式提示不变 |
-| `src/commands/doctor.mjs` | 新增一行指针状态展示（生效版本、来源、指针异常） |
+| `src/commands/doctor.mjs` | 新增指针状态展示一行（生效版本、来源、指针异常）；检测到全局 openwiki 时提示「已检测到，但 launcher 不使用它，请用 check/update/switch 管理版本」 |
 | `src/cli.mjs` | 注册四个新命令；更新 HELP |
 | `scripts/gen-manifest.mjs` | `generateManifest` 透传 `explicitVersion` 给解析函数，其余不变 |
 | `src/manifest.mjs` | 无改动 |
