@@ -1,0 +1,227 @@
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { spawn } from "node:child_process";
+import { createInterface } from "node:readline";
+import { resolveOpenwikiRuntime } from "../paths.mjs";
+import { manifestFilePath } from "../manifest.mjs";
+import { generateManifest } from "../gen-manifest.mjs";
+import { isValidVersion, versionDir, writeActiveAtomic } from "../versions.mjs";
+
+/**
+ * openwiki 升级：装新版本 → 录快照 → 切换指针，任何一步失败当前版本都不受影响。
+ *
+ * 目标版本默认交互确认（0.x 阶段每个版本都可能改工具清单，人工过目再装）；
+ * `--version` 显式指定时跳过选择。快照录不到不阻塞升级：没有快照的版本会以
+ * 直通模式运行，那是设计好的兜底，比回滚一个装好的版本更合理。
+ */
+
+const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
+
+/** npm 执行器契约：所有网络与安装动作都经过它，测试由此注入假件。 */
+function defaultRunNpm(args) {
+  return new Promise((resolve) => {
+    const child = spawn(NPM_BIN, args, { stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    // install 的进度条在 stderr 上，原样透传——几百 MB 的依赖树要装几分钟，
+    // 静默会让用户以为卡死了。
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on("data", (chunk) => {
+      const text = chunk.toString();
+      stderr += text;
+      process.stderr.write(text);
+    });
+    child.on("error", (error) => resolve({ code: -1, stdout, stderr: error.message }));
+    child.on("close", (code) => resolve({ code: code ?? -1, stdout, stderr }));
+  });
+}
+
+/** 交互确认的默认实现：readline 问一个是非题，只有明确的 y/yes 算同意。 */
+async function defaultConfirm(question) {
+  const rl = createInterface({ input: process.stdin, output: process.stderr });
+  try {
+    const answer = await new Promise((resolve) => rl.question(`${question} [y/N] `, resolve));
+    return /^y(es)?$/i.test(answer.trim());
+  } finally {
+    rl.close();
+  }
+}
+
+/**
+ * 解析 update 的参数。
+ *
+ * @param {string[]} args
+ * @returns {{ flags: { version: string | null, noSwitch: boolean }, error?: string }}
+ */
+export function parseUpdateArgs(args) {
+  const flags = { version: null, noSwitch: false };
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === "--no-switch") {
+      flags.noSwitch = true;
+    } else if (arg === "--version") {
+      flags.version = args[i + 1] ?? null;
+      i += 1;
+    } else if (arg.startsWith("--version=")) {
+      flags.version = arg.slice("--version=".length);
+    } else {
+      return { flags, error: `无法识别的参数: ${arg}` };
+    }
+  }
+  return { flags };
+}
+
+/**
+ * 把一个 openwiki 版本装进 versions/<version>/。
+ *
+ * 失败（含信号退出）时删掉半成品目录：一个装了一半的版本目录会让 switch 的
+ * 「已安装」判断说yes，然后在 broker 启动时才爆炸。
+ *
+ * @param {{ pkgRoot: string, version: string, runNpm: Function, logger: object }} options
+ * @returns {Promise<{ ok: true } | { ok: false }>}
+ */
+export async function installVersion({ pkgRoot, version, runNpm, logger }) {
+  const dir = versionDir(pkgRoot, version);
+  logger.info(`安装 openwiki@${version}（npm install --prefix ${dir}）…`);
+  const result = await runNpm(["install", `openwiki@${version}`, "--prefix", dir]);
+  if (result.code !== 0) {
+    rmSync(dir, { recursive: true, force: true });
+    const detail = (result.stderr || "").trim().split("\n").slice(-3).join(" ");
+    logger.error(`npm install 失败（退出码 ${result.code}）：${detail}`);
+    return { ok: false };
+  }
+  return { ok: true };
+}
+
+/**
+ * @param {{
+ *   logger: object,
+ *   pkgRoot: string,
+ *   args?: string[],
+ *   runNpm?: Function,
+ *   confirm?: (question: string) => Promise<boolean>,
+ *   resolveRuntime?: Function,
+ *   writeSnapshot?: (options: object) => Promise<object>,
+ * }} options
+ * @returns {Promise<number>} Exit code.
+ */
+export async function runUpdateCommand({
+  logger,
+  pkgRoot,
+  args = [],
+  runNpm = defaultRunNpm,
+  confirm = defaultConfirm,
+  resolveRuntime = resolveOpenwikiRuntime,
+  writeSnapshot = generateManifest,
+}) {
+  const parsed = parseUpdateArgs(args);
+  if (parsed.error) {
+    logger.error(parsed.error);
+    return 1;
+  }
+  const { version: requested, noSwitch } = parsed.flags;
+  if (requested !== null && !isValidVersion(requested)) {
+    logger.error(`--version 的值必须是 x.y.z 形式的三段数字版本名，收到: ${JSON.stringify(requested)}`);
+    return 1;
+  }
+
+  let runtime;
+  try {
+    runtime = await resolveRuntime({ pkgRoot });
+  } catch (error) {
+    logger.error(`解析当前 openwiki 运行时失败: ${error.message}`);
+    return 1;
+  }
+  const current = runtime.version;
+  const currentLabel = runtime.source === "versions" ? "versions 指针" : "出厂依赖";
+
+  // 目标版本：显式 --version 直接采用；否则查 registry 并列给用户选。
+  let target = requested;
+  if (target === null) {
+    let versions;
+    try {
+      const result = await runNpm(["view", "openwiki", "versions", "--json"]);
+      if (result.code !== 0) {
+        throw new Error((result.stderr || "").trim() || `npm 退出码 ${result.code}`);
+      }
+      versions = JSON.parse(result.stdout);
+    } catch (error) {
+      logger.error(`无法查询 openwiki 版本：${error.message}`);
+      return 1;
+    }
+    if (!Array.isArray(versions) || versions.length === 0) {
+      logger.error("registry 返回的版本列表为空，无法决定升级目标");
+      return 1;
+    }
+    const latest = versions[versions.length - 1];
+    if (latest === current) {
+      logger.info(`已是最新版本（${current}），无需更新`);
+      return 0;
+    }
+    logger.info(`当前生效版本：${current}（${currentLabel}）`);
+    logger.info(`registry 最新版本：${latest}`);
+    logger.info(`最近版本：${versions.slice(-10).reverse().join("、")}`);
+    const proceed = await confirm(`安装 openwiki@${latest} 并切换为当前版本？`);
+    if (!proceed) {
+      logger.info("已取消，未做任何改动");
+      return 0;
+    }
+    target = latest;
+  } else if (target === current) {
+    logger.info(`当前生效版本已是 ${target}，无需更新`);
+    return 0;
+  }
+
+  const installed = await installVersion({ pkgRoot, version: target, runNpm, logger });
+  if (!installed.ok) return 1;
+
+  // 快照：录不到不阻塞升级，问一句是否仍要切换（默认否）。
+  let snapshot = null;
+  let snapshotError = null;
+  try {
+    snapshot = await writeSnapshot({ explicitVersion: target, hostId: "update", pkgRoot });
+    const usable = snapshot
+      && Array.isArray(snapshot.tools) && snapshot.tools.length > 0
+      && typeof snapshot.protocolVersion === "string" && snapshot.protocolVersion.length > 0;
+    if (!usable) throw new Error("快照缺少工具清单或 protocolVersion");
+  } catch (error) {
+    snapshotError = error;
+  }
+
+  if (snapshotError) {
+    logger.warn(`快照生成失败：${snapshotError.message}`);
+    logger.info(`openwiki@${target} 已安装但无快照，将以直通模式运行（首次工具调用等待后端启动）`);
+    const proceed = await confirm(`仍要切换到 ${target} 吗？`);
+    if (!proceed) {
+      logger.error("已取消切换；版本已安装，可稍后重跑 update 或用 switch 切换");
+      return 1;
+    }
+  } else {
+    const snapshotPath = manifestFilePath(target, pkgRoot);
+    // manifest/ 随包发布，生产环境里一定在；但被清理过的安装没有它，
+    // 而 writeFileSync 不建父目录——没有这一行，升级会在最后一步炸掉。
+    mkdirSync(path.dirname(snapshotPath), { recursive: true });
+    writeFileSync(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+    logger.info(`✓ 快照已生成：openwiki-${target}.json（${snapshot.tools.length} 个工具）`);
+  }
+
+  if (!noSwitch) {
+    try {
+      writeActiveAtomic(pkgRoot, target);
+    } catch (error) {
+      logger.error(`切换失败：${error.message}（版本已安装，指针未改动）`);
+      return 1;
+    }
+    logger.info(`✓ 已切换：${current} → ${target}`);
+  } else {
+    logger.info(`已安装 openwiki@${target} 并生成快照（--no-switch，未切换）`);
+  }
+
+  logger.info("提醒：宿主持有的旧会话不受影响，新连接即用新版本；可运行 openwiki-launcher warm 预热");
+  if (!snapshotError) {
+    logger.info("提醒：若 openwiki 的 skill 内容有更新，重跑 openwiki-launcher 安装器可刷新宿主技能目录");
+  }
+  return 0;
+}
