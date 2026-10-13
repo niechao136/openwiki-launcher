@@ -62,18 +62,18 @@ function resolveEntry(dir) {
 function preferBundle(pkgRoot, version, sourceCliJs) {
   const bundleDir = versionDir(pkgRoot, version);
   if (existsSync(path.join(bundleDir, "bundle.bad"))) {
-    return { cliJs: sourceCliJs, backend: "source" };
+    return { cliJs: sourceCliJs, backend: "source", sourceCliJs };
   }
   try {
     const meta = JSON.parse(readFileSync(path.join(bundleDir, "bundle.meta.json"), "utf8"));
     const bundlePath = path.join(bundleDir, meta.file);
     if (typeof meta.file === "string" && existsSync(bundlePath)) {
-      return { cliJs: bundlePath, backend: "bundle" };
+      return { cliJs: bundlePath, backend: "bundle", sourceCliJs };
     }
   } catch {
     // meta 缺失/损坏 → 降级，ensureBundle 下次触发重建
   }
-  return { cliJs: sourceCliJs, backend: "source" };
+  return { cliJs: sourceCliJs, backend: "source", sourceCliJs };
 }
 
 /**
@@ -162,6 +162,7 @@ export async function resolveOpenwikiRuntime({
           version,
           cliJs: preferred.cliJs,
           backend: preferred.backend,
+          sourceCliJs: preferred.sourceCliJs,
           source: candidate.source,
         };
       }

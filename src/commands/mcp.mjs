@@ -3,6 +3,7 @@ import { createBroker } from "../broker.mjs";
 import { createLineParser, formatMessage } from "../jsonrpc.mjs";
 import { loadManifest } from "../manifest.mjs";
 import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
+import { scheduleBackgroundBundle, createBundleFallbackSupervisor } from "../ensure-bundle.mjs";
 import { resolveHolderSession } from "../holder-client.mjs";
 import { resolveSelfBin } from "../self-path.mjs";
 
@@ -86,8 +87,28 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
       supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
     }
   } else {
-    supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
+    supervisor = createBackendSupervisor({ spawnFn, cliJs: runtime.cliJs, hostId, logger });
+    // §9：bundle 启动失败（就绪前崩溃）时换源码入口兜底一次，并写 bundle.bad
+    if (runtime.backend === "bundle") {
+      supervisor = createBundleFallbackSupervisor({
+        primary: supervisor,
+        makeFallback: () =>
+          createBackendSupervisor({ spawnFn, cliJs: runtime.sourceCliJs, hostId, logger }),
+        bundleCliJs: runtime.cliJs,
+        sourceCliJs: runtime.sourceCliJs,
+        badPath: path.join(path.dirname(runtime.cliJs), "bundle.bad"),
+        logger,
+      });
+    }
   }
+  // §9：缺 bundle（backend=source）时，等后端就绪后后台补打，不占冷启动关键路径
+  scheduleBackgroundBundle({
+    runtime,
+    pkgRoot: runtime.packageRoot,
+    logger,
+    supervisor,
+    ensureBundleFn: deps?.ensureBundleFn,
+  });
   const broker = createBroker({
     manifest,
     supervisor,

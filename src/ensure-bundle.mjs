@@ -164,3 +164,100 @@ export async function ensureBundleForActive({ pkgRoot = launcherPackageRoot(), l
   }
   return ensureBundle({ version, pkgRoot, logger, deps });
 }
+
+/**
+ * §9：mcp 运行中发现缺 bundle（backend=source）时，等后端就绪后再后台补打——
+ * 补打的 IO 不得与冷启动抢资源。backend=bundle（当前会话已在用）则不调度。
+ *
+ * @param {{
+ *   runtime: { backend: string, version: string },
+ *   pkgRoot: string,
+ *   logger: object,
+ *   supervisor: { ensureReady(): Promise<object> },
+ *   ensureBundleFn?: Function,
+ * }} options
+ */
+export function scheduleBackgroundBundle({ runtime, pkgRoot, logger, supervisor, ensureBundleFn }) {
+  if (runtime.backend !== "source") return;
+  supervisor
+    .ensureReady()
+    .then(() => (ensureBundleFn ?? ensureBundle)({ version: runtime.version, pkgRoot, logger }))
+    .then((result) => {
+      if (result.ok) logger.info(`bundle 已在后台生成：${result.file}（下次会话生效）`);
+      else logger.warn(`后台补打 bundle 未成功：${result.reason ?? "未知原因"}`);
+    })
+    .catch((error) => logger.warn(`后台补打 bundle 失败：${error.message}`));
+}
+
+/**
+ * bundle 启动失败的运行时兜底（§9）：就绪前崩溃时改用源码入口重试一次；
+ * **只有源码随后成功**才写 bundle.bad——磁盘满、杀毒拦截等与 bundle 无关的
+ * 失败不污染标记。标记在下一次 ensureBundle 成功时清除（解析层见 bundle.bad
+ * 自动跳过 bundle）。
+ *
+ * @param {{
+ *   primary: object,
+ *   makeFallback: (sourceCliJs: string) => object,
+ *   bundleCliJs: string,
+ *   sourceCliJs: string,
+ *   badPath: string,
+ *   logger: object,
+ * }} options
+ */
+export function createBundleFallbackSupervisor({
+  primary,
+  makeFallback,
+  bundleCliJs,
+  sourceCliJs,
+  badPath,
+  logger,
+}) {
+  let recovered = false;
+  let fallback = null;
+  const exitListeners = [];
+  const forwardExit = (target) => {
+    try {
+      target.onSessionExit((info) => {
+        for (const fn of exitListeners) fn(info);
+      });
+    } catch {
+      // 目标不提供 onSessionExit 时静默
+    }
+  };
+  forwardExit(primary);
+
+  return {
+    ensureReady() {
+      if (recovered) return fallback.ensureReady();
+      return primary.ensureReady().catch(async (error) => {
+        recovered = true;
+        logger.warn(`bundle 启动的后端失败，改用源码入口重试：${error.message}`);
+        fallback = fallback ?? makeFallback(sourceCliJs);
+        forwardExit(fallback);
+        try {
+          const session = await fallback.ensureReady();
+          try {
+            writeFileSync(badPath, "");
+          } catch {
+            // 标记写失败不影响兜底运行
+          }
+          return session;
+        } catch (fallbackError) {
+          // 源码也失败：问题不在 bundle，不写标记
+          logger.warn(`源码入口同样失败：${fallbackError.message}`);
+          throw fallbackError;
+        }
+      });
+    },
+    current() {
+      return (recovered ? fallback : primary).current();
+    },
+    onSessionExit(fn) {
+      exitListeners.push(fn);
+    },
+    stop() {
+      primary.stop();
+      if (fallback) fallback.stop();
+    },
+  };
+}
