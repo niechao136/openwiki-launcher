@@ -287,6 +287,14 @@ export async function runDoctorCommand({
     logger.info("  建议：npm run manifest 生成快照（不影响使用，首次调用会走直通模式）");
   }
 
+  // Defender 排除是可选优化（规格 §6.3）：实时扫描对 node_modules 海量小文件的
+  // 冷启动影响实测显著；只提示不代写，且仅 win32 相关。
+  if (platform === "win32" && nodeCommand?.command) {
+    const nodeDir = path.dirname(nodeCommand.command);
+    logger.info("提示：Windows 实时扫描会显著拖慢冷启动——把以下目录加入 Defender 排除（需管理员，示例）：");
+    logger.info(`  Add-MpPreference -ExclusionPath "${nodeDir}","${pkgRoot}"`);
+  }
+
   // warmup 登录预热是可选优化（规格 §5.6）；只提示不代写。
   if (nodeCommand?.command && selfBin) {
     logger.info("提示：可将冷启动移到登录时——用 warmup 挂登录启动项（示例，需管理员执行 schtasks）：");
