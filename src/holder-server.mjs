@@ -118,12 +118,15 @@ export function createHolderCore({
       conn.send({ jsonrpc: "2.0", id: connId, result });
     } catch (error) {
       if (connState.closed || isCancelled(connState, connId)) return;
-      if (error.message === QUEUE_TIMEOUT) {
+      // reject 值可能是 undefined（测试注入或上游实现行为）：error.message 会
+      // 二次抛错，把 catch 变成 unhandled rejection 杀掉整个 worker 进程。
+      const reason = error && error.message ? error.message : String(error);
+      if (reason === QUEUE_TIMEOUT) {
         conn.send(toolError(connId, QUEUE_TIMEOUT_TEXT));
         return;
       }
-      logger.error(`openwiki 后端不可用：${error.message}`);
-      conn.send(toolError(connId, `openwiki 后端不可用：${error.message}`));
+      logger.error(`openwiki 后端不可用：${reason}`);
+      conn.send(toolError(connId, `openwiki 后端不可用：${reason}`));
     }
   }
 

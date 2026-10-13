@@ -9,6 +9,17 @@ import { ensureEsbuild } from "./esbuild-tools.mjs";
 
 const PINNED = { esbuildVersion: "0.28.2" };
 
+// 探活一个 pid：进程存在返回 true。ESRCH/EPERM 都视为不存在（EPERM 是
+// 别人的进程，同样不该继续挡路——本场景锁只可能是本机本用户的构建进程）。
+function pidAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error.code === "EPERM";
+  }
+}
+
 // 打包脚本相对本模块定位（同仓库），不随被测 pkgRoot 漂移
 const BUNDLE_SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "bundle-backend.mjs");
 
@@ -71,7 +82,16 @@ export async function ensureBundle({ version, pkgRoot, logger, deps = {} }) {
   if (!esbuild.ok) return { ok: false, reason: esbuild.reason };
 
   const lockPath = path.join(versionsRoot(pkgRoot), "bundle.lock");
-  const lock = acquireLock(lockPath, { pid: process.pid, startedAt: Date.now() });
+  let lock = acquireLock(lockPath, { pid: process.pid, startedAt: Date.now() });
+  if (!lock.acquired) {
+    // 残留锁（持有者进程已死，如上次构建被杀）会让 bundle 永远补不上。
+    // 探活 pid：进程不存在就强制重取——与 holder lockfile 的探活同一套思路。
+    const stalePid = lock.existing?.pid;
+    if (typeof stalePid === "number" && !pidAlive(stalePid)) {
+      releaseLock(lockPath);
+      lock = acquireLock(lockPath, { pid: process.pid, startedAt: Date.now() });
+    }
+  }
   if (!lock.acquired) {
     // 另一个进程正在构建：本次降级源码，锁释放后的下一次触发自然补上
     return { ok: false, reason: "另一进程正在构建 bundle" };

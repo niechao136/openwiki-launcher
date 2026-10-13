@@ -18,6 +18,8 @@ const DEFAULT_TTL_MINUTES = 30;
  * @returns {Promise<number>} Process exit code.
  */
 export async function runHolderCommand({ hostId, logger, env = process.env, pkgRoot, forceLaunch = false }) {
+  // 排障/测试钩子：把 holder 的锁与管道指向另一个包根（lockfile 与版本目录都在 pkgRoot/versions/ 下）
+  pkgRoot = env.LAUNCHER_HOLDER_PKG_ROOT || pkgRoot;
   let runtime;
   try {
     runtime = await resolveOpenwikiRuntime({ pkgRoot });

@@ -2,6 +2,7 @@ import { createBackendSupervisor } from "../backend.mjs";
 import { createBroker } from "../broker.mjs";
 import { createLineParser, formatMessage } from "../jsonrpc.mjs";
 import { loadManifest } from "../manifest.mjs";
+import path from "node:path";
 import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
 import { scheduleBackgroundBundle, createBundleFallbackSupervisor } from "../ensure-bundle.mjs";
 import { resolveHolderSession } from "../holder-client.mjs";
@@ -40,7 +41,7 @@ export function queueTimeoutFromEnv(env) {
  * }} options
  * @returns {Promise<number>} Process exit code.
  */
-export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn }) {
+export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn, deps = {} }) {
   const startedAt = Date.now();
   let runtime;
   try {

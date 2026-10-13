@@ -127,7 +127,15 @@ if (isMain) {
     const backendPkg = path.join(pkgRoot, "node_modules", "openwiki", "package.json");
     version = JSON.parse(readFileSync(backendPkg, "utf8")).version;
   }
-  ensureBundle({ version, pkgRoot, logger }).then((result) =>
-    process.exit(result.ok ? 0 : 1),
-  );
+  ensureBundle({ version, pkgRoot, logger })
+    .then((result) => {
+      if (result.ok) process.exit(0);
+      // 失败必须留下原因：静默 exit 1 会让使用者（和 npm run bundle）无从判断
+      logger.error(`bundle 未就绪：${result.reason ?? "未知原因"}`);
+      process.exit(1);
+    })
+    .catch((error) => {
+      logger.error(`bundle 失败：${error.message}`);
+      process.exit(1);
+    });
 }
