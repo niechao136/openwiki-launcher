@@ -62,9 +62,11 @@ export async function runHolder({
   const exitWaiters = [];
 
   const supervisor = createBackendSupervisor({ cliJs, hostId, logger, env });
+  const sockets = new Set();
 
   const server = net.createServer((socket) => {
     activeConns += 1;
+    sockets.add(socket);
     armTtl();
     const parser = createLineParser((message) => messageHandler(message));
     socket.setEncoding("utf8");
@@ -77,6 +79,7 @@ export async function runHolder({
     let messageHandler = null;
     core.handleConnection(conn);
     socket.on("close", () => {
+      sockets.delete(socket);
       activeConns -= 1;
       armTtl();
     });
@@ -108,11 +111,14 @@ export async function runHolder({
       if (ttlTimer) clearTimeout(ttlTimer);
       releaseLock(lockPath);
       supervisor.stop();
+      // 销毁所有连接：wrapper 侧要靠 socket close 感知 holder 消失并重连/回退。
+      for (const socket of sockets) socket.destroy();
+      sockets.clear();
       server.close(() => resolve(0));
       // 有活跃连接时 server.close 等连接排空；给一个宽限，避免永久挂起。
       setTimeout(() => resolve(0), 2000).unref?.();
     });
-    exitedResolve(awaitShutdown(shutdownPromise));
+    exitedResolve(shutdownPromise);
     return shutdownPromise;
   }
 
