@@ -3,6 +3,7 @@ import path from "node:path";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
 import { isValidVersion, isInstalled, versionDir, writeActiveAtomic } from "../versions.mjs";
 import { generateManifest } from "../gen-manifest.mjs";
+import { bundleStatus, ensureBundle } from "../ensure-bundle.mjs";
 import { defaultConfirm, defaultRunNpm, installAndSnapshot } from "./update.mjs";
 
 /**
@@ -35,6 +36,7 @@ export async function runSwitchCommand({
   resolveRuntime = resolveOpenwikiRuntime,
   writeSnapshot = generateManifest,
   install = installAndSnapshot,
+  ensureBundleFn = ensureBundle,
 }) {
   if (version === undefined) {
     logger.error("switch 需要一个版本名（x.y.z），例如: openwiki-launcher switch 0.6.0");
@@ -85,6 +87,21 @@ export async function runSwitchCommand({
     return 1;
   }
   logger.info(`✓ 已切换：${current} → ${version}`);
+
+  // §9：bundle 状态不静默。缺失时后台尽力补打（本进程若先退出，下次触发再补）；
+  // 补打成功前新会话以源码入口启动。
+  const status = bundleStatus(pkgRoot, version);
+  if (status === "ready") {
+    logger.info("✓ 该版本有 bundle（冷启动已优化）");
+  } else if (status === "bad") {
+    logger.warn("! 该版本的 bundle 被标记不可用，新会话将以源码入口启动（npm run bundle 重建后自动恢复）");
+  } else {
+    logger.warn("! 该版本无 bundle，冷启动较慢；正在后台尝试生成，下次会话生效");
+    ensureBundleFn({ version, pkgRoot, logger }).catch((error) =>
+      logger.debug(`后台补打 bundle 失败: ${error.message}`),
+    );
+  }
+
   logger.info("提醒：宿主持有的旧会话不受影响，新连接即用新版本；可运行 openwiki-launcher warm 预热");
   return 0;
 }

@@ -3,6 +3,7 @@ import path from "node:path";
 import { createInterface } from "node:readline";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
 import { manifestFilePath } from "../manifest.mjs";
+import { ensureBundle } from "../ensure-bundle.mjs";
 import { generateManifest } from "../gen-manifest.mjs";
 import { compareVersions, isValidVersion, isInstalled, versionDir, writeActiveAtomic } from "../versions.mjs";
 import { pickLatestStable, runNpm } from "../npm-runner.mjs";
@@ -219,6 +220,8 @@ export async function runUpdateCommand({
   confirm = defaultConfirm,
   resolveRuntime = resolveOpenwikiRuntime,
   writeSnapshot = generateManifest,
+  install = installAndSnapshot,
+  ensureBundleFn = ensureBundle,
 }) {
   const parsed = parseUpdateArgs(args);
   if (parsed.error) {
@@ -284,7 +287,7 @@ export async function runUpdateCommand({
     return 0;
   }
 
-  const outcome = await installAndSnapshot({
+  const outcome = await install({
     pkgRoot, version: target, runNpm, logger, writeSnapshot, hostId: "update",
   });
   if (outcome.stage === "install") return 1;
@@ -313,6 +316,15 @@ export async function runUpdateCommand({
   }
 
   logger.info("提醒：宿主持有的旧会话不受影响，新连接即用新版本；可运行 openwiki-launcher warm 预热");
+  // §9：新版本装好后 best-effort 打 bundle；失败只提示，退出码不变
+  try {
+    const bundleResult = await ensureBundleFn({ version: target, pkgRoot, logger });
+    if (bundleResult.ok !== true) {
+      logger.warn(`bundle 未就绪（${bundleResult.reason ?? "未知原因"}），该版本将以源码入口启动，冷启动较慢`);
+    }
+  } catch (error) {
+    logger.warn(`bundle 未就绪（${error.message}），该版本将以源码入口启动，冷启动较慢`);
+  }
   if (outcome.ok) {
     logger.info("提醒：若 openwiki 的 skill 内容有更新，重跑 openwiki-launcher 安装器可刷新宿主技能目录");
   }

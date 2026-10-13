@@ -4,6 +4,7 @@ import { resolveSelfBin, resolveNodeCommand } from "../self-path.mjs";
 import { runInstall } from "../install.mjs";
 import { runUninstall } from "../uninstall.mjs";
 import { runWarmCommand } from "./warm.mjs";
+import { ensureBundleForActive } from "../ensure-bundle.mjs";
 
 /**
  * install / uninstall 的命令层：参数解析、路径解析、打印、预热。
@@ -119,16 +120,29 @@ export async function runInstallCommand(flags, deps) {
   // 规格 5：安装成功后自动预热一次，让第一次工具调用不用等 openwiki 的导入。
   // 预热是优化不是安装的一部分 —— 失败只告警，退出码仍然是安装的结果。
   if (result.exitCode === 0 && !flags.uninstall && !flags.noWarm) {
-    const warm = deps.warmFn ?? runWarmCommand;
-    const warmCode = await warm({
-      logger,
-      env: deps.env ?? process.env,
-      hostId: "warm",
-    });
-    if (warmCode !== 0) {
-      logger.warn("预热未成功，不影响本次安装结果；可稍后单独运行 `openwiki-launcher warm`。");
-    }
+    await warmAfterInstall({ logger, env: deps.env ?? process.env, ensureBundleFn: deps.ensureBundleFn, warmFn: deps.warmFn });
   }
 
   return result.exitCode;
+}
+
+/**
+ * 安装成功后的收尾：先 ensureBundle（§9，预热即顺带验证 bundle 可启动），
+ * 再预热后端。两步都只告警，不影响安装退出码。
+ *
+ * @param {{ logger: object, env?: object, ensureBundleFn?: Function, warmFn?: Function }} options
+ * @returns {Promise<number>} 预热退出码
+ */
+export async function warmAfterInstall({ logger, env = process.env, ensureBundleFn, warmFn }) {
+  const ensure = ensureBundleFn ?? ensureBundleForActive;
+  const bundleResult = await ensure({ logger }).catch((error) => ({ ok: false, reason: error.message }));
+  if (bundleResult.ok !== true) {
+    logger.warn(`bundle 未就绪（${bundleResult.reason ?? "未知原因"}），后端将以源码入口启动。`);
+  }
+  const warm = warmFn ?? runWarmCommand;
+  const warmCode = await warm({ logger, env, hostId: "warm" });
+  if (warmCode !== 0) {
+    logger.warn("预热未成功，不影响本次安装结果；可稍后单独运行 `openwiki-launcher warm`。");
+  }
+  return warmCode;
 }

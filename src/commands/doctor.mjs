@@ -9,7 +9,8 @@ import { HOSTS } from "../registry.mjs";
 import { readJsonEntry, readTomlBlock } from "../mcp-config.mjs";
 import { collectMcpSnapshot } from "../targets.mjs";
 import { declaredOpenwikiRange, exactPinnedVersion } from "../pkg.mjs";
-import { launcherPackageRoot, readActive, versionsRoot } from "../versions.mjs";
+import { isInstalled, launcherPackageRoot, listInstalled, readActive, versionsRoot } from "../versions.mjs";
+import { bundleStatus } from "../ensure-bundle.mjs";
 import { runNpm } from "../npm-runner.mjs";
 
 const ENTRY_KEY = "openwiki";
@@ -293,6 +294,19 @@ export async function runDoctorCommand({
     const nodeDir = path.dirname(nodeCommand.command);
     logger.info("提示：Windows 实时扫描会显著拖慢冷启动——把以下目录加入 Defender 排除（需管理员，示例）：");
     logger.info(`  Add-MpPreference -ExclusionPath "${nodeDir}","${pkgRoot}"`);
+  }
+
+  // §9：各已装版本的 bundle 状态一目了然（ready/bad/missing）。
+  const bundleStatusLabel = { ready: "✓ bundle 就绪", bad: "! bundle 被标记不可用（npm run bundle 重建后自动恢复）", missing: "! 无 bundle（冷启动较慢，npm run bundle 生成）" };
+  try {
+    const installed = listInstalled(pkgRoot).filter((entry) => isInstalled(pkgRoot, entry.version));
+    if (installed.length > 0) {
+      for (const entry of installed) {
+        logger.info(`${bundleStatusLabel[bundleStatus(pkgRoot, entry.version)] ?? "! bundle 状态未知"}：openwiki ${entry.version}`);
+      }
+    }
+  } catch (error) {
+    logger.warn(`! bundle 状态枚举失败：${error.message}`);
   }
 
   // warmup 登录预热是可选优化（规格 §5.6）；只提示不代写。

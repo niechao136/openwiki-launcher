@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { versionDir, versionsRoot } from "./versions.mjs";
+import { launcherPackageRoot, readActive, versionDir, versionsRoot } from "./versions.mjs";
 import { acquireLock, releaseLock } from "./lockfile.mjs";
 import { ensureEsbuild } from "./esbuild-tools.mjs";
 
@@ -126,4 +126,41 @@ export async function ensureBundle({ version, pkgRoot, logger, deps = {} }) {
   } finally {
     releaseLock(lockPath);
   }
+}
+
+/**
+ * 当前生效版本的 bundle 状态："ready" / "bad" / "missing"。
+ *
+ * @param {string} pkgRoot
+ * @param {string} version
+ * @returns {"ready" | "bad" | "missing"}
+ */
+export function bundleStatus(pkgRoot, version) {
+  const bundleDir = versionDir(pkgRoot, version);
+  if (existsSync(path.join(bundleDir, "bundle.bad"))) return "bad";
+  try {
+    const meta = JSON.parse(readFileSync(path.join(bundleDir, "bundle.meta.json"), "utf8"));
+    if (typeof meta.file === "string" && existsSync(path.join(bundleDir, meta.file))) return "ready";
+  } catch {
+    // meta 缺失/损坏 → missing
+  }
+  return "missing";
+}
+
+/**
+ * 对当前生效版本执行 ensureBundle（版本号探测：指针优先，回退 openwiki 包声明）。
+ *
+ * @param {{ pkgRoot?: string, logger: object, deps?: object }} options
+ */
+export async function ensureBundleForActive({ pkgRoot = launcherPackageRoot(), logger, deps }) {
+  let version = readActive(pkgRoot)?.version;
+  if (!version) {
+    const backendPkg = path.join(pkgRoot, "node_modules", "openwiki", "package.json");
+    try {
+      version = JSON.parse(readFileSync(backendPkg, "utf8")).version;
+    } catch {
+      return { ok: false, reason: "无法确定 openwiki 版本（指针缺失且 node_modules 不可读）" };
+    }
+  }
+  return ensureBundle({ version, pkgRoot, logger, deps });
 }
