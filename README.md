@@ -173,6 +173,7 @@ versions/，想换版本请用上面的命令而不是 `npm install -g openwiki@
 | `LAUNCHER_DEBUG=1` | 打印详细诊断（stderr） |
 | `LAUNCHER_REAL_SMOKE=1` | 启用真实后端冒烟测试 |
 | `LAUNCHER_BACKEND_CLI` | 覆盖后端入口，仅供测试与排障使用 |
+| `LAUNCHER_QUEUE_TIMEOUT_MS` | `tools/call` 排队等待后端就绪的上限（毫秒，默认 25000） |
 | `LAUNCHER_EAGER_START=0` | 关闭连接时的后台预热，恢复懒启动（首个工具调用才启动后端） |
 
 ## 当前范围

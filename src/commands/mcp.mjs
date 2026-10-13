@@ -4,6 +4,24 @@ import { createLineParser, formatMessage } from "../jsonrpc.mjs";
 import { loadManifest } from "../manifest.mjs";
 import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
 
+const DEFAULT_QUEUE_TIMEOUT_MS = 25000;
+
+/**
+ * 解析 tools/call 排队上限。宿主对单个请求的超时普遍在 30~60 秒量级，
+ * 排队上限必须小于它，宿主才能在放弃前收到 wrapper 的可重试错误而不是
+ * 自己先超时。非法配置回退默认值。
+ *
+ * @param {Record<string, string>} env
+ * @returns {number}
+ */
+export function queueTimeoutFromEnv(env) {
+  const raw = env.LAUNCHER_QUEUE_TIMEOUT_MS;
+  if (raw === undefined) return DEFAULT_QUEUE_TIMEOUT_MS;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isInteger(parsed) || parsed <= 0) return DEFAULT_QUEUE_TIMEOUT_MS;
+  return parsed;
+}
+
 /**
  * Runs the launcher as the MCP server a coding host talks to.
  *
@@ -53,6 +71,7 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
     supervisor,
     logger,
     send: (message) => process.stdout.write(formatMessage(message)),
+    queueTimeoutMs: queueTimeoutFromEnv(env),
   });
 
   // Prewarm the backend in the background. The handshake and the tool list are
