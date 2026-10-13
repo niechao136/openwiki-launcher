@@ -181,14 +181,12 @@ holder 自身对上游执行一次 initialize 握手（沿用 `initializeParams(
 1. **esbuild bundle**：将 openwiki `dist/` 与依赖打成单文件；`better-sqlite3` 及一切
    原生 `.node` 标记 external，产物与 bundle 同目录。产物进 `versions/<v>/`，
    与 `switch` / `versions remove` 集成；`files` 白名单加产物路径；
-2. **`module.enableCompileCache()`**：需要 Node ≥ 22.1；launcher `engines` 已要求
-   ≥ 22.22.0，满足。缓存目录设为用户级稳定路径（不落版本目录，
-   避免 `versions remove` 连坐清除）。收益需实测（单文件产物下按内容 hash 失效，
-   每版本首次仍全价），无收益则砍掉；
-3. **Defender 排除**：`doctor` 增加检测与提示，打印可直接执行的
+2. **Defender 排除**：`doctor` 增加检测与提示，打印可直接执行的
    `Add-MpPreference` 命令（需管理员）；**不做自动添加**（与现有护栏原则一致）；
-4. **验收**：全冷（清文件缓存 + Defender 扫描态）启动对比基线，目标中位数 < 10s；
+3. **验收**：全冷（清文件缓存 + Defender 扫描态）启动对比基线，目标中位数 < 10s；
    bundle 后重跑一次 CPU profile，若瓶颈仍在再回查上游。
+
+> compile cache：双路径实测未见收益（见 §9），已整体移除，无悬空项。
 
 ## 7. 风险与开放问题
 
@@ -206,3 +204,61 @@ holder 自身对上游执行一次 initialize 握手（沿用 `initializeParams(
 | 第一步 | 排队 25s 超时返回明确可重试文案；带 progressToken 的宿主无硬超时；取消不波及预热；单测全绿 |
 | 第二步 | 同 hostId 连续两会话，第二会话首调 < 2s；**宿主退出后 holder 存活（逐宿主实测：CodeBuddy、Claude Code 等首批支持宿主各一次；不成立的宿主标注降级）**；两个会话并发调用时 id 与结果不串；TTL 后 holder 退出且 lockfile 清理；`switch` 后旧 holder 换新；宿主断开后端存活至 TTL |
 | 第三步 | 全冷启动中位数 < 10s；Defender 排除前后有可对比数据；bundle 产物经 `doctor` 自检通过 |
+
+## 9. 修订（2026-10-13，第三步交付后）：ensureBundle 统一打包入口
+
+第三步交付后暴露缺口：bundle 只在构建时生成一份，全新机器安装、`update` 新版本、
+`switch` 到旧版本都拿不到 bundle 且无任何提示。`prepare` 方案被否决（只覆盖安装时
+版本；产物路径与 files 白名单错位即静默失效）。修订如下：
+
+**机制**：`ensureBundle(version)` 成为唯一的 bundle 生产入口——"launcher 对某个
+openwiki 版本目录执行的运行时操作"，而非仓库构建产物。
+
+- **esbuild 懒安装**：不进 dependencies。首次需要时安装到 launcher 自己的
+  `<pkgRoot>/tools/esbuild/`（独立 `npm install esbuild`，失败即降级并提示）。
+  运行时依赖保持为零。
+- **触发点**：`install`（预热前先 ensureBundle(active)，预热顺带验证 bundle 可启动）、
+  `update <v>`（装完新版本后 best-effort，失败只提示不影响退出码）、
+  `switch <v>`（毫秒级不构建：缺 bundle 打印状态并在后台起低优先级补打任务）、
+  `mcp` 运行中缺 bundle（后端就绪后后台补，不占冷启动关键路径）、
+  `doctor`（列出各版本 bundle 状态）。
+- **原子写入**：构建到临时文件再 rename，杜绝读到半成品。
+- **失效判断**：`bundle.meta.json` 记录 openwiki 版本、打包脚本哈希、Node 主版本、
+  平台；任一变化视为过期，降级并重建。
+- **运行时兜底**：bundle 启动的后端在就绪前崩溃 → 自动改用源码入口重试一次，并写
+  `bundle.bad` 标记阻止后续会话重复踩坑（解析层见 `bundle.bad` 直接跳过 bundle）。
+- **不静默**：`switch` 与 `doctor` 显示 bundle 状态。
+
+**compile cache 双路径实测未见收益（数据）**：bundle 态 2.5s vs +cache 2.5~3.1s；
+源码态（缓存已填充的多轮计时）6.3s vs +cache 9.3~10s。**原因待证**——
+"缓存反序列化与校验的 IO 超过重编译"是推测。§6.2 的 compile cache 条目就此删除，
+不留"实测决定去留"的悬空项：两条路径都不引入 compile cache。
+
+**冷态收益未证**：现有对比均为热缓存数据。验收新增：ensureBundle 合入后，
+**重启机器后的首次启动**实测一次（不清 standby list），作为两项决策的依据——
+① bundle 的冷态收益量化；② `LAUNCHER_HOLDER` 是否改默认开启（若 bundle+排队已让
+首调落在宿主超时内，holder 维持可选；holder 本体已交付，无需返工）。
+
+**esbuild 懒安装的落点与约束**：esbuild 不进 dependencies，按需装到**用户级数据目录**
+`%LOCALAPPDATA%\openwiki-launcher\tools\esbuild\`（非 %TEMP%、非 pkgRoot——pkgRoot
+随 Node 版本与重装漂移，跨用户机器不可靠；`versions/` 同病，holder lockfile 的迁移
+记为后续项）。约束：esbuild 钉死确切版本（不用范围）；npm 安装走用户既有 npm 配置
+（复用 npm-runner，不硬编码源）；离线/失败静默降级但 `doctor` 可见原因。
+
+**bundle.bad 的触发条件（防误判）**：只有"**bundle 启动失败且源码入口随后成功**"才写
+标记；标记内容含当时 meta 的哈希，`ensureBundle` 重新构建成功后自动失效；
+`doctor` 提供清除标记的说明。磁盘满、路径问题、杀毒拦截等与 bundle 无关的失败
+不会污染标记。
+
+**并发与 Windows 文件占用**：多会话同时发现缺 bundle 时，用规格 §5.2 同款 `wx` 独占
+lockfile 做构建锁；重建时若产物内容哈希与现役一致则跳过，不一致则写到带哈希后缀的
+新文件（`bundle-<hash8>.mjs`），由 meta 指向实际文件名——避免 rename 覆盖被运行中
+后端（尤其 `.node`）占用的文件。
+
+**后台构建的时机**：`switch`/`mcp` 的补打延后到**后端就绪之后**——冷启动瓶颈是 IO，
+构建的 CPU/磁盘占用不得与它同时抢。
+
+**已交付部分与本修订的衔接**：`scripts/bundle-backend.mjs` 的构建配置、
+`resolveOpenwikiRuntime` 的 `preferBundle` 降级语义、doctor Defender 提示均保留，
+作为 `ensureBundle` 的构建内核与降级底座；本修订新增的是懒安装、触发点接线、
+元数据失效、原子写入与运行时兜底。
