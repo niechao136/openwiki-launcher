@@ -350,3 +350,41 @@ describe("installedEntryMatches", () => {
     expect(installedEntryMatches(null, nodeCommand, selfBin, "win32")).toBe(false);
   });
 });
+
+describe("doctor 的 Defender 排除提示（规格 §6.3）", () => {
+  it("win32 输出可复制的 Add-MpPreference 排除命令，不执行任何命令", async () => {
+    const { lines, logger } = capture();
+    const code = await runDoctorCommand({
+      logger,
+      nodeVersion: "24.21.0",
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: supervisorWith(loadManifest("0.6.0").tools),
+      platform: "win32",
+      nodeCommand: { command: "D:\\Hub\\node\\node.exe", warning: null },
+      selfBin: SELF_BIN,
+      resolveGlobalRoot: async () => null,
+    });
+
+    const output = lines.join("\n");
+    expect(code).toBe(0);
+    expect(output).toContain("Add-MpPreference");
+    expect(output).toContain("D:\\Hub\\node");
+  });
+
+  it("非 win32 平台不出现 Defender 提示", async () => {
+    const { lines, logger } = capture();
+    const code = await runDoctorCommand({
+      logger,
+      nodeVersion: "24.21.0",
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: supervisorWith(loadManifest("0.6.0").tools),
+      platform: "darwin",
+      nodeCommand: { command: "/usr/local/bin/node", warning: null },
+      selfBin: SELF_BIN,
+      resolveGlobalRoot: async () => null,
+    });
+
+    expect(code).toBe(0);
+    expect(lines.join("\n")).not.toContain("Add-MpPreference");
+  });
+});
