@@ -139,7 +139,9 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 - 宿主发来的 `initialize` 与 `tools/list` 由 `manifest/openwiki-<版本>.json` 快照即时应答，不触碰后端；
 - 连接建立时即在后台预热后端：握手与清单毫秒应答的同时，openwiki 的冷启动（Windows 30-50 秒）
   与宿主连接后的操作重叠，首个工具调用大概率已就绪（`LAUNCHER_EAGER_START=0` 可关闭，恢复懒启动）；
-- `tools/call` 在后端未就绪时排队（默认上限 120 秒），就绪后透传；
+- `tools/call` 在后端未就绪时排队（默认上限 25 秒，`LAUNCHER_QUEUE_TIMEOUT_MS` 可配），
+  期间按宿主的 `progressToken` 流式发送 `notifications/progress`；超时返回明确的可重试错误
+  （"请等待约 30 秒后重试"），宿主取消（`notifications/cancelled`）只终结该请求、不波及预热；
 - 没有匹配快照的 openwiki 版本会自动降级为直通模式：不再即时应答，改为等待真实后端，
   宁可慢也不给宿主一份对不上的工具清单；
 - 后端崩溃会自动重启一次，在途调用收到明确错误而不是无声挂起。
@@ -160,6 +162,12 @@ Holder 模式（`LAUNCHER_HOLDER=1`，可选）：默认每个宿主会话的 wr
 指针优先，指针缺失或损坏时回退出厂依赖（package.json 里钉的那个）并告警；
 **全局安装的 openwiki 不参与解析**——launcher 只认自己包根下的 node_modules 与
 versions/，想换版本请用上面的命令而不是 `npm install -g openwiki@x`。
+
+冷启动治理（0.4.0 新增）：实测 openwiki 冷启动 33~120 秒（Windows 上 Defender 扫描
+node_modules 是主因），0.4.0 用三招压缩它——排队上限降到 25s 并流式发 progress
+（首个工具调用不再必然撞宿主超时）；可选的 holder 延迟回收（`LAUNCHER_HOLDER=1`，
+见上）；后端 esbuild 单文件打包（`npm run bundle`，运行时自动优先使用，
+缺失或不可用自动回退源码入口，`doctor` 一并给出 Defender 排除命令）。
 
 ## 故障排查
 
