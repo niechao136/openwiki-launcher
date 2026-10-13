@@ -11,6 +11,16 @@ function pipeNameFor(hostId, version) {
   return `\\\\.\\pipe\\openwiki-launcher-${hostId}-${version}`;
 }
 
+// 探活一个 pid：进程存在返回 true（EPERM 视作存在——那是别人的进程）。
+function pidAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error.code === "EPERM";
+  }
+}
+
 /**
  * holder 进程的运行时装配。
  *
@@ -44,12 +54,34 @@ export async function runHolder({
   const pipeName = pipeNameFor(hostId, version);
   const lockPath = holderLockPath(hostId, pkgRoot);
 
-  const lockResult = acquireLock(lockPath, {
-    pid: process.pid,
-    pipeName,
-    version,
-    startedAt: Date.now(),
-  }, { force: forceLaunch });
+  let lockResult = acquireLock(
+    lockPath,
+    {
+      pid: process.pid,
+      pipeName,
+      version,
+      startedAt: Date.now(),
+    },
+    { force: forceLaunch },
+  );
+  if (!lockResult.acquired) {
+    // 残留锁（持有者进程已死：上次崩溃、被 kill、worker 自杀）会让 holder 永远
+    // 起不来。探活 pid：不存在就强制重取——与 bundle.lock 同一套思路。
+    const stalePid = lockResult.existing?.pid;
+    if (!forceLaunch && typeof stalePid === "number" && !pidAlive(stalePid)) {
+      releaseLock(lockPath);
+      lockResult = acquireLock(
+        lockPath,
+        {
+          pid: process.pid,
+          pipeName,
+          version,
+          startedAt: Date.now(),
+        },
+        { force: true },
+      );
+    }
+  }
   if (!lockResult.acquired) {
     throw new Error(
       `holder lockfile 已被占用（pid=${lockResult.existing?.pid}）；先探活接入，探活失败用 forceLaunch 覆盖`,

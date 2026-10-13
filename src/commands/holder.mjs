@@ -20,21 +20,27 @@ const DEFAULT_TTL_MINUTES = 30;
 export async function runHolderCommand({ hostId, logger, env = process.env, pkgRoot, forceLaunch = false }) {
   // 排障/测试钩子：把 holder 的锁与管道指向另一个包根（lockfile 与版本目录都在 pkgRoot/versions/ 下）
   pkgRoot = env.LAUNCHER_HOLDER_PKG_ROOT || pkgRoot;
-  let runtime;
-  try {
-    runtime = await resolveOpenwikiRuntime({ pkgRoot });
-  } catch (error) {
-    if (error instanceof OpenwikiNotFoundError) {
-      logger.error(error.message);
-      logger.error("openwiki-launcher 自带 openwiki 依赖，请重新安装本包。");
-    } else {
-      logger.error(`解析 openwiki 运行时失败: ${error.message}`);
+
+  // LAUNCHER_BACKEND_CLI 显式指定入口时（测试/排障），不要求包内装有 openwiki：
+  // 解析失败会把 holder 启动变成 exit 1，而调用方（wrapper spawn）拿不到原因。
+  const override = env.LAUNCHER_BACKEND_CLI;
+  let runtime = null;
+  if (!override) {
+    try {
+      runtime = await resolveOpenwikiRuntime({ pkgRoot });
+    } catch (error) {
+      if (error instanceof OpenwikiNotFoundError) {
+        logger.error(error.message);
+        logger.error("openwiki-launcher 自带 openwiki 依赖，请重新安装本包。");
+      } else {
+        logger.error(`解析 openwiki 运行时失败: ${error.message}`);
+      }
+      return 1;
     }
-    return 1;
   }
 
-  const override = env.LAUNCHER_BACKEND_CLI;
   const cliJs = override ?? runtime.cliJs;
+  const version = override ? env.LAUNCHER_HOLDER_VERSION ?? "custom" : runtime.version;
 
   const rawTtl = env.LAUNCHER_HOLDER_TTL_MINUTES;
   const parsedTtl = Number(rawTtl);
@@ -43,7 +49,7 @@ export async function runHolderCommand({ hostId, logger, env = process.env, pkgR
   try {
     const holder = await runHolder({
       hostId,
-      version: runtime.version,
+      version,
       cliJs,
       logger,
       env: { LAUNCHER_BACKEND_CLI: cliJs },

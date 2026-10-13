@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createHolderSupervisorAdapter } from "../src/holder-session.mjs";
-import { resolveHolderSession } from "../src/holder-client.mjs";
+import { resolveHolderSession, connectToHolder } from "../src/holder-client.mjs";
 import { runHolder } from "../src/holder-runtime.mjs";
 import { readLock } from "../src/lockfile.mjs";
 
@@ -159,8 +159,11 @@ describe("resolveHolderSession", () => {
       cliJs: FAKE_BACKEND,
       logger: noopLogger,
       deps: {
-        // 旧 holder 会收到 shutdown 并退出；新版本管道无人监听 → 连接失败 → 回退
-        connectFn: async (pipeName) => (pipeName === lock.pipeName ? null : null),
+        // 旧 holder 的管道真连并发 shutdown（让它自己退出、释放 lockfile）；
+        // 新版本管道无人监听 → null → 回退。绝不能对 lock.pid 直接 kill：
+        // 进程内 holder 的 pid 就是测试进程自己。
+        connectFn: async (pipeName, opts) =>
+          pipeName === lock.pipeName ? connectToHolder(pipeName, opts) : null,
         spawnFn: () => {},
       },
     });
