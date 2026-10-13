@@ -1,6 +1,7 @@
 const DEFAULT_QUEUE_TIMEOUT_MS = 25000;
 const DEFAULT_CALL_DEADLINE_MS = 180000;
 const DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;
+const DEFAULT_PROGRESS_INTERVAL_MS = 2000;
 
 const CANCELLED = "host disconnected";
 const QUEUE_TIMEOUT = "queue timeout";
@@ -31,6 +32,7 @@ export function createBroker({
   queueTimeoutMs = DEFAULT_QUEUE_TIMEOUT_MS,
   callDeadlineMs = DEFAULT_CALL_DEADLINE_MS,
   unavailableCooldownMs = DEFAULT_UNAVAILABLE_COOLDOWN_MS,
+  progressIntervalMs = DEFAULT_PROGRESS_INTERVAL_MS,
   now = () => Date.now(),
 }) {
   const timers = new Set();
@@ -108,6 +110,37 @@ export function createBroker({
     return Promise.race([promise, cancelled]).finally(() => inFlight.delete(record));
   }
 
+  // A host that supports resetTimeoutOnProgress keeps its request alive as long
+  // as progress keeps arriving; the token travels in the request's _meta. Only
+  // scalar tokens are usable (MCP allows string or number); anything else means
+  // the host cannot match notifications and we stay silent.
+  function progressTokenOf(entry) {
+    const token = entry.params?._meta?.progressToken;
+    return typeof token === "string" || typeof token === "number" ? token : null;
+  }
+
+  // While a call waits for the backend to start, report progress on its token.
+  // The interval is registered in `timers` so host disconnect clears it; the
+  // promise settling (ready, queue timeout, or failure) stops it.
+  function withQueueProgress(entry, pending) {
+    const token = progressTokenOf(entry);
+    if (token === null) return pending;
+    let progress = 0;
+    const timer = setInterval(() => {
+      progress += 1;
+      send({
+        jsonrpc: "2.0",
+        method: "notifications/progress",
+        params: { progressToken: token, progress, message: "等待 openwiki 后端启动" },
+      });
+    }, progressIntervalMs);
+    timers.add(timer);
+    return pending.finally(() => {
+      clearInterval(timer);
+      timers.delete(timer);
+    });
+  }
+
   function sameToolList(expected, actual) {
     if (!Array.isArray(expected)) return false;
     if (expected.length !== actual.length) return false;
@@ -142,8 +175,11 @@ export function createBroker({
 
     let session;
     try {
-      session = await withCancellation(
-        withDeadline(supervisor.ensureReady(), queueTimeoutMs, QUEUE_TIMEOUT),
+      session = await withQueueProgress(
+        entry,
+        withCancellation(
+          withDeadline(supervisor.ensureReady(), queueTimeoutMs, QUEUE_TIMEOUT),
+        ),
       );
     } catch (error) {
       if (error.message === QUEUE_TIMEOUT) {
@@ -260,7 +296,12 @@ export function createBroker({
     },
 
     handleClientEof() {
-      for (const timer of timers) clearTimeout(timer);
+      // timers 里既有 setTimeout 也有 setInterval 句柄，两种 clear 都调，
+      // 不依赖 Node 内部两者互通的实现细节。
+      for (const timer of timers) {
+        clearTimeout(timer);
+        clearInterval(timer);
+      }
       timers.clear();
       for (const record of inFlight) record.cancel();
       inFlight.clear();

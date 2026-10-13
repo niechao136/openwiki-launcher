@@ -178,6 +178,84 @@ describe("createBroker", () => {
     );
   });
 
+  it("sends progress notifications while a call waits for the backend", async () => {
+    vi.useFakeTimers();
+    try {
+      let release;
+      const gate = new Promise((resolve) => (release = resolve));
+      const supervisor = {
+        ensureReady: () => gate,
+        current: () => null,
+        onSessionExit() {},
+        stop() {},
+      };
+      const { broker, sent } = makeBrokerWithSupervisor(supervisor, null, {
+        progressIntervalMs: 1000,
+      });
+
+      broker.handleClientMessage({
+        jsonrpc: "2.0",
+        id: 30,
+        method: "tools/call",
+        params: { name: "openwiki_search", arguments: {}, _meta: { progressToken: "tok-1" } },
+      });
+      await vi.advanceTimersByTimeAsync(2000);
+
+      const progress = sent.filter((m) => m.method === "notifications/progress");
+      expect(progress).toHaveLength(2);
+      expect(progress[0].params).toMatchObject({
+        progressToken: "tok-1",
+        progress: 1,
+        message: "等待 openwiki 后端启动",
+      });
+      expect(progress[1].params.progress).toBe(2);
+
+      release({
+        ready: Promise.resolve({ protocolVersion: "2024-11-05", serverInfo: { name: "x" } }),
+        request: async () => ({ isError: false, content: [] }),
+        isRunning: () => true,
+      });
+      await vi.advanceTimersByTimeAsync(100);
+      expect(byId(sent, 30).result.isError).toBe(false);
+      expect(sent.filter((m) => m.method === "notifications/progress")).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not send progress when the request has no usable progressToken", async () => {
+    vi.useFakeTimers();
+    try {
+      const supervisor = {
+        ensureReady: () => new Promise(() => {}),
+        current: () => null,
+        onSessionExit() {},
+        stop() {},
+      };
+      const { broker, sent } = makeBrokerWithSupervisor(supervisor, null, {
+        progressIntervalMs: 10,
+      });
+
+      broker.handleClientMessage({
+        jsonrpc: "2.0",
+        id: 31,
+        method: "tools/call",
+        params: { name: "openwiki_search", arguments: {} },
+      });
+      broker.handleClientMessage({
+        jsonrpc: "2.0",
+        id: 32,
+        method: "tools/call",
+        params: { name: "openwiki_search", arguments: {}, _meta: { progressToken: {} } },
+      });
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(sent.filter((m) => m.method === "notifications/progress")).toHaveLength(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("clears queued timers and stops the backend when the host disconnects", () => {
     vi.useFakeTimers();
     try {
@@ -191,6 +269,12 @@ describe("createBroker", () => {
       const { broker } = makeBrokerWithSupervisor(supervisor);
 
       toolCall(broker, 9);
+      broker.handleClientMessage({
+        jsonrpc: "2.0",
+        id: 91,
+        method: "tools/call",
+        params: { name: "openwiki_search", arguments: {}, _meta: { progressToken: "tok-eof" } },
+      });
       expect(vi.getTimerCount()).toBeGreaterThan(0);
 
       broker.handleClientEof();
