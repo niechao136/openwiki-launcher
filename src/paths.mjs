@@ -50,9 +50,9 @@ function resolveEntry(dir) {
 }
 
 /**
- * bundle 产物（versions/<版本>/bundle.mjs）存在即优先：单文件把模块图加载的
- * 文件 IO 与编译从数千文件降到一个。bundle 缺失或属于别的版本目录时静默
- * 降级 node_modules 的 cliJs——bundle 只是优化，缺失绝不能致命（规格 §6.1）。
+ * bundle 优先解析（规格 §9）：meta 指向实际产物文件（内容哈希寻址）；
+ * bundle.bad 标记存在时跳过 bundle（上次构建的产物把后端搞挂过，直到重建成功）。
+ * 任何缺失/损坏都静默降级 node_modules 的 cliJs——bundle 只是优化，绝不致命。
  *
  * @param {string} pkgRoot
  * @param {string} version 解析出的 openwiki 版本号
@@ -60,10 +60,20 @@ function resolveEntry(dir) {
  * @returns {{ cliJs: string, backend: "bundle" | "source" }}
  */
 function preferBundle(pkgRoot, version, sourceCliJs) {
-  const bundlePath = path.join(versionDir(pkgRoot, version), "bundle.mjs");
-  return existsSync(bundlePath)
-    ? { cliJs: bundlePath, backend: "bundle" }
-    : { cliJs: sourceCliJs, backend: "source" };
+  const bundleDir = versionDir(pkgRoot, version);
+  if (existsSync(path.join(bundleDir, "bundle.bad"))) {
+    return { cliJs: sourceCliJs, backend: "source" };
+  }
+  try {
+    const meta = JSON.parse(readFileSync(path.join(bundleDir, "bundle.meta.json"), "utf8"));
+    const bundlePath = path.join(bundleDir, meta.file);
+    if (typeof meta.file === "string" && existsSync(bundlePath)) {
+      return { cliJs: bundlePath, backend: "bundle" };
+    }
+  } catch {
+    // meta 缺失/损坏 → 降级，ensureBundle 下次触发重建
+  }
+  return { cliJs: sourceCliJs, backend: "source" };
 }
 
 /**

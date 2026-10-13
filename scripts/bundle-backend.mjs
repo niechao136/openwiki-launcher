@@ -44,6 +44,7 @@ export async function runBundleBackend({
   pkgRoot = launcherPackageRoot(),
   version,
   outDir,
+  outFile: resolvedOutFile,
   esbuildModule: esbuildModuleOverride = esbuild,
 }) {
   if (!esbuildModuleOverride) {
@@ -70,7 +71,8 @@ export async function runBundleBackend({
   }
   targetVersion = targetVersion ?? "bundled";
   const targetDir = outDir ?? path.join(pkgRoot, "versions", targetVersion);
-  const outfile = path.join(targetDir, "bundle.mjs");
+  // ensureBundle 走内容寻址：先构建到临时/指定路径，再由它 rename 到最终名
+  const outfile = resolvedOutFile ?? path.join(targetDir, "bundle.mjs");
   const entry = path.join(pkgRoot, "node_modules", "openwiki", "dist", "cli", "cli.js");
   if (!existsSync(entry)) {
     logger.error(`未找到 openwiki CLI 入口：${entry}`);
@@ -116,5 +118,16 @@ if (isMain) {
     warn: (m) => process.stderr.write(`[launcher] warn: ${m}\n`),
     error: (m) => process.stderr.write(`[launcher] ${m}\n`),
   };
-  runBundleBackend({ logger }).then((code) => process.exit(code));
+  // CLI 入口也走 ensureBundle：meta / 内容寻址 / bundle.bad 清除只有它管
+  const { readActive } = await import("../src/versions.mjs");
+  const { ensureBundle } = await import("../src/ensure-bundle.mjs");
+  const pkgRoot = launcherPackageRoot();
+  let version = readActive(pkgRoot)?.version;
+  if (!version) {
+    const backendPkg = path.join(pkgRoot, "node_modules", "openwiki", "package.json");
+    version = JSON.parse(readFileSync(backendPkg, "utf8")).version;
+  }
+  ensureBundle({ version, pkgRoot, logger }).then((result) =>
+    process.exit(result.ok ? 0 : 1),
+  );
 }
