@@ -286,6 +286,75 @@ describe("createBroker", () => {
     }
   });
 
+  it("drops a queued call when the host cancels it without disturbing prewarm", async () => {
+    let release;
+    const gate = new Promise((resolve) => (release = resolve));
+    const stop = vi.fn();
+    const supervisor = {
+      ensureReady: () => gate,
+      current: () => null,
+      onSessionExit() {},
+      stop,
+    };
+    const { broker, sent } = makeBrokerWithSupervisor(supervisor, null);
+
+    toolCall(broker, 40);
+    await Promise.resolve();
+    broker.handleClientMessage({
+      jsonrpc: "2.0",
+      method: "notifications/cancelled",
+      params: { requestId: 40 },
+    });
+
+    // 取消不产生应答
+    await new Promise((r) => setTimeout(r, 50));
+    expect(byId(sent, 40)).toBeUndefined();
+    // 取消不波及预热
+    expect(stop).not.toHaveBeenCalled();
+
+    // 预热仍在：解除 gate 后，后续调用正常完成
+    release({
+      ready: Promise.resolve({ protocolVersion: "2024-11-05", serverInfo: { name: "x" } }),
+      request: async () => ({ isError: false, content: [] }),
+      isRunning: () => true,
+    });
+    toolCall(broker, 41);
+    await vi.waitFor(() => expect(byId(sent, 41)).toBeTruthy(), { timeout: 5000 });
+    expect(byId(sent, 41).result.isError).toBe(false);
+    // 取消真正终结了等待：预热完成后被取消的调用也不冒出应答
+    await new Promise((r) => setTimeout(r, 50));
+    expect(byId(sent, 40)).toBeUndefined();
+  });
+
+  it("ignores cancellation for unknown or finished requests", async () => {
+    const supervisor = {
+      ensureReady: () => Promise.resolve({
+        ready: Promise.resolve({ protocolVersion: "2024-11-05", serverInfo: { name: "x" } }),
+        request: async () => ({ isError: false, content: [] }),
+        isRunning: () => true,
+      }),
+      current: () => null,
+      onSessionExit() {},
+      stop() {},
+    };
+    const { broker, sent } = makeBrokerWithSupervisor(supervisor, null);
+
+    expect(() =>
+      broker.handleClientMessage({
+        jsonrpc: "2.0",
+        method: "notifications/cancelled",
+        params: { requestId: 999 },
+      }),
+    ).not.toThrow();
+    expect(() =>
+      broker.handleClientMessage({ jsonrpc: "2.0", method: "notifications/cancelled", params: {} }),
+    ).not.toThrow();
+
+    toolCall(broker, 50);
+    await vi.waitFor(() => expect(byId(sent, 50)).toBeTruthy(), { timeout: 5000 });
+    expect(byId(sent, 50).result.isError).toBe(false);
+  });
+
   it("ignores a malformed host line and keeps serving", () => {
     const { broker, sent } = makeBroker();
 

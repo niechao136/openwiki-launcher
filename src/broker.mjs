@@ -4,6 +4,7 @@ const DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;
 const DEFAULT_PROGRESS_INTERVAL_MS = 2000;
 
 const CANCELLED = "host disconnected";
+const HOST_CANCELLED = "host cancelled";
 const QUEUE_TIMEOUT = "queue timeout";
 const CALL_DEADLINE = "call deadline";
 
@@ -37,6 +38,7 @@ export function createBroker({
 }) {
   const timers = new Set();
   const inFlight = new Set();
+  const cancelById = new Map();
   // 与 commands/mcp.mjs 的预热日志同一时间起点，两条日志的差值就是
   // “宿主第一次调用比后端就绪早到了多少”。
   const startedAt = now();
@@ -100,14 +102,23 @@ export function createBroker({
 
   // Lets host disconnect settle requests that are waiting on the backend,
   // instead of leaving their promises dangling until the process dies.
-  function withCancellation(promise) {
-    let cancel;
+  // A host may also cancel a single request (notifications/cancelled); those
+  // cancellations are keyed by request id and reject with HOST_CANCELLED so
+  // the dispatch layer can drop the answer without touching the supervisor.
+  function withCancellation(id, promise) {
+    let rejectCancelled;
     const cancelled = new Promise((_, reject) => {
-      cancel = () => reject(new Error(CANCELLED));
+      rejectCancelled = reject;
     });
-    const record = { cancel };
+    const record = { cancel: () => rejectCancelled(new Error(CANCELLED)) };
     inFlight.add(record);
-    return Promise.race([promise, cancelled]).finally(() => inFlight.delete(record));
+    if (id !== undefined) {
+      cancelById.set(id, () => rejectCancelled(new Error(HOST_CANCELLED)));
+    }
+    return Promise.race([promise, cancelled]).finally(() => {
+      inFlight.delete(record);
+      cancelById.delete(id);
+    });
   }
 
   // A host that supports resetTimeoutOnProgress keeps its request alive as long
@@ -178,6 +189,7 @@ export function createBroker({
       session = await withQueueProgress(
         entry,
         withCancellation(
+          entry.id,
           withDeadline(supervisor.ensureReady(), queueTimeoutMs, QUEUE_TIMEOUT),
         ),
       );
@@ -188,6 +200,13 @@ export function createBroker({
       }
       if (error.message === CANCELLED) {
         sendToolError(entry.id, "宿主已断开，调用已取消");
+        return;
+      }
+      if (error.message === HOST_CANCELLED) {
+        // The host abandoned this request; MCP needs no answer for it. The
+        // prewarm behind it keeps running — cancelling one call must not
+        // restart or stop the backend.
+        logger.debug(`宿主已取消该调用 id=${entry.id}`);
         return;
       }
       unavailable = error;
@@ -207,6 +226,7 @@ export function createBroker({
         return;
       }
       const result = await withCancellation(
+        entry.id,
         withDeadline(
           session.request("tools/call", entry.params),
           callDeadlineMs,
@@ -215,6 +235,12 @@ export function createBroker({
       );
       send({ jsonrpc: "2.0", id: entry.id, result });
     } catch (error) {
+      if (error.message === HOST_CANCELLED) {
+        // Already forwarded to the backend: MCP says the tool keeps running
+        // and the answer is simply discarded.
+        logger.debug(`宿主已取消该调用 id=${entry.id}（后端继续执行，结果丢弃）`);
+        return;
+      }
       if (error.message === CALL_DEADLINE) {
         sendToolError(entry.id, "openwiki 后端调用超时，请重试");
         return;
@@ -259,6 +285,13 @@ export function createBroker({
       }
 
       if (message.id === undefined) {
+        if (message.method === "notifications/cancelled") {
+          const requestId = message.params?.requestId;
+          const cancel = cancelById.get(requestId);
+          if (cancel) cancel();
+          else logger.debug(`忽略无法对应的取消请求 id=${requestId}`);
+          return;
+        }
         const session = supervisor.current();
         if (session) session.notify(message.method, message.params);
         else logger.debug(`后端未就绪，丢弃宿主通知 ${message.method}`);
@@ -305,6 +338,7 @@ export function createBroker({
       timers.clear();
       for (const record of inFlight) record.cancel();
       inFlight.clear();
+      cancelById.clear();
       supervisor.stop();
     },
   };
