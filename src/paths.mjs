@@ -20,6 +20,23 @@ export class OpenwikiNotFoundError extends Error {}
 const silentLogger = { warn() {} };
 
 /**
+ * holder lockfile 的落点：versions/ 目录已随包存在且由 launcher 自管，
+ * 与版本指针同处一处便于整体清理。
+ *
+ * @param {string} hostId
+ * @param {string} [pkgRoot]
+ * @returns {string}
+ */
+export function holderLockPath(hostId, pkgRoot = launcherPackageRoot()) {
+  if (!/^[a-z0-9-]{1,64}$/.test(hostId)) {
+    throw new Error(
+      `非法的 hostId: ${JSON.stringify(hostId)}（应为 1-64 位小写字母、数字或连字符）`,
+    );
+  }
+  return path.join(versionsRoot(pkgRoot), `holder-${hostId}.json`);
+}
+
+/**
  * 解析一个候选 openwiki 包目录；package.json 与 CLI 入口不全时返回 null。
  *
  * @param {string} dir 候选 openwiki 包目录。
