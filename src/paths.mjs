@@ -50,6 +50,23 @@ function resolveEntry(dir) {
 }
 
 /**
+ * bundle 产物（versions/<版本>/bundle.mjs）存在即优先：单文件把模块图加载的
+ * 文件 IO 与编译从数千文件降到一个。bundle 缺失或属于别的版本目录时静默
+ * 降级 node_modules 的 cliJs——bundle 只是优化，缺失绝不能致命（规格 §6.1）。
+ *
+ * @param {string} pkgRoot
+ * @param {string} version 解析出的 openwiki 版本号
+ * @param {string} sourceCliJs node_modules 侧的 cliJs
+ * @returns {{ cliJs: string, backend: "bundle" | "source" }}
+ */
+function preferBundle(pkgRoot, version, sourceCliJs) {
+  const bundlePath = path.join(versionDir(pkgRoot, version), "bundle.mjs");
+  return existsSync(bundlePath)
+    ? { cliJs: bundlePath, backend: "bundle" }
+    : { cliJs: sourceCliJs, backend: "source" };
+}
+
+/**
  * @param {string} packageJson package.json 路径。
  * @returns {string | null} version 字段；读不出或不是字符串时为 null。
  */
@@ -81,7 +98,7 @@ function readDeclaredVersion(packageJson) {
  *   pkgRoot?: string,
  *   logger?: { warn(message: string): void },
  * }} [options]
- * @returns {Promise<{ packageRoot: string, version: string, cliJs: string, source: "versions" | "bundled" }>}
+ * @returns {Promise<{ packageRoot: string, version: string, cliJs: string, backend: "bundle" | "source", source: "versions" | "bundled" }>}
  */
 export async function resolveOpenwikiRuntime({
   explicitVersion,
@@ -110,7 +127,7 @@ export async function resolveOpenwikiRuntime({
         `versions/${explicitVersion} 下找不到可解析的 openwiki（package.json 或 dist/cli/cli.js 缺失）`,
       );
     }
-    return { packageRoot: path.dirname(entry.packageJson), version, cliJs: entry.cliJs, source: "versions" };
+    return { packageRoot: path.dirname(entry.packageJson), version, cliJs: entry.cliJs, backend: "source", source: "versions" };
   }
 
   /** @type {{ dir: string, source: "versions" | "bundled", pointerMiss?: string }[]} */
@@ -129,7 +146,14 @@ export async function resolveOpenwikiRuntime({
     if (entry) {
       const version = readDeclaredVersion(entry.packageJson);
       if (version) {
-        return { packageRoot: candidate.dir, version, cliJs: entry.cliJs, source: candidate.source };
+        const preferred = preferBundle(pkgRoot, version, entry.cliJs);
+        return {
+          packageRoot: candidate.dir,
+          version,
+          cliJs: preferred.cliJs,
+          backend: preferred.backend,
+          source: candidate.source,
+        };
       }
     }
     if (candidate.pointerMiss) logger.warn(candidate.pointerMiss);
