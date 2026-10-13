@@ -1,5 +1,10 @@
 const QUEUE_TIMEOUT = "queue timeout";
 const QUEUE_TIMEOUT_TEXT = "openwiki 后端仍在启动（冷启动可能需要 30~120 秒），请等待约 30 秒后重试";
+const INITIALIZE_PARAMS = {
+  protocolVersion: "2024-11-05",
+  capabilities: {},
+  clientInfo: { name: "openwiki-launcher-holder", version: "holder" },
+};
 
 /**
  * holder 的多路复用核心。
@@ -78,6 +83,29 @@ export function createHolderCore({
     return { jsonrpc: "2.0", id, result: { content: [{ type: "text", text }], isError: true } };
   }
 
+  // 直通模式（无 manifest）下 wrapper 需要上游的 initialize 结果。规格 §5.4：
+  // initialize 只对上游做一次，holder 缓存后所有连接共用。
+  let initCache = null;
+
+  async function dispatchInit(conn, connState, message) {
+    try {
+      const session = await withDeadline(getSession(), queueTimeoutMs, QUEUE_TIMEOUT);
+      if (connState.closed) return;
+      if (!initCache) {
+        initCache = await session.request("initialize", INITIALIZE_PARAMS);
+      }
+      conn.send({ jsonrpc: "2.0", id: message.id, result: initCache });
+    } catch (error) {
+      if (connState.closed) return;
+      if (error.message === QUEUE_TIMEOUT) {
+        conn.send(toolError(message.id, QUEUE_TIMEOUT_TEXT));
+        return;
+      }
+      logger.error(`openwiki 后端不可用：${error.message}`);
+      conn.send(toolError(message.id, `openwiki 后端不可用：${error.message}`));
+    }
+  }
+
   async function dispatch(conn, connState, message) {
     const connId = message.id;
     const params = { ...message.params };
@@ -116,6 +144,10 @@ export function createHolderCore({
       return;
     }
 
+    if (message.method === "holder/init") {
+      dispatchInit(conn, connState, message);
+      return;
+    }
     if (message.method === "holder/status") {
       conn.send({
         jsonrpc: "2.0",

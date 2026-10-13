@@ -3,6 +3,8 @@ import { createBroker } from "../broker.mjs";
 import { createLineParser, formatMessage } from "../jsonrpc.mjs";
 import { loadManifest } from "../manifest.mjs";
 import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
+import { resolveHolderSession } from "../holder-client.mjs";
+import { resolveSelfBin } from "../self-path.mjs";
 
 const DEFAULT_QUEUE_TIMEOUT_MS = 25000;
 
@@ -65,7 +67,27 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
     );
   }
 
-  const supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
+  // LAUNCHER_HOLDER=1 时尝试接入/拉起常驻 holder（规格 §5.3）。
+  // 默认关闭：逐宿主 detached 存活验收（规格 §8）完成后再改默认。
+  let supervisor;
+  if (env.LAUNCHER_HOLDER === "1") {
+    const resolved = await resolveHolderSession({
+      hostId,
+      version: runtime.version,
+      cliJs,
+      logger,
+      selfBin: resolveSelfBin(import.meta.url),
+    });
+    if (resolved.mode === "holder") {
+      logger.debug(`已接入 openwiki holder（host=${hostId}）`);
+      supervisor = resolved.adapter;
+    } else {
+      logger.warn(`holder 不可用，回退进程内 supervisor：${resolved.reason}`);
+      supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
+    }
+  } else {
+    supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
+  }
   const broker = createBroker({
     manifest,
     supervisor,

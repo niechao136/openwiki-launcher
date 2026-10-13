@@ -199,6 +199,37 @@ describe("createHolderCore", () => {
     core.closeAll();
   });
 
+  it("performs the upstream initialize once and caches holder/init", async () => {
+    const initCalls = [];
+    const session = {
+      ready: Promise.resolve({}),
+      request: async (method, params) => {
+        if (method === "initialize") {
+          initCalls.push(params);
+          return { protocolVersion: "2024-11-05", serverInfo: { name: "fake", version: "9.9.9" } };
+        }
+        return { isError: false, content: [] };
+      },
+      isRunning: () => true,
+    };
+    const core = createHolderCore({ supervisor: fakeSupervisor({ session }), version: "0.6.0" });
+    const conn = fakeConn();
+    core.handleConnection(conn);
+
+    conn.feed({ jsonrpc: "2.0", id: 1, method: "holder/init", params: {} });
+    await vi.waitFor(() => expect(conn.sent).toHaveLength(1));
+    expect(conn.sent[0].result.serverInfo.name).toBe("fake");
+
+    // 第二个连接再要 initialize：命中缓存，上游不再被调
+    const conn2 = fakeConn();
+    core.handleConnection(conn2);
+    conn2.feed({ jsonrpc: "2.0", id: 5, method: "holder/init", params: {} });
+    await vi.waitFor(() => expect(conn2.sent).toHaveLength(1));
+    expect(conn2.sent[0].result.serverInfo.version).toBe("9.9.9");
+    expect(initCalls).toHaveLength(1);
+    core.closeAll();
+  });
+
   it("answers holder/status and holder/shutdown", async () => {
     let shutdownCalls = 0;
     const supervisor = fakeSupervisor();
