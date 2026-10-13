@@ -35,6 +35,10 @@ export function createBroker({
 }) {
   const timers = new Set();
   const inFlight = new Set();
+  // 与 commands/mcp.mjs 的预热日志同一时间起点，两条日志的差值就是
+  // “宿主第一次调用比后端就绪早到了多少”。
+  const startedAt = now();
+  let firstCallLogged = false;
   let unavailable = null;
   let unavailableAt = 0;
   let mismatchWarned = false;
@@ -244,6 +248,10 @@ export function createBroker({
       }
 
       if (message.method === "tools/call") {
+        if (!firstCallLogged) {
+          firstCallLogged = true;
+          logger.debug(`首次 tools/call 到达，距启动 ${now() - startedAt}ms`);
+        }
         dispatchSafely({ id: message.id, method: "tools/call", params: message.params });
         return;
       }

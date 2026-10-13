@@ -20,6 +20,7 @@ import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
  * @returns {Promise<number>} Process exit code.
  */
 export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn }) {
+  const startedAt = Date.now();
   let runtime;
   try {
     runtime = await resolveOpenwikiRuntime();
@@ -64,7 +65,11 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
     const prewarmStarted = Date.now();
     supervisor
       .ensureReady()
-      .then(() => logger.debug(`后端预热完成，耗时 ${Date.now() - prewarmStarted}ms`))
+      .then(() =>
+        logger.debug(
+          `后端预热完成，耗时 ${Date.now() - prewarmStarted}ms（距启动 ${Date.now() - startedAt}ms）`,
+        ),
+      )
       .catch((error) =>
         logger.warn(`后端预热失败，首次工具调用将重试: ${error.message}`),
       );
