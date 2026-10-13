@@ -13,12 +13,14 @@
     "bin",
     "src",
     "manifest",
-    "scripts"
+    "scripts",
+    "versions"
   ],
   "scripts": {
     "test": "vitest run",
     "test:smoke": "node scripts/run-smoke.mjs",
-    "manifest": "node scripts/gen-manifest.mjs"
+    "manifest": "node scripts/gen-manifest.mjs",
+    "bundle": "node scripts/bundle-backend.mjs"
   },
   "repository": {
     "type": "git",
