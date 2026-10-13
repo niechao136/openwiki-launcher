@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkS
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launcherPackageRoot, readActive, versionDir, versionsRoot } from "./versions.mjs";
+import { launcherDataDir } from "./paths.mjs";
 import { acquireLock, releaseLock } from "./lockfile.mjs";
 import { ensureEsbuild } from "./esbuild-tools.mjs";
 
@@ -66,7 +67,7 @@ export async function ensureBundle({ version, pkgRoot, logger, deps = {} }) {
     return { ok: true, reused: true, file: existingMeta.file };
   }
 
-  const esbuild = await ensureEsbuildFn({ dataDir: pkgRoot, logger, pinnedVersion: PINNED.esbuildVersion });
+  const esbuild = await ensureEsbuildFn({ dataDir: launcherDataDir(), logger, pinnedVersion: PINNED.esbuildVersion });
   if (!esbuild.ok) return { ok: false, reason: esbuild.reason };
 
   const lockPath = path.join(versionsRoot(pkgRoot), "bundle.lock");

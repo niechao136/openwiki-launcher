@@ -20,6 +20,17 @@ export class OpenwikiNotFoundError extends Error {}
 const silentLogger = { warn() {} };
 
 /**
+ * launcher 的用户级数据目录（规格 §9）：esbuild 工具链放这里，跨 Node 版本
+ * 与 launcher 重装存活；pkgRoot 会随 Node 版本漂移，不可靠。
+ *
+ * @returns {string}
+ */
+export function launcherDataDir() {
+  const base = process.env.LOCALAPPDATA || path.join(process.env.USERPROFILE || process.env.HOME || "", ".openwiki-launcher");
+  return path.join(base, "openwiki-launcher");
+}
+
+/**
  * holder lockfile 的落点：versions/ 目录已随包存在且由 launcher 自管，
  * 与版本指针同处一处便于整体清理。
  *
