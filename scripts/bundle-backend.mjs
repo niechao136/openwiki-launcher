@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import { mkdirSync, existsSync } from "node:fs";
+import { mkdirSync, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launcherPackageRoot, readActive } from "../src/versions.mjs";
@@ -56,7 +56,19 @@ export async function runBundleBackend({
   } catch {
     active = null;
   }
-  const targetVersion = version ?? active?.version ?? "bundled";
+  // 目标版本目录必须与运行时解析出的版本号一致（preferBundle 按 version 查找）：
+  // 有指针用指针；无指针时读 openwiki 包自身的声明——"bundled" 不是版本号，
+  // 落到 versions/bundled/ 的 bundle 永远不会被运行时找到。
+  let targetVersion = version ?? active?.version;
+  if (!targetVersion) {
+    const backendPkg = path.join(pkgRoot, "node_modules", "openwiki", "package.json");
+    try {
+      targetVersion = JSON.parse(readFileSync(backendPkg, "utf8")).version;
+    } catch {
+      targetVersion = null;
+    }
+  }
+  targetVersion = targetVersion ?? "bundled";
   const targetDir = outDir ?? path.join(pkgRoot, "versions", targetVersion);
   const outfile = path.join(targetDir, "bundle.mjs");
   const entry = path.join(pkgRoot, "node_modules", "openwiki", "dist", "cli", "cli.js");
