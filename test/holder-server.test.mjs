@@ -100,10 +100,11 @@ describe("createHolderCore", () => {
     b.feed(toolCall(1, { who: "b" }));
     await vi.waitFor(() => expect(session.calls).toHaveLength(2));
 
-    // 上游收到的两个请求参数未被混淆（id 唯一性由 holder 内部映射保证，
-    // 经 supervisor 层转发后不外露——映射正确性由下面的乱序路由断言验证）
-    expect(session.calls[0].arguments).toEqual({ who: "a" });
-    expect(session.calls[1].arguments).toEqual({ who: "b" });
+    // 上游收到的两个请求参数未被混淆。并发 dispatch 的到达顺序由事件循环
+    // 决定，不断言固定顺序——真正的路由正确性由下面的乱序 resolve 验证。
+    const received = session.calls.map((c) => c.arguments);
+    expect(received).toContainEqual({ who: "a" });
+    expect(received).toContainEqual({ who: "b" });
     // 乱序 resolve：先 B 后 A
     pendingB.resolve({ isError: false, content: [{ type: "text", text: "B" }] });
     pendingA.resolve({ isError: false, content: [{ type: "text", text: "A" }] });

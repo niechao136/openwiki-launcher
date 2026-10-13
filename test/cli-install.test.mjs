@@ -4,12 +4,13 @@ import { join } from "node:path";
 import { main } from "../src/cli.mjs";
 import { BUNDLE, NODE, SELF_BIN, makeTempDir, removeTempDir, collectLogger } from "./helpers.mjs";
 
-let home, proj, logs, warmCalls;
+let home, proj, logs, warmCalls, bundleCalls;
 beforeEach(() => {
   home = makeTempDir("ow-cli-home-");
   proj = makeTempDir("ow-cli-proj-");
   logs = collectLogger();
   warmCalls = [];
+  bundleCalls = [];
 });
 afterEach(() => { removeTempDir(home); removeTempDir(proj); });
 
@@ -32,6 +33,12 @@ const deps = (over = {}) => ({
   nodeCommand: { command: NODE, warning: null },
   bundleDir: BUNDLE,
   warmFn: stubWarm(),
+  // 与 warmFn 同理：不注入桩的话 install 预热前会真去装 esbuild（数十秒）。
+  // ensureBundle 是预热前的第一步，真实安装留给真实环境验证。
+  ensureBundleFn: async () => {
+    bundleCalls.push(true);
+    return { ok: true, file: "bundle-x.mjs" };
+  },
   ...over,
 });
 
@@ -124,6 +131,12 @@ describe("安装后的自动预热", () => {
     const r = await main(["--tool", "claude"], deps());
     expect(r).toBe(0);
     expect(warmCalls).toHaveLength(1);
+  });
+
+  it("预热之前先 ensureBundle（规格 §9：预热顺带验证 bundle 可启动）", async () => {
+    const r = await main(["--tool", "claude"], deps());
+    expect(r).toBe(0);
+    expect(bundleCalls).toHaveLength(1);
   });
 
   it("--no-warm 跳过预热，并提示可以手动跑", async () => {

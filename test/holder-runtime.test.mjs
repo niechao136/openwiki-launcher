@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import os from "node:os";
 import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,8 +14,16 @@ const FAKE_BACKEND = path.join(REPO_ROOT, "test", "fixtures", "fake-openwiki.mjs
 const BIN = path.join(REPO_ROOT, "bin", "openwiki-launcher.mjs");
 
 const holders = [];
+const tempRoots = [];
+function tempPkgRoot() {
+  const dir = mkdtempSync(path.join(os.tmpdir(), "hr-test-"));
+  mkdirSync(path.join(dir, "versions"), { recursive: true });
+  tempRoots.push(dir);
+  return dir;
+}
 afterEach(async () => {
   for (const holder of holders.splice(0)) await holder.shutdown().catch(() => {});
+  for (const dir of tempRoots.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
 function connect(pipeName) {
@@ -56,6 +65,9 @@ const baseOptions = (overrides = {}) => ({
   logger: { debug() {}, warn() {}, error() {} },
   env: { FAKE_STARTUP_DELAY_MS: "800" },
   ttlMinutes: 30,
+  // 每个 holder 一个临时 pkgRoot：lockfile 不落在真实 repo 的 versions/ 里，
+  // 上次运行泄漏的 holder 也不会通过同名管道把新 holder 挤下线。
+  pkgRoot: tempPkgRoot(),
   ...overrides,
 });
 
@@ -204,11 +216,16 @@ describe("holder CLI (subprocess)", () => {
 
   it("starts serving a real pipe connection end to end", async () => {
     const uniqueHost = "e2e-host";
-    const lockPath = path.join(REPO_ROOT, "versions", `holder-${uniqueHost}.json`);
+    const pkgRoot = tempPkgRoot();
+    const lockPath = path.join(pkgRoot, "versions", `holder-${uniqueHost}.json`);
     releaseLock(lockPath);
     const child = spawn(process.execPath, [BIN, "holder", "--host", uniqueHost], {
       cwd: REPO_ROOT,
-      env: { ...process.env, LAUNCHER_BACKEND_CLI: FAKE_BACKEND },
+      env: {
+        ...process.env,
+        LAUNCHER_BACKEND_CLI: FAKE_BACKEND,
+        LAUNCHER_HOLDER_PKG_ROOT: pkgRoot,
+      },
       stdio: ["ignore", "ignore", "ignore"],
     });
     holders.push({ shutdown: async () => child.kill(), exited: new Promise(() => {}), lockPath });

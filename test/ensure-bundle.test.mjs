@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, writeFileSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -71,11 +71,15 @@ describe("ensureEsbuild", () => {
 });
 
 describe("ensureBundle", () => {
-  const buildKernelWrites = (contents = "// bundle v1") =>
-    async ({ outfile }) => {
+  const buildKernelWrites = (contents = "// bundle v1") => {
+    const fn = async ({ outfile }) => {
+      fn.calls += 1;
       writeFileSync(outfile, contents);
       return { ok: true, bytes: contents.length };
     };
+    fn.calls = 0;
+    return fn;
+  };
 
   it("builds, writes meta and clears bundle.bad when absent", async () => {
     const pkgRoot = tempDir();
@@ -106,7 +110,7 @@ describe("ensureBundle", () => {
     };
     await ensureBundle(options);
     await ensureBundle(options);
-    expect(buildKernel).toHaveBeenCalledTimes(1);
+    expect(buildKernel.calls).toBe(1);
   });
 
   it("rebuilds when meta is stale (node major changed)", async () => {
@@ -124,7 +128,7 @@ describe("ensureBundle", () => {
     meta.nodeMajor = "99";
     writeFileSync(metaPath, JSON.stringify(meta));
     await ensureBundle(options);
-    expect(buildKernel).toHaveBeenCalledTimes(2);
+    expect(buildKernel.calls).toBe(2);
   });
 
   it("does not rebuild over an identical existing artifact", async () => {
@@ -159,6 +163,23 @@ describe("ensureBundle", () => {
     expect(result.ok).toBe(false);
     expect(result.reason).toContain("offline");
     expect(existsSync(path.join(pkgRoot, "versions", "0.6.0", "bundle.meta.json"))).toBe(false);
+  });
+
+  it("reclaims a stale build lock whose owner process is gone", async () => {
+    const pkgRoot = tempDir();
+    const lockPath = path.join(pkgRoot, "versions", "bundle.lock");
+    mkdirSync(path.join(pkgRoot, "versions"), { recursive: true });
+    // 死进程的残留锁：不探活 pid 的话 bundle 将永远补不上
+    writeFileSync(lockPath, JSON.stringify({ pid: 2147483646, startedAt: 1 }));
+    const buildKernel = buildKernelWrites();
+    const result = await ensureBundle({
+      version: "0.6.0",
+      pkgRoot,
+      logger: noopLogger,
+      deps: { buildKernel, ensureEsbuildFn: async () => ({ ok: true, esbuildModule: {} }) },
+    });
+    expect(result.ok).toBe(true);
+    expect(buildKernel.calls).toBe(1);
   });
 
   it("skips the bundle when bundle.bad is present, and clears it on successful rebuild", async () => {
