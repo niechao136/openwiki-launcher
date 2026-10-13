@@ -1,5 +1,6 @@
 import { createBackendSupervisor } from "../backend.mjs";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
+import { ensureBundleForActive } from "../ensure-bundle.mjs";
 
 /**
  * 预热等待上限。
@@ -36,6 +37,7 @@ function withTimeout(promise, ms) {
  *   logger: object,
  *   resolveRuntime?: Function,
  *   createSupervisor?: Function,
+ *   ensureBundleFn?: Function,
  *   hostId?: string,
  *   timeoutMs?: number,
  * }} options
@@ -46,9 +48,25 @@ export async function runWarmCommand({
   env = process.env,
   resolveRuntime = resolveOpenwikiRuntime,
   createSupervisor = createBackendSupervisor,
+  ensureBundleFn = ensureBundleForActive,
   hostId = "warm",
   timeoutMs = DEFAULT_WARM_TIMEOUT_MS,
 }) {
+  // §9：先补打当前生效版本的 bundle，再解析运行时——预热直接走 bundle 入口，
+  // 顺带验证 bundle 可启动（与 install 收尾 warmAfterInstall 同一顺序）。
+  // bundle 失败只警告：它是优化，预热仍以源码入口完成。LAUNCHER_BACKEND_CLI
+  // 覆盖（排障路径）时打 bundle 没有意义，跳过。
+  if (!env.LAUNCHER_BACKEND_CLI) {
+    try {
+      const bundleResult = await ensureBundleFn({ logger });
+      if (bundleResult && bundleResult.ok === false) {
+        logger.warn(`bundle 未就绪（${bundleResult.reason ?? "未知原因"}），本次预热走源码入口`);
+      }
+    } catch (error) {
+      logger.warn(`bundle 补打失败：${error.message}，本次预热走源码入口`);
+    }
+  }
+
   let runtime;
   try {
     runtime = await resolveRuntime();

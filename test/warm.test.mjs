@@ -3,6 +3,7 @@ import { BackendUnavailableError } from "../src/backend.mjs";
 import { runWarmCommand } from "../src/commands/warm.mjs";
 
 const RUNTIME = { packageRoot: "root", version: "0.6.0", cliJs: "/abs/cli.js" };
+const BUNDLE_OK = async () => ({ ok: true, file: "bundle-abc.mjs" });
 
 function capture() {
   const lines = [];
@@ -28,11 +29,77 @@ describe("runWarmCommand", () => {
         ensureReady: async () => ({ ok: true }),
         stop: () => stopped.push(true),
       }),
+      ensureBundleFn: BUNDLE_OK,
     });
 
     expect(code).toBe(0);
     expect(lines.join("\n")).toMatch(/后端就绪（\d+ms）/);
     expect(stopped).toHaveLength(1);
+  });
+
+  it("ensures the bundle before warming the backend", async () => {
+    const { lines, logger } = capture();
+    const order = [];
+    const code = await runWarmCommand({
+      logger,
+      resolveRuntime: async () => {
+        order.push("resolveRuntime");
+        return RUNTIME;
+      },
+      createSupervisor: () => ({
+        ensureReady: async () => {
+          order.push("ensureReady");
+          return { ok: true };
+        },
+        stop: () => {},
+      }),
+      ensureBundleFn: async () => {
+        order.push("ensureBundle");
+        return { ok: true, file: "bundle-abc.mjs" };
+      },
+    });
+
+    expect(code).toBe(0);
+    // bundle 先行：预热直接走 bundle 入口，顺带验证 bundle 可启动
+    expect(order).toEqual(["ensureBundle", "resolveRuntime", "ensureReady"]);
+  });
+
+  it("still warms when the bundle cannot be built", async () => {
+    const { lines, logger } = capture();
+    const code = await runWarmCommand({
+      logger,
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: () => ({
+        ensureReady: async () => ({ ok: true }),
+        stop: () => {},
+      }),
+      ensureBundleFn: async () => ({ ok: false, reason: "esbuild 安装失败" }),
+    });
+
+    expect(code).toBe(0);
+    expect(lines.join("\n")).toContain("esbuild 安装失败");
+    expect(lines.join("\n")).toMatch(/后端就绪（\d+ms）/);
+  });
+
+  it("skips bundling when LAUNCHER_BACKEND_CLI overrides the entry", async () => {
+    const { logger } = capture();
+    let bundleCalled = false;
+    const code = await runWarmCommand({
+      logger,
+      env: { LAUNCHER_BACKEND_CLI: "/tmp/fake-cli.js" },
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: () => ({
+        ensureReady: async () => ({ ok: true }),
+        stop: () => {},
+      }),
+      ensureBundleFn: async () => {
+        bundleCalled = true;
+        return { ok: true };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(bundleCalled).toBe(false);
   });
 
   it("surfaces backend stderr when the backend cannot start", async () => {
@@ -48,6 +115,7 @@ describe("runWarmCommand", () => {
         },
         stop: () => {},
       }),
+      ensureBundleFn: BUNDLE_OK,
     });
 
     expect(code).toBe(1);
@@ -66,6 +134,7 @@ describe("runWarmCommand", () => {
         ensureReady: () => new Promise(() => {}),
         stop: () => stopped.push(true),
       }),
+      ensureBundleFn: BUNDLE_OK,
       timeoutMs: 20,
     });
 
@@ -84,6 +153,7 @@ describe("runWarmCommand", () => {
       createSupervisor: () => {
         throw new Error("must not be called");
       },
+      ensureBundleFn: BUNDLE_OK,
     });
 
     expect(code).toBe(1);

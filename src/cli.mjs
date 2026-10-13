@@ -124,6 +124,7 @@ export async function main(argv, deps = {}) {
       logger,
       resolveRuntime: deps.resolveRuntime,
       createSupervisor: deps.createSupervisor,
+      ensureBundleFn: deps.ensureBundleFn,
       env,
     });
   }

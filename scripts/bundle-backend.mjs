@@ -1,8 +1,14 @@
-import * as esbuild from "esbuild";
 import { mkdirSync, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launcherPackageRoot, readActive } from "../src/versions.mjs";
+
+// 注意：本文件**不得**静态 import esbuild。esbuild 不是本包的运行时依赖
+// （全局安装只有 dependencies），由 ensureBundle 经 ensureEsbuild 懒安装到
+// 用户数据目录后以 esbuildModule 参数注入。顶部静态 import 会在模块加载时
+// 直接抛 ERR_MODULE_NOT_FOUND，把整套懒加载设计击穿（2026-10-13 实测：
+// 全局安装下 update 的 bundle 全部失败于此）。回归测试见
+// test/bundle-backend.test.mjs 的源文件不变量用例。
 
 // react-devtools-core 只服务 React DevTools 调试，openwiki 运行时不可达；
 // 用空模块替换，避免为它引入真实依赖。
@@ -35,7 +41,7 @@ const stubDevtools = {
  *   pkgRoot?: string,
  *   version?: string,
  *   outDir?: string,
- *   esbuildModule?: object | null,
+ *   esbuildModule: object,
  * }} options
  * @returns {Promise<number>} Exit code.
  */
@@ -45,10 +51,10 @@ export async function runBundleBackend({
   version,
   outDir,
   outFile: resolvedOutFile,
-  esbuildModule: esbuildModuleOverride = esbuild,
+  esbuildModule,
 }) {
-  if (!esbuildModuleOverride) {
-    logger.error("esbuild 不可用：请先 npm install（esbuild 为 devDependency）");
+  if (!esbuildModule) {
+    logger.error("esbuild 模块缺失：应由 ensureBundle 经 ensureEsbuild 注入（本脚本不静态引入 esbuild）");
     return 1;
   }
   let active;
@@ -82,7 +88,7 @@ export async function runBundleBackend({
   const started = Date.now();
   try {
     mkdirSync(targetDir, { recursive: true });
-    const result = await esbuildModuleOverride.build({
+    const result = await esbuildModule.build({
       entryPoints: [entry],
       bundle: true,
       platform: "node",

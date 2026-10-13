@@ -140,7 +140,9 @@ export async function warmAfterInstall({ logger, env = process.env, ensureBundle
     logger.warn(`bundle 未就绪（${bundleResult.reason ?? "未知原因"}），后端将以源码入口启动。`);
   }
   const warm = warmFn ?? runWarmCommand;
-  const warmCode = await warm({ logger, env, hostId: "warm" });
+  // ensure 已解析过（注入桩或真实实现），透传给 warm：warm 自己也会先补一次
+  // bundle（meta 有效时是毫秒级命中），传入同一实现避免双份安装/双份语义。
+  const warmCode = await warm({ logger, env, hostId: "warm", ensureBundleFn: ensure });
   if (warmCode !== 0) {
     logger.warn("预热未成功，不影响本次安装结果；可稍后单独运行 `openwiki-launcher warm`。");
   }
