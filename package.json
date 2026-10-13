@@ -3,9 +3,18 @@
   "version": "0.3.0",
   "type": "module",
   "license": "MIT",
-  "bin": { "openwiki-launcher": "./bin/openwiki-launcher.mjs" },
-  "engines": { "node": ">=22.22.0" },
-  "files": ["bin", "src", "manifest", "scripts"],
+  "bin": {
+    "openwiki-launcher": "./bin/openwiki-launcher.mjs"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "files": [
+    "bin",
+    "src",
+    "manifest",
+    "scripts"
+  ],
   "scripts": {
     "test": "vitest run",
     "test:smoke": "node scripts/run-smoke.mjs",
@@ -35,6 +44,7 @@
     "openwiki": "0.6.0"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "vitest": "^4.1.11"
   }
 }
