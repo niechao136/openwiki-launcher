@@ -1,6 +1,7 @@
 import os from "node:os";
 import { createLogger } from "./log.mjs";
 import { runDoctorCommand } from "./commands/doctor.mjs";
+import { runHolderCommand } from "./commands/holder.mjs";
 import { runMcpCommand } from "./commands/mcp.mjs";
 import { runWarmCommand } from "./commands/warm.mjs";
 import { runInstallCommand, parseInstallArgs } from "./commands/install.mjs";
@@ -108,6 +109,12 @@ export async function main(argv, deps = {}) {
     const hostId = readHostId(rest, logger);
     if (hostId === null) return 1;
     return runMcpCommand({ hostId, logger, env, spawnFn: deps.spawnFn });
+  }
+
+  if (command === "holder") {
+    const hostId = readHostId(rest, logger);
+    if (hostId === null) return 1;
+    return runHolderCommand({ hostId, logger, env });
   }
 
   if (command === "warm") {

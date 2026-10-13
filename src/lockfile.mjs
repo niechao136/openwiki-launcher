@@ -1,4 +1,5 @@
-import { closeSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { closeSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 
 /**
  * holder lockfile 的一等操作。
@@ -18,6 +19,7 @@ import { closeSync, openSync, readFileSync, rmSync, writeFileSync } from "node:f
  */
 export function acquireLock(lockPath, data, { force = false } = {}) {
   if (force) rmSync(lockPath, { force: true });
+  mkdirSync(dirname(lockPath), { recursive: true });
   let fd;
   try {
     fd = openSync(lockPath, "wx");
