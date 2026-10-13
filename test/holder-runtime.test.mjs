@@ -168,7 +168,11 @@ describe("runHolder", () => {
 
 describe("holder CLI (subprocess)", () => {
   it("exits with code 1 without overwriting a foreign lockfile", async () => {
-    const holder = await runHolder(baseOptions());
+    // CLI 子进程必须看到同一把锁：holder 的锁在 temp pkgRoot 下，通过
+    // LAUNCHER_HOLDER_PKG_ROOT 让子进程用同一个根，否则它看的是 repo 的
+    // versions/（没有这把锁）→ 正常启动常驻 → 测试挂到超时。
+    const pkgRoot = tempPkgRoot();
+    const holder = await runHolder(baseOptions({ pkgRoot }));
     holders.push(holder);
     const lock = readLock(holder.lockPath);
 
@@ -178,6 +182,7 @@ describe("holder CLI (subprocess)", () => {
         env: {
           ...process.env,
           LAUNCHER_BACKEND_CLI: FAKE_BACKEND,
+          LAUNCHER_HOLDER_PKG_ROOT: pkgRoot,
         },
         stdio: ["ignore", "ignore", "pipe"],
       });
@@ -197,15 +202,15 @@ describe("holder CLI (subprocess)", () => {
 
   it("auto-exits when idle beyond the TTL from the environment", async () => {
     const uniqueHost = "ttl-host";
-    const pipeName = `\\\\.\\pipe\\openwiki-launcher-${uniqueHost}-0.6.0`;
-    const lockPath = path.join(REPO_ROOT, "versions", `holder-${uniqueHost}.json`);
+    const pkgRoot = tempPkgRoot();
+    const lockPath = path.join(pkgRoot, "versions", `holder-${uniqueHost}.json`);
     releaseLock(lockPath);
-
     const child = spawn(process.execPath, [BIN, "holder", "--host", uniqueHost], {
       cwd: REPO_ROOT,
       env: {
         ...process.env,
         LAUNCHER_BACKEND_CLI: FAKE_BACKEND,
+        LAUNCHER_HOLDER_PKG_ROOT: pkgRoot,
         LAUNCHER_HOLDER_TTL_MINUTES: "0.01",
       },
       stdio: ["ignore", "ignore", "ignore"],

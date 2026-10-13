@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { BackendUnavailableError } from "../src/backend.mjs";
 import { createHolderCore } from "../src/holder-server.mjs";
 
 const READY_SESSION = () => ({
@@ -16,7 +17,6 @@ function fakeSupervisor({ session = READY_SESSION(), failReady = false } = {}) {
     ensureReady: async () => {
       ensureCalls += 1;
       if (failReady) {
-        const { BackendUnavailableError } = await import("../src/backend.mjs");
         throw new BackendUnavailableError("无法启动 openwiki 后端: fake");
       }
       return session;
