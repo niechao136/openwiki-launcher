@@ -287,6 +287,12 @@ export async function runDoctorCommand({
     logger.info("  建议：npm run manifest 生成快照（不影响使用，首次调用会走直通模式）");
   }
 
+  // warmup 登录预热是可选优化（规格 §5.6）；只提示不代写。
+  if (nodeCommand?.command && selfBin) {
+    logger.info("提示：可将冷启动移到登录时——用 warmup 挂登录启动项（示例，需管理员执行 schtasks）：");
+    logger.info(`  schtasks /create /tn "openwiki-warmup" /sc onlogon /tr "${nodeCommand.command} ${selfBin} warmup --host <宿主id>"`);
+  }
+
   const supervisor = createSupervisor({ cliJs: runtime.cliJs, hostId, logger });
   try {
     const session = await supervisor.ensureReady();
@@ -304,6 +310,7 @@ export async function runDoctorCommand({
         for (const line of drift) logger.warn(`  ${line}`);
       }
     }
+    // warmup 登录预热是可选优化（规格 §5.6）；只提示不代写。
     return 0;
   } catch (error) {
     logger.error(`✗ 后端握手失败：${error.message}`);

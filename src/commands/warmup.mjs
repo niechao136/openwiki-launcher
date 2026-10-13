@@ -1,0 +1,85 @@
+import { resolveHolderSession } from "../holder-client.mjs";
+import { resolveOpenwikiRuntime } from "../paths.mjs";
+import { resolveSelfBin } from "../self-path.mjs";
+
+const DEFAULT_WARMUP_TIMEOUT_MS = 60000;
+const STATUS_POLL_MS = 500;
+
+/**
+ * 登录时预热：确保指定宿主的 holder 已拉起且 openwiki 后端就绪。
+ *
+ * 与 `warm` 的区别：warm 拉起后端就退出（只留 OS 文件缓存），warmup 拉起的是
+ * 常驻 holder（TTL 内的所有会话直接接入热后端）。挂到登录启动项即可在每天
+ * 第一次会话前把冷启动付掉。
+ *
+ * @param {{
+ *   hostId: string,
+ *   logger: object,
+ *   env?: Record<string, string>,
+ *   timeoutMs?: number,
+ *   deps?: { holderDeps?: { connectFn?: Function, spawnFn?: Function } },
+ * }} options
+ * @returns {Promise<number>} Exit code.
+ */
+export async function runWarmupCommand({
+  hostId,
+  logger,
+  env = process.env,
+  timeoutMs = DEFAULT_WARMUP_TIMEOUT_MS,
+  deps = {},
+}) {
+  let runtime;
+  try {
+    runtime = await resolveOpenwikiRuntime();
+  } catch (error) {
+    logger.error(`未找到 openwiki 依赖：${error.message}`);
+    return 1;
+  }
+
+  const override = env.LAUNCHER_BACKEND_CLI;
+  const cliJs = override ? override : runtime.cliJs;
+  const started = Date.now();
+
+  let adapter;
+  try {
+    const resolved = await resolveHolderSession({
+      hostId,
+      version: runtime.version,
+      cliJs,
+      logger,
+      selfBin: resolveSelfBin(import.meta.url),
+      deps: deps.holderDeps ?? {},
+    });
+    if (resolved.mode !== "holder") {
+      logger.error(`holder 无法拉起：${resolved.reason ?? "未知原因"}（可改用 openwiki-launcher warm 预热）`);
+      return 1;
+    }
+    adapter = resolved.adapter;
+  } catch (error) {
+    logger.error(`holder 接入失败：${error.message}`);
+    return 1;
+  }
+
+  try {
+    const session = await adapter.ensureReady();
+    const deadline = started + timeoutMs;
+    for (;;) {
+      const status = await session.request("holder/status", {});
+      if (status.backendReady) {
+        logger.info(`openwiki holder 后端就绪（${Date.now() - started}ms）`);
+        return 0;
+      }
+      if (Date.now() > deadline) {
+        logger.error(`预热超时（${timeoutMs}ms）：holder 已就绪但后端未在时限内启动`);
+        return 1;
+      }
+      await new Promise((resolve) => setTimeout(resolve, STATUS_POLL_MS));
+    }
+  } catch (error) {
+    logger.error(`预热失败：${error.message}`);
+    return 1;
+  } finally {
+    // 断开自己的连接；holder 的空闲 TTL 从此刻重新起算
+    adapter.stop();
+  }
+}

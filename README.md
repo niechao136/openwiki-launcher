@@ -126,6 +126,7 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 | `openwiki-launcher --uninstall` | 卸载 |
 | `openwiki-launcher mcp [--host <id>]` | 作为 MCP 服务器运行，宿主配置指向这里 |
 | `openwiki-launcher warm` | 启动一次后端到就绪后退出，用于预热 |
+| `openwiki-launcher warmup --host <id>` | 确保 holder 常驻且后端就绪（适合挂登录启动项） |
 | `openwiki-launcher doctor` | 检查 Node、openwiki、快照、真实后端与已写入的 MCP 命令 |
 | `openwiki-launcher check` | 查看本地 openwiki 版本状态：当前生效版本、已装版本与快照、registry 最新版 |
 | `openwiki-launcher update [--version <v>]` | 升级 openwiki：列出可选版本交互确认后安装、生成快照并切换（`--no-switch` 只装不切） |
@@ -142,6 +143,16 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 - 没有匹配快照的 openwiki 版本会自动降级为直通模式：不再即时应答，改为等待真实后端，
   宁可慢也不给宿主一份对不上的工具清单；
 - 后端崩溃会自动重启一次，在途调用收到明确错误而不是无声挂起。
+
+Holder 模式（`LAUNCHER_HOLDER=1`，可选）：默认每个宿主会话的 wrapper 各持有一个后端进程，
+宿主一断开就回收——每个新会话都要重付一次冷启动。开启后，首个 wrapper 会以 detached 方式
+拉起一个常驻 holder 进程（`openwiki-launcher holder --host <id>`），后端随之脱离宿主生命周期；
+后续同宿主会话经 lockfile 与命名管道接入热后端，首个工具调用秒回。holder 空闲超过
+`LAUNCHER_HOLDER_TTL_MINUTES` 自动退出；版本切换时旧 holder 自动换血；holder 拉不起或
+管道连不上时 wrapper 自动回退到默认的进程内路径。两个已知边界：TTL 过期或重启机器后的
+第一个会话仍要付冷启动（用 `openwiki-launcher warmup --host <id>` 挂登录启动项缓解，
+`doctor` 会打印可复制的 schtasks 命令）；命名管道对本机任意进程可连——openwiki 工具
+仅读写仓库内 wiki 文件，风险评估为可接受。
 
 版本管理（0.3.0 新增）：openwiki 各版本 side-by-side 装在 launcher 自己的
 `versions/<版本>/` 下，`versions/active.json` 指针决定生效版本——`check` 看状态、
@@ -174,6 +185,8 @@ versions/，想换版本请用上面的命令而不是 `npm install -g openwiki@
 | `LAUNCHER_REAL_SMOKE=1` | 启用真实后端冒烟测试 |
 | `LAUNCHER_BACKEND_CLI` | 覆盖后端入口，仅供测试与排障使用 |
 | `LAUNCHER_QUEUE_TIMEOUT_MS` | `tools/call` 排队等待后端就绪的上限（毫秒，默认 25000） |
+| `LAUNCHER_HOLDER=1` | 启用 holder 模式：后端脱离宿主会话常驻（延迟回收，见下） |
+| `LAUNCHER_HOLDER_TTL_MINUTES` | holder 无活跃连接后的存活时长（分钟，默认 30） |
 | `LAUNCHER_EAGER_START=0` | 关闭连接时的后台预热，恢复懒启动（首个工具调用才启动后端） |
 
 ## 当前范围

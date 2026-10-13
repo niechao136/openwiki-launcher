@@ -4,6 +4,7 @@ import { runDoctorCommand } from "./commands/doctor.mjs";
 import { runHolderCommand } from "./commands/holder.mjs";
 import { runMcpCommand } from "./commands/mcp.mjs";
 import { runWarmCommand } from "./commands/warm.mjs";
+import { runWarmupCommand } from "./commands/warmup.mjs";
 import { runInstallCommand, parseInstallArgs } from "./commands/install.mjs";
 import { runCheckCommand } from "./commands/check.mjs";
 import { runUpdateCommand } from "./commands/update.mjs";
@@ -28,6 +29,7 @@ const HELP = [
   "  openwiki-launcher --no-warm              安装后不自动预热（默认会预热一次）",
   "  openwiki-launcher mcp [--host <id>]      作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
   "  openwiki-launcher warm                    预热 openwiki 后端后退出",
+  "  openwiki-launcher warmup --host <id>      确保 holder 常驻且后端就绪（适合挂登录启动项）",
   "  openwiki-launcher doctor                  检查环境、manifest 与已写入的 MCP 命令",
   "  openwiki-launcher check                   查看本地 openwiki 版本状态（当前/已装/registry）",
   "  openwiki-launcher update [--version <v>]  升级 openwiki（交互确认；--no-switch 只装不切）",
@@ -124,6 +126,12 @@ export async function main(argv, deps = {}) {
       createSupervisor: deps.createSupervisor,
       env,
     });
+  }
+
+  if (command === "warmup") {
+    const hostId = readHostId(rest, logger);
+    if (hostId === null) return 1;
+    return runWarmupCommand({ hostId, logger, env });
   }
 
   if (command === "doctor") {
