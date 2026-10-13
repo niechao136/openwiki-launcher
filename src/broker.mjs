@@ -147,7 +147,7 @@ export function createBroker({
       );
     } catch (error) {
       if (error.message === QUEUE_TIMEOUT) {
-        sendToolError(entry.id, "openwiki 后端排队超时，请重试");
+        sendToolError(entry.id, "openwiki 后端仍在启动（冷启动可能需要 30~120 秒），请等待约 30 秒后重试");
         return;
       }
       if (error.message === CANCELLED) {

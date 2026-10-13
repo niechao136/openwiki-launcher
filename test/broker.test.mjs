@@ -173,7 +173,9 @@ describe("createBroker", () => {
 
     await vi.waitFor(() => expect(byId(sent, 8)).toBeTruthy(), { timeout: 10000 });
     expect(byId(sent, 8).result.isError).toBe(true);
-    expect(byId(sent, 8).result.content[0].text).toContain("超时");
+    expect(byId(sent, 8).result.content[0].text).toBe(
+      "openwiki 后端仍在启动（冷启动可能需要 30~120 秒），请等待约 30 秒后重试",
+    );
   });
 
   it("clears queued timers and stops the backend when the host disconnects", () => {
