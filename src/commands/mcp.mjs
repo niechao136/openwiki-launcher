@@ -88,9 +88,10 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
       supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
     }
   } else {
-    supervisor = createBackendSupervisor({ spawnFn, cliJs: runtime.cliJs, hostId, logger });
-    // §9：bundle 启动失败（就绪前崩溃）时换源码入口兜底一次，并写 bundle.bad
-    if (runtime.backend === "bundle") {
+    supervisor = createBackendSupervisor({ spawnFn, cliJs, hostId, logger });
+    // §9：bundle 启动失败（就绪前崩溃）时换源码入口兜底一次，并写 bundle.bad。
+    // override（LAUNCHER_BACKEND_CLI，测试/排障）不掺和 bundle 语义。
+    if (runtime.backend === "bundle" && !override) {
       supervisor = createBundleFallbackSupervisor({
         primary: supervisor,
         makeFallback: () =>
@@ -102,14 +103,17 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
       });
     }
   }
-  // §9：缺 bundle（backend=source）时，等后端就绪后后台补打，不占冷启动关键路径
-  scheduleBackgroundBundle({
-    runtime,
-    pkgRoot: runtime.packageRoot,
-    logger,
-    supervisor,
-    ensureBundleFn: deps?.ensureBundleFn,
-  });
+  // §9：缺 bundle（backend=source）时，等后端就绪后后台补打，不占冷启动关键路径。
+  // override 模式下不补打：测试/排障显式指定了入口，不该触发真构建。
+  if (!override) {
+    scheduleBackgroundBundle({
+      runtime,
+      pkgRoot: runtime.packageRoot,
+      logger,
+      supervisor,
+      ensureBundleFn: deps?.ensureBundleFn,
+    });
+  }
   const broker = createBroker({
     manifest,
     supervisor,

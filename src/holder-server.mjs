@@ -30,7 +30,7 @@ const INITIALIZE_PARAMS = {
  */
 export function createHolderCore({
   supervisor,
-  logger,
+  logger = { debug() {}, warn() {}, error() {} },
   version,
   queueTimeoutMs = 120000,
   onShutdown,

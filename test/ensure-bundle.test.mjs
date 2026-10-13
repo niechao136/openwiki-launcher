@@ -30,7 +30,7 @@ describe("ensureEsbuild", () => {
         calls.push(args);
         // 模拟安装成功：写出可解析的 esbuild 入口
         const dir = path.join(dataDir, "tools", "esbuild");
-        mkdirSync(path.join(dir, "node_modules", "esbuild"), { recursive: true });
+        mkdirSync(path.join(dir, "node_modules", "esbuild", "lib"), { recursive: true });
         writeFileSync(path.join(dir, "node_modules", "esbuild", "lib", "main.js"), "export default {};");
         return { code: 0, stdout: "", stderr: "" };
       },
@@ -44,7 +44,7 @@ describe("ensureEsbuild", () => {
   it("reuses an existing install without invoking npm", async () => {
     const dataDir = tempDir();
     const dir = path.join(dataDir, "tools", "esbuild");
-    mkdirSync(path.join(dir, "node_modules", "esbuild"), { recursive: true });
+    mkdirSync(path.join(dir, "node_modules", "esbuild", "lib"), { recursive: true });
     writeFileSync(path.join(dir, "node_modules", "esbuild", "lib", "main.js"), "export default {};");
     let called = false;
     const result = await ensureEsbuild({

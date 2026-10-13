@@ -103,7 +103,15 @@ describe("runHolder", () => {
     await new Promise((r) => setTimeout(r, 1800));
     conn.feed({ jsonrpc: "2.0", id: 2, method: "holder/status", params: {} });
     const after = await conn.onNext();
-    expect(after.result.backendReady).toBe(true);
+    // 满负载下 fake 的 1200ms 延迟可能被调度拖过 1800ms；轮询到就绪为止
+    // （上限 10s）——本用例的语义是“预热后 backendReady 转 true”。
+    let ready = after.result.backendReady;
+    for (let i = 0; !ready && i < 100; i++) {
+      conn.feed({ jsonrpc: "2.0", id: 2, method: "holder/status", params: {} });
+      const next = await conn.onNext();
+      ready = next.result.backendReady;
+    }
+    expect(ready).toBe(true);
     conn.close();
   });
 
@@ -230,9 +238,13 @@ describe("holder CLI (subprocess)", () => {
     });
     holders.push({ shutdown: async () => child.kill(), exited: new Promise(() => {}), lockPath });
 
-    // 等 lockfile 出现（上游预热在后台进行，不阻塞连接）
-    await new Promise((r) => setTimeout(r, 500));
-    const lock = readLock(lockPath);
+    // 等 lockfile 出现（上游预热在后台进行，不阻塞连接）。轮询而非硬等：
+    // 满负载下 node 子进程启动可能超过 500ms，硬等会把环境慢当成代码错。
+    let lock = null;
+    for (let i = 0; i < 100 && lock === null; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      lock = readLock(lockPath);
+    }
     expect(lock).not.toBe(null);
 
     const conn = connect(lock.pipeName);

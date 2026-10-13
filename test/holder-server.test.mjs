@@ -83,10 +83,11 @@ describe("createHolderCore", () => {
     const pendingB = deferred();
     const session = {
       ready: Promise.resolve({}),
+      // 按参数而非到达顺序分配 deferred：并发 dispatch 的到达顺序由事件循环
+      // 决定，按 length 分配会让"A 的连接拿到 B 的结果"这种假故障出现。
       request: (method, params) => {
         session.calls.push(params);
-        if (session.calls.length === 1) return pendingA.promise;
-        return pendingB.promise;
+        return params.arguments.who === "a" ? pendingA.promise : pendingB.promise;
       },
       calls: [],
       isRunning: () => true,

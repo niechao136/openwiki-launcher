@@ -238,6 +238,8 @@ function cliDeps(deps, logger) {
     bundleDir: deps.bundleDir,
     // install 的自动预热要能被测试替掉，否则每个安装用例都会去 spawn 真实后端。
     warmFn: deps.warmFn,
+    // 同理：预热前的 ensureBundle（§9）也要可注入，否则安装用例会真去装 esbuild。
+    ensureBundleFn: deps.ensureBundleFn,
     now: deps.now,
   };
 }

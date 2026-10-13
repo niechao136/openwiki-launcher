@@ -19,7 +19,9 @@ function tempOutDir() {
 }
 
 describe("runBundleBackend", () => {
-  it("builds a bundle over 1MB into the output dir", { timeout: 60000 }, async () => {
+  // 真实 esbuild 构建：单独跑约 3s，但全量套件并发下（ Defender 扫描 + 多 worker
+  // 抢 IO）实测可到 60s+。给足上限，超时是环境信号不是代码信号。
+  it("builds a bundle over 1MB into the output dir", { timeout: 180000 }, async () => {
     const outDir = tempOutDir();
     const code = await runBundleBackend({ logger: noopLogger, pkgRoot: REPO_ROOT, outDir });
     expect(code).toBe(0);
@@ -28,7 +30,7 @@ describe("runBundleBackend", () => {
     expect(statSync(bundlePath).size).toBeGreaterThan(1024 * 1024);
   });
 
-  it("overwrites a previous build idempotently", { timeout: 60000 }, async () => {
+  it("overwrites a previous build idempotently", { timeout: 180000 }, async () => {
     const outDir = tempOutDir();
     await runBundleBackend({ logger: noopLogger, pkgRoot: REPO_ROOT, outDir });
     const code = await runBundleBackend({ logger: noopLogger, pkgRoot: REPO_ROOT, outDir });
