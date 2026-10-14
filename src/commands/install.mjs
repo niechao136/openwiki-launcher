@@ -198,9 +198,13 @@ export async function prepareDefaultVersion({ logger, env = process.env, runNpm,
  */
 export async function warmAfterInstall({ logger, env = process.env, ensureBundleFn, ensureDefaultVersionFn, warmFn, skipPrepare = false }) {
   const ensure = ensureBundleFn ?? ensureBundleForActive;
-  const bundleResult = await ensure({ logger }).catch((error) => ({ ok: false, reason: error.message }));
-  if (bundleResult.ok !== true) {
-    logger.warn(`bundle 未就绪（${bundleResult.reason ?? "未知原因"}），后端将以源码入口启动。`);
+  // bundle 落在版本仓库里，所以"别动版本仓库"的开关同样跳过它（否则物化关了、
+  // bundle 还照打，会造出 bundle-only 的畸形目录）。
+  if (prepareEnabled(env) && !skipPrepare) {
+    const bundleResult = await ensure({ logger }).catch((error) => ({ ok: false, reason: error.message }));
+    if (bundleResult.ok !== true) {
+      logger.warn(`bundle 未就绪（${bundleResult.reason ?? "未知原因"}），后端将以源码入口启动。`);
+    }
   }
   const warm = warmFn ?? runWarmCommand;
   // ensure 已解析过（注入桩或真实实现），透传给 warm：warm 自己也会先补一次

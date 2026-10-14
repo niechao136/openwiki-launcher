@@ -363,6 +363,29 @@ describe("installVersion", () => {
     expect(calls).toEqual([]);
   });
 
+  it("落盘失败时软着陆，清理临时目录且不留下半成品", async () => {
+    const root = freshRoot();
+    const { runNpm } = fakeNpmInstaller();
+
+    // Windows 上目标目录被 Defender / 运行中的后端占用就是这个形状：rename 抛错。
+    const outcome = await installVersion({
+      pkgRoot: root,
+      version: "0.7.0",
+      runNpm,
+      logger: noopLogger,
+      deps: {
+        promoteVersionDirFn: () => {
+          throw new Error("EPERM: operation not permitted, rename");
+        },
+      },
+    });
+
+    expect(outcome).toMatchObject({ ok: false, stage: "install" });
+    expect(outcome.reason).toContain("EPERM");
+    expect(existsSync(versionDir(root, "0.7.0"))).toBe(false);
+    expect(TMP_OR_BAK(root)).toEqual([]);
+  });
+
   it("passes the low-priority spawn hook through to npm", async () => {
     const root = freshRoot();
     const { runNpm, calls } = fakeNpmInstaller();

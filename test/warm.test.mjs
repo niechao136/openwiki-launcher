@@ -96,6 +96,28 @@ describe("runWarmCommand", () => {
     expect(prepared).toBe(false);
   });
 
+  it("LAUNCHER_PREPARE=0 时连 bundle 也不打（bundle 落在版本仓库里）", async () => {
+    const { logger } = capture();
+    let bundleCalled = false;
+    const code = await runWarmCommand({
+      logger,
+      env: { LAUNCHER_PREPARE: "0" },
+      resolveRuntime: async () => RUNTIME,
+      createSupervisor: () => ({
+        ensureReady: async () => ({ ok: true }),
+        stop: () => {},
+      }),
+      ensureDefaultVersionFn: PREPARE_OK,
+      ensureBundleFn: async () => {
+        bundleCalled = true;
+        return { ok: true };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(bundleCalled).toBe(false);
+  });
+
   it("still warms when the default version cannot be prepared", async () => {
     const { lines, logger } = capture();
     const code = await runWarmCommand({

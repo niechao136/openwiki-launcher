@@ -244,6 +244,27 @@ describe("切回默认版本", () => {
     expect(text()).toContain("network down");
   });
 
+  it("物化过程抛错时也以退出码 1 收场，而不是把异常抛给宿主", async () => {
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    const { runNpm } = fakeNpm();
+    const { text, logger } = collectLogger();
+
+    const code = await runSwitchCommand({
+      logger, pkgRoot: root, version: "0.6.0", runNpm,
+      resolveRuntime: runtimeAt("0.7.0"),
+      ensureDefaultVersionFn: async () => {
+        throw new Error("EPERM: operation not permitted, rename");
+      },
+    });
+
+    expect(code).toBe(1);
+    expect(readActive(root).version).toBe("0.7.0");
+    expect(text()).toContain("EPERM");
+  });
+
   it("就绪动作被关闭时拒绝切换", async () => {
     const root = freshRoot();
     plantBundled(root, "0.6.0");

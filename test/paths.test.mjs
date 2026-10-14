@@ -59,6 +59,47 @@ describe("resolveOpenwikiRuntime", () => {
     }
   });
 
+  it("忽略 entryVersion 缺失的 bundle：那可能是用出厂代码冒名打出来的", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      const cliJs = plantFakeOpenwiki(root, path.join("versions", "0.7.0", "node_modules", "openwiki"), "0.7.0");
+      writeActiveAtomic(root, "0.7.0");
+      writeFileSync(path.join(root, "versions", "0.7.0", "bundle-alpha.mjs"), "// 冒名产物");
+      writeFileSync(
+        path.join(root, "versions", "0.7.0", "bundle.meta.json"),
+        JSON.stringify({ openwikiVersion: "0.7.0", file: "bundle-alpha.mjs" }),
+      );
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root });
+
+      expect(runtime.backend).toBe("source");
+      expect(runtime.cliJs).toBe(cliJs);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("entryVersion 与请求版本一致的 bundle 才被采用", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
+    try {
+      plantFakeOpenwiki(root, path.join("versions", "0.7.0", "node_modules", "openwiki"), "0.7.0");
+      writeActiveAtomic(root, "0.7.0");
+      const bundlePath = path.join(root, "versions", "0.7.0", "bundle-beta.mjs");
+      writeFileSync(bundlePath, "// bundle");
+      writeFileSync(
+        path.join(root, "versions", "0.7.0", "bundle.meta.json"),
+        JSON.stringify({ openwikiVersion: "0.7.0", entryVersion: "0.7.0", file: "bundle-beta.mjs" }),
+      );
+
+      const runtime = await resolveOpenwikiRuntime({ pkgRoot: root });
+
+      expect(runtime.backend).toBe("bundle");
+      expect(runtime.cliJs).toBe(bundlePath);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it("falls back with a warning when the pointer is corrupted", async () => {
     const root = mkdtempSync(path.join(tmpdir(), "openwiki-paths-"));
     try {

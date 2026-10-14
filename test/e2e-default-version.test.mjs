@@ -74,7 +74,10 @@ function fakeEnsureBundle() {
     const dir = versionDir(pkgRoot, version);
     mkdirSync(dir, { recursive: true });
     writeFileSync(path.join(dir, "bundle-abc.mjs"), "// bundle");
-    writeFileSync(path.join(dir, "bundle.meta.json"), JSON.stringify({ file: "bundle-abc.mjs" }));
+    writeFileSync(
+      path.join(dir, "bundle.meta.json"),
+      JSON.stringify({ openwikiVersion: version, entryVersion: version, file: "bundle-abc.mjs" }),
+    );
     return { ok: true, file: "bundle-abc.mjs" };
   };
   return { ensureBundleFn, calls };

@@ -230,6 +230,47 @@ describe("ensureDefaultVersion", () => {
     expect(readMarker(root, PREPARE_FAILED_FILE)).toBeNull();
   });
 
+  it("自带 npm 执行器：调用方不传 runNpm 时也能真的安装", async () => {
+    const root = freshRoot();
+    const seen = [];
+    const result = await ensureDefaultVersion({
+      pkgRoot: root,
+      logger: noopLogger,
+      env: {},
+      // 关键：不传 runNpm。真实默认安装器必须有执行器可用，否则 warm / warmup /
+      // mcp 后台自愈这三个没有执行器可传的触发点会永远物化失败。
+      deps: {
+        installVersionFn: async (options) => {
+          seen.push(options.runNpm);
+          return { ok: true, entryVersion: "0.6.0" };
+        },
+        ensureBundleFn: async () => ({ ok: true }),
+      },
+    });
+
+    expect(result).toMatchObject({ ok: true, installed: true });
+    expect(seen).toHaveLength(1);
+    expect(typeof seen[0]).toBe("function");
+  });
+
+  it("安装器抛错也软着陆，不把异常丢给调用方", async () => {
+    const root = freshRoot();
+    const result = await ensureDefaultVersion({
+      pkgRoot: root,
+      logger: noopLogger,
+      env: {},
+      deps: {
+        installVersionFn: async () => {
+          throw new Error("EPERM: operation not permitted, rename");
+        },
+        ensureBundleFn: async () => ({ ok: true }),
+      },
+    });
+
+    expect(result).toMatchObject({ ok: false, stage: "install" });
+    expect(result.reason).toContain("EPERM");
+  });
+
   it("passes a locked install through to the caller", async () => {
     const root = freshRoot();
     const locked = stubs({ install: { ok: false, stage: "locked", reason: "另一个进程正在安装同一个版本" } });
@@ -283,7 +324,10 @@ describe("defaultVersionState", () => {
     const dir = path.join(versionsRoot(root), version);
     mkdirSync(dir, { recursive: true });
     writeFileSync(path.join(dir, "bundle-abc.mjs"), "// bundle");
-    writeFileSync(path.join(dir, "bundle.meta.json"), JSON.stringify({ file: "bundle-abc.mjs" }));
+    writeFileSync(
+      path.join(dir, "bundle.meta.json"),
+      JSON.stringify({ openwikiVersion: version, entryVersion: version, file: "bundle-abc.mjs" }),
+    );
   }
 
   it("unknown：读不到出厂依赖的版本", () => {

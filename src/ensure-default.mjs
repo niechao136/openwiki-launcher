@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import path from "node:path";
 import { bundleStatus, ensureBundle } from "./ensure-bundle.mjs";
 import { manifestFilePath } from "./manifest.mjs";
-import { installAndSnapshot, installVersion } from "./openwiki-install.mjs";
+import { defaultRunNpm, installAndSnapshot, installVersion } from "./openwiki-install.mjs";
 import { bundledOpenwikiVersion } from "./paths.mjs";
 import { isInstalled, launcherPackageRoot, versionsRoot } from "./versions.mjs";
 
@@ -244,9 +244,9 @@ export async function ensureDefaultVersion({
     }
   }
 
-  if (!runNpm && (typeof deps.installVersionFn !== "function" || typeof deps.installAndSnapshotFn !== "function")) {
-    return { ok: false, stage: "install", reason: "未提供 npm 执行器" };
-  }
+  // `warm` / `warmup` / `mcp` 后台自愈这三个触发点没有执行器可传，必须在这里兜底：
+  // 少了它，物化会静默失败，而自愈还会把这次失败记进 24h 退避，把修复通道彻底堵死。
+  const runNpmFn = runNpm ?? defaultRunNpm;
 
   const started = Date.now();
   if (background) logger?.info?.(`开始后台就绪默认版本 openwiki@${version}（低优先级）`);
@@ -257,16 +257,22 @@ export async function ensureDefaultVersion({
   let installed = false;
   let snapshot = false;
   let outcome;
-  if (snapshotExists && installedAlready) {
-    // 出厂版本的快照随包发布，已就绪时连后端都不该启一次。
-    outcome = { ok: true };
-  } else if (snapshotExists) {
-    installed = true;
-    outcome = await installVersionFn({ pkgRoot, version, runNpm, logger, priority, deps });
-  } else {
-    installed = !installedAlready;
-    snapshot = true;
-    outcome = await installAndSnapshotFn({ pkgRoot, version, runNpm, logger, hostId, priority, deps });
+  try {
+    if (snapshotExists && installedAlready) {
+      // 出厂版本的快照随包发布，已就绪时连后端都不该启一次。
+      outcome = { ok: true };
+    } else if (snapshotExists) {
+      installed = true;
+      outcome = await installVersionFn({ pkgRoot, version, runNpm: runNpmFn, logger, priority, deps });
+    } else {
+      installed = !installedAlready;
+      snapshot = true;
+      outcome = await installAndSnapshotFn({ pkgRoot, version, runNpm: runNpmFn, logger, hostId, priority, deps });
+    }
+  } catch (error) {
+    // 安装内核自己就会软着陆；能落到这里的是没被兜住的抛错（如 rename 被占用）。
+    // 就绪动作永远不许把异常丢给宿主——否则宿主看到的是栈，而不是可诊断的原因。
+    outcome = { ok: false, stage: "install", reason: error.message };
   }
 
   if (outcome.ok !== true) {

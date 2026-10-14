@@ -5,6 +5,7 @@ import path from "node:path";
 import { generateManifest } from "./gen-manifest.mjs";
 import { acquireLock, pidAlive, releaseLock } from "./lockfile.mjs";
 import { manifestFilePath } from "./manifest.mjs";
+import { runNpm } from "./npm-runner.mjs";
 import { isValidVersion, isInstalled, versionDir, versionsRoot } from "./versions.mjs";
 
 /**
@@ -121,6 +122,17 @@ export async function withVersionLock({ pkgRoot, version, logger, deps = {} }, f
   } finally {
     releaseLock(lockPath);
   }
+}
+
+/**
+ * 命令行场景的默认 npm 执行器：把进度条（写 stderr）原样透传给用户。
+ *
+ * 几百 MB 的依赖树要装几分钟，静默会让人以为卡死。它必须住在模块层而不是某个
+ * 命令里——就绪动作的三个触发点（`warm` / `warmup` / `mcp` 后台自愈）没有执行器
+ * 可传，只能靠这里兜底。
+ */
+export function defaultRunNpm(args, options = {}) {
+  return runNpm(args, { ...options, onStderr: (text) => process.stderr.write(text) });
 }
 
 /** 原生模块预编译二进制下载失败时的可操作指引（update / 就绪动作共用）。 */
@@ -352,7 +364,17 @@ async function installVersionLocked({ pkgRoot, version, runNpm, logger, priority
     return { ok: false, stage: "verify", reason: verified.reason };
   }
 
-  promoteVersionDir({ pkgRoot, version, tmpDir });
+  const promote = deps.promoteVersionDirFn ?? promoteVersionDir;
+  try {
+    promote({ pkgRoot, version, tmpDir });
+  } catch (error) {
+    // Windows 上目标目录被 Defender / 运行中的后端占用就是这个形状。留在可诊断的
+    // 错误态：清掉临时目录、不写 meta、不假装装好了，下一次触发可以自愈。
+    rmSync(tmpDir, { recursive: true, force: true });
+    logger?.error?.(`安装产物落盘失败：${error.message}`);
+    return { ok: false, stage: "install", reason: `安装产物落盘失败：${error.message}` };
+  }
+
   writeInstallMeta(pkgRoot, version, deps.now);
   return { ok: true, entryVersion: version };
 }

@@ -72,8 +72,10 @@ export async function runWarmCommand({
   // §9：先补打当前生效版本的 bundle，再解析运行时——预热直接走 bundle 入口，
   // 顺带验证 bundle 可启动（与 install 收尾 warmAfterInstall 同一顺序）。
   // bundle 失败只警告：它是优化，预热仍以源码入口完成。LAUNCHER_BACKEND_CLI
-  // 覆盖（排障路径）时打 bundle 没有意义，跳过。
-  if (!env.LAUNCHER_BACKEND_CLI) {
+  // 覆盖（排障路径）时打 bundle 没有意义，跳过。bundle 落在版本仓库
+  // `versions/<版本>/` 里，所以 `--no-prepare` / `LAUNCHER_PREPARE=0`（= 别动版本
+  // 仓库）同样跳过它——否则物化关了、bundle 还照打，会造出 bundle-only 的畸形目录。
+  if (!env.LAUNCHER_BACKEND_CLI && prepareEnabled(env) && !skipPrepare) {
     try {
       const bundleResult = await ensureBundleFn({ logger });
       if (bundleResult && bundleResult.ok === false) {

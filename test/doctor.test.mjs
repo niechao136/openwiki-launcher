@@ -444,7 +444,10 @@ describe("默认版本状态与安装漂移", () => {
     plantBundled(root, "0.6.0");
     plantVersion(root, "0.6.0");
     writeFileSync(join(root, "versions", "0.6.0", "bundle-abc.mjs"), "// bundle");
-    writeFileSync(join(root, "versions", "0.6.0", "bundle.meta.json"), JSON.stringify({ file: "bundle-abc.mjs" }));
+    writeFileSync(
+      join(root, "versions", "0.6.0", "bundle.meta.json"),
+      JSON.stringify({ openwikiVersion: "0.6.0", entryVersion: "0.6.0", file: "bundle-abc.mjs" }),
+    );
 
     await run(root, logger);
 

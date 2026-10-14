@@ -83,7 +83,10 @@ export async function runSwitchCommand({
         logger.error("就绪动作已被 LAUNCHER_PREPARE=0 关闭，无法就绪尚未物化的默认版本；移除该变量后重试");
         return 1;
       }
-      const prepared = await ensureDefaultVersionFn({ mode: "explicit", pkgRoot, logger, runNpm });
+      const prepared = await ensureDefaultVersionFn({ mode: "explicit", pkgRoot, logger, runNpm }).catch((error) => ({
+        ok: false,
+        reason: error.message,
+      }));
       if (prepared?.ok !== true || !isInstalled(pkgRoot, version)) {
         // 指针只允许指向真实条目（规格 I3）：物化失败就必须拒绝切换。
         logger.error(`无法就绪默认版本 openwiki@${version}：${prepared?.reason ?? "未知原因"}`);

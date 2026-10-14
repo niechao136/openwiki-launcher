@@ -228,6 +228,15 @@ describe("默认版本就绪的接线", () => {
     expect(warmCalls).toHaveLength(1);
   });
 
+  it("--no-prepare 连 bundle 也不打（bundle 属于版本仓库的一部分）", async () => {
+    const r = await main(["--tool", "claude", "--no-prepare"], deps());
+
+    expect(r).toBe(0);
+    expect(prepareCalls).toHaveLength(0);
+    expect(bundleCalls).toHaveLength(0);
+    expect(warmCalls).toHaveLength(1);
+  });
+
   it("--no-warm 只跳过预热，仍执行就绪动作", async () => {
     const r = await main(["--tool", "claude", "--no-warm"], deps());
 

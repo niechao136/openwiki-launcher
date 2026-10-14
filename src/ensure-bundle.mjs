@@ -167,7 +167,11 @@ export function bundleStatus(pkgRoot, version) {
   if (existsSync(path.join(bundleDir, "bundle.bad"))) return "bad";
   try {
     const meta = JSON.parse(readFileSync(path.join(bundleDir, "bundle.meta.json"), "utf8"));
-    if (typeof meta.file === "string" && existsSync(path.join(bundleDir, meta.file))) return "ready";
+    // 与 preferBundle 同一口径：缺 entryVersion 的历史 meta 不谎报就绪（doctor/check
+    // 会显示"无 bundle"，而不是把一个冒名产物标成 ✓）。
+    if (meta.entryVersion === version && typeof meta.file === "string" && existsSync(path.join(bundleDir, meta.file))) {
+      return "ready";
+    }
   } catch {
     // meta 缺失/损坏 → missing
   }

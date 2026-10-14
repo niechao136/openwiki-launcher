@@ -78,7 +78,9 @@ function preferBundle(pkgRoot, version, sourceCliJs) {
   try {
     const meta = JSON.parse(readFileSync(path.join(bundleDir, "bundle.meta.json"), "utf8"));
     const bundlePath = path.join(bundleDir, meta.file);
-    if (typeof meta.file === "string" && existsSync(bundlePath)) {
+    // entryVersion 必须与请求版本一致：缺字段的历史 meta 无法证明这份产物是用哪个
+    // 版本的代码打的（旧实现会拿出厂代码冒名非默认版本）。运行时宁可慢也不冒名。
+    if (meta.entryVersion === version && typeof meta.file === "string" && existsSync(bundlePath)) {
       return { cliJs: bundlePath, backend: "bundle", sourceCliJs };
     }
   } catch {

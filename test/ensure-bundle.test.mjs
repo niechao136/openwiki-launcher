@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { ensureEsbuild } from "../src/esbuild-tools.mjs";
-import { ensureBundle } from "../src/ensure-bundle.mjs";
+import { bundleStatus, ensureBundle } from "../src/ensure-bundle.mjs";
 import { resolveOpenwikiRuntime } from "../src/paths.mjs";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -219,6 +219,18 @@ describe("ensureBundle", () => {
     });
     expect(result.ok).toBe(true);
     expect(buildKernel.calls).toBe(1);
+  });
+
+  it("历史 meta 缺 entryVersion 时 bundleStatus 判为 missing（不谎报就绪）", () => {
+    const pkgRoot = tempDir();
+    mkdirSync(path.join(pkgRoot, "versions", "0.6.0"), { recursive: true });
+    writeFileSync(path.join(pkgRoot, "versions", "0.6.0", "bundle-x.mjs"), "// bundle");
+    writeFileSync(
+      path.join(pkgRoot, "versions", "0.6.0", "bundle.meta.json"),
+      JSON.stringify({ openwikiVersion: "0.6.0", file: "bundle-x.mjs" }),
+    );
+
+    expect(bundleStatus(pkgRoot, "0.6.0")).toBe("missing");
   });
 
   it("skips the bundle when bundle.bad is present, and clears it on successful rebuild", async () => {

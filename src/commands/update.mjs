@@ -4,7 +4,7 @@ import { ensureBundle } from "../ensure-bundle.mjs";
 import { generateManifest } from "../gen-manifest.mjs";
 import { compareVersions, isValidVersion, writeActiveAtomic } from "../versions.mjs";
 import { pickLatestStable, runNpm } from "../npm-runner.mjs";
-import { installAndSnapshot, installVersion, summarizeInstallFailure } from "../openwiki-install.mjs";
+import { defaultRunNpm, installAndSnapshot, installVersion, summarizeInstallFailure } from "../openwiki-install.mjs";
 import { ensureDefaultVersion, prepareEnabled } from "../ensure-default.mjs";
 
 // 安装内核（锁 + 原子安装 + 完整性校验）住在 src/openwiki-install.mjs：它同时
@@ -20,13 +20,9 @@ export { installAndSnapshot, installVersion, summarizeInstallFailure };
  * 直通模式运行，那是设计好的兜底，比回滚一个装好的版本更合理。
  */
 
-/**
- * npm 执行器：install 的进度条在 stderr 上，原样透传——几百 MB 的依赖树
- * 要装几分钟，静默会让用户以为卡死了。
- */
-export function defaultRunNpm(args, options = {}) {
-  return runNpm(args, { ...options, onStderr: (text) => process.stderr.write(text) });
-}
+// npm 执行器住在安装内核里：就绪动作的几个触发点（warm / warmup / mcp 自愈）
+// 没有执行器可传，必须由模块层兜底。这里保留同名再导出，既有 import 不破。
+export { defaultRunNpm };
 
 /** 交互确认的默认实现：readline 问一个是非题，只有明确的 y/yes 算同意。 */
 export async function defaultConfirm(question) {
