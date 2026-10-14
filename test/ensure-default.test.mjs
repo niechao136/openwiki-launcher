@@ -11,6 +11,7 @@ import {
   markDefaultRemoved,
   prepareEnabled,
   readMarker,
+  scheduleBackgroundPrepare,
 } from "../src/ensure-default.mjs";
 import { versionsRoot } from "../src/versions.mjs";
 
@@ -271,5 +272,179 @@ describe("ensureDefaultVersion", () => {
     clearMarker(root, DEFAULT_REMOVED_FILE);
     clearMarker(root, DEFAULT_REMOVED_FILE);
     expect(readMarker(root, DEFAULT_REMOVED_FILE)).toBeNull();
+  });
+});
+
+describe("scheduleBackgroundPrepare", () => {
+  /** 假 supervisor：记录 ensureReady 是否被调用，并可按需拒绝。 */
+  function fakeSupervisor({ reject = null, order = [] } = {}) {
+    return {
+      ensureReady: () => {
+        order.push("ensureReady");
+        return reject ? Promise.reject(reject) : Promise.resolve({ ok: true });
+      },
+    };
+  }
+
+  /** 等所有微任务排空：调度是 fire-and-forget 的。 */
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  it("waits for the backend before doing anything", async () => {
+    const order = [];
+    const supervisor = fakeSupervisor({ order });
+    const deps = {
+      ensureDefaultVersionFn: async () => {
+        order.push("prepare");
+        return { ok: true };
+      },
+    };
+
+    scheduleBackgroundPrepare({
+      runtime: { source: "bundled", backend: "source" },
+      pkgRoot: "/pkg",
+      logger: noopLogger,
+      supervisor,
+      deps,
+    });
+    // 同步阶段只发出 ensureReady；真正的活儿排在它 resolve 之后。
+    expect(order).toEqual(["ensureReady"]);
+    await settle();
+    expect(order).toEqual(["ensureReady", "prepare"]);
+  });
+
+  it("prepares the default version, at below-normal priority, when running the bundled dependency", async () => {
+    const called = [];
+    const deps = {
+      ensureDefaultVersionFn: async (options) => {
+        called.push(options);
+        return { ok: true };
+      },
+      ensureBundleFn: async () => {
+        called.push("bundle");
+        return { ok: true };
+      },
+    };
+
+    scheduleBackgroundPrepare({
+      runtime: { source: "bundled", backend: "source" },
+      pkgRoot: "/pkg",
+      logger: noopLogger,
+      supervisor: fakeSupervisor(),
+      deps,
+    });
+    await settle();
+
+    expect(called).toHaveLength(1);
+    expect(called[0]).toMatchObject({ mode: "self-heal", priority: "below-normal", pkgRoot: "/pkg" });
+  });
+
+  it("only补 bundle when the active version is a real entry running from source", async () => {
+    const called = [];
+    const deps = {
+      ensureDefaultVersionFn: async () => {
+        called.push("prepare");
+        return { ok: true };
+      },
+      ensureBundleFn: async (options) => {
+        called.push(options);
+        return { ok: true };
+      },
+    };
+
+    scheduleBackgroundPrepare({
+      runtime: { source: "versions", backend: "source", version: "0.7.0" },
+      pkgRoot: "/pkg",
+      logger: noopLogger,
+      supervisor: fakeSupervisor(),
+      deps,
+    });
+    await settle();
+
+    expect(called).toEqual([{ version: "0.7.0", pkgRoot: "/pkg", logger: noopLogger }]);
+  });
+
+  it("does nothing when the backend already runs from a bundle", async () => {
+    const called = [];
+    scheduleBackgroundPrepare({
+      runtime: { source: "versions", backend: "bundle", version: "0.7.0" },
+      pkgRoot: "/pkg",
+      logger: noopLogger,
+      supervisor: fakeSupervisor(),
+      deps: {
+        ensureDefaultVersionFn: async () => {
+          called.push("prepare");
+          return { ok: true };
+        },
+        ensureBundleFn: async () => {
+          called.push("bundle");
+          return { ok: true };
+        },
+      },
+    });
+    await settle();
+
+    expect(called).toEqual([]);
+  });
+
+  it("returns immediately when the prepare step is disabled", async () => {
+    const order = [];
+    scheduleBackgroundPrepare({
+      runtime: { source: "bundled", backend: "source" },
+      pkgRoot: "/pkg",
+      logger: noopLogger,
+      env: { LAUNCHER_PREPARE: "0" },
+      supervisor: fakeSupervisor({ order }),
+      deps: {
+        ensureDefaultVersionFn: async () => {
+          order.push("prepare");
+          return { ok: true };
+        },
+      },
+    });
+    await settle();
+
+    expect(order).toEqual([]);
+  });
+
+  it("warns instead of throwing when the backend never becomes ready", async () => {
+    const { lines, logger } = (() => {
+      const collected = [];
+      return {
+        lines: collected,
+        logger: { debug() {}, info: (m) => collected.push(m), warn: (m) => collected.push(m), error: (m) => collected.push(m) },
+      };
+    })();
+
+    scheduleBackgroundPrepare({
+      runtime: { source: "bundled", backend: "source" },
+      pkgRoot: "/pkg",
+      logger,
+      supervisor: fakeSupervisor({ reject: new Error("backend down") }),
+      deps: { ensureDefaultVersionFn: async () => ({ ok: true }) },
+    });
+    await settle();
+
+    expect(lines.join("\n")).toContain("backend down");
+  });
+
+  it("warns when the background work itself reports failure", async () => {
+    const { lines, logger } = (() => {
+      const collected = [];
+      return {
+        lines: collected,
+        logger: { debug() {}, info: (m) => collected.push(m), warn: (m) => collected.push(m), error: (m) => collected.push(m) },
+      };
+    })();
+
+    scheduleBackgroundPrepare({
+      runtime: { source: "bundled", backend: "source" },
+      pkgRoot: "/pkg",
+      logger,
+      supervisor: fakeSupervisor(),
+      deps: { ensureDefaultVersionFn: async () => ({ ok: false, reason: "offline" }) },
+    });
+    await settle();
+
+    expect(lines.join("\n")).toContain("offline");
   });
 });

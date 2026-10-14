@@ -245,3 +245,50 @@ export async function ensureDefaultVersion({
   if (background) logger?.info?.(`后台就绪完成（${Date.now() - started}ms）`);
   return { ok: true, version, installed, snapshot };
 }
+
+/**
+ * MCP 会话的后台自愈：等后端就绪之后，按运行时来源决定补什么。
+ *
+ * 为什么延后到后端就绪之后：冷启动的瓶颈是文件 IO，构建与 npm install 的
+ * CPU/磁盘占用与它同时发生只会互相拖慢（规格 §9「后台构建的时机」）。用户
+ * 那一侧已经用起来了，这些活儿排在后面做、而且降优先级。
+ *
+ * 分流：
+ * - `source === "bundled"`：默认版本还没进版本仓库 → 就绪它（物化 + bundle）；
+ * - `source === "versions" && backend === "source"`：条目齐全但缺 bundle → 只补 bundle；
+ * - 其余（已在用 bundle）什么都不做。
+ *
+ * @param {{
+ *   runtime: { source?: string, backend?: string, version?: string },
+ *   pkgRoot: string, logger: object, supervisor: { ensureReady(): Promise<object> },
+ *   env?: Record<string, string>,
+ *   deps?: { ensureDefaultVersionFn?: Function, ensureBundleFn?: Function },
+ * }} options
+ */
+export function scheduleBackgroundPrepare({ runtime, pkgRoot, logger, supervisor, env = process.env, deps = {} }) {
+  if (!prepareEnabled(env)) return;
+
+  supervisor
+    .ensureReady()
+    .then(() => {
+      if (runtime.source === "bundled") {
+        return (deps.ensureDefaultVersionFn ?? ensureDefaultVersion)({
+          mode: "self-heal",
+          priority: "below-normal",
+          pkgRoot,
+          logger,
+          env,
+        });
+      }
+      if (runtime.backend === "source") {
+        return (deps.ensureBundleFn ?? ensureBundle)({ version: runtime.version, pkgRoot, logger });
+      }
+      return null;
+    })
+    .then((result) => {
+      if (result && result.ok !== true) {
+        logger?.warn?.(`后台就绪未完成：${result.reason ?? "未知原因"}`);
+      }
+    })
+    .catch((error) => logger?.warn?.(`后台就绪未完成：${error.message}`));
+}

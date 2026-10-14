@@ -4,7 +4,8 @@ import { createLineParser, formatMessage } from "../jsonrpc.mjs";
 import { loadManifest } from "../manifest.mjs";
 import path from "node:path";
 import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
-import { scheduleBackgroundBundle, createBundleFallbackSupervisor } from "../ensure-bundle.mjs";
+import { createBundleFallbackSupervisor } from "../ensure-bundle.mjs";
+import { scheduleBackgroundPrepare } from "../ensure-default.mjs";
 import { resolveHolderSession } from "../holder-client.mjs";
 import { resolveSelfBin } from "../self-path.mjs";
 import { launcherPackageRoot } from "../versions.mjs";
@@ -104,18 +105,23 @@ export async function runMcpCommand({ hostId, logger, env = process.env, spawnFn
       });
     }
   }
-  // §9：缺 bundle（backend=source）时，等后端就绪后后台补打，不占冷启动关键路径。
+  // §9：缺 bundle（backend=source）时，等后端就绪后后台补打；默认版本还没进版本
+  // 仓库时先在后台就绪它。两者都不占冷启动关键路径，且降优先级。
   // override 模式下不补打：测试/排障显式指定了入口，不该触发真构建。
   // pkgRoot 必须是 launcher 包根：bundle 落在 `<launcher 包根>/versions/<版本>/`，
   // 而解析层（preferBundle）也是从那里找。传 runtime.packageRoot（openwiki 包目录）
   // 会把产物写进 node_modules/openwiki/versions/<版本>/，永远不被采用。
   if (!override) {
-    scheduleBackgroundBundle({
+    scheduleBackgroundPrepare({
       runtime,
       pkgRoot: launcherPackageRoot(),
       logger,
       supervisor,
-      ensureBundleFn: deps?.ensureBundleFn,
+      env,
+      deps: {
+        ensureBundleFn: deps?.ensureBundleFn,
+        ensureDefaultVersionFn: deps?.ensureDefaultVersionFn,
+      },
     });
   }
   const broker = createBroker({
