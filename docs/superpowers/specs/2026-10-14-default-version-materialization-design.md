@@ -87,7 +87,7 @@ ensureDefaultVersion({ pkgRoot, logger, runNpm, writeSnapshot?, hostId?, mode })
 
 1. `v = bundledOpenwikiVersion(pkgRoot)`；读不到 → `{ ok: false, stage: "version" }`。
 2. `mode === "self-heal"` 时先查两个标记：`versions/default-removed.json` 的 `version === v` → 返回 `{ ok: true, skipped: "removed" }`；`versions/prepare-failed.json` 的 `nextRetryAt > now` → 返回 `{ ok: true, skipped: "backoff" }`。
-3. 取**版本键控锁**（§5.1）；拿不到即 `{ ok: false, stage: "locked" }`。
+3. **不自行取锁**：版本键控锁（§5.1）由 `installVersion` / `installAndSnapshot` 内部持有；拿不到锁时它们返回 `{ ok: false, stage: "locked" }`，本函数原样透传。
 4. 快照已存在（`manifestFilePath(v, pkgRoot)` 存在）**且** `isInstalled(pkgRoot, v)` 为真 → 跳过安装与录快照；
    快照已存在但未安装 → 只装（§5.2）；
    快照不存在 → `installAndSnapshot`（装 + 录；它自身带"已安装则跳过下载"）。

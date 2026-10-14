@@ -33,7 +33,7 @@
 **创建**
 
 - `src/openwiki-install.mjs` — 安装内核：`withVersionLock`、`cleanupStaleTempDirs`、`installVersion`、`installAndSnapshot`、`promoteVersionDir`、`verifyInstallTree`。这是"往 `versions/` 写一个版本"的唯一入口。
-- `src/ensure-default.mjs` — 默认版本就绪：`ensureDefaultVersion`、`bundledVersionMarkerPaths`、`readMarker` / `writeMarker` / `clearMarker`、`prepareEnabled`、`backoffMsFromEnv`。
+- `src/ensure-default.mjs` — 默认版本就绪：`ensureDefaultVersion`、`DEFAULT_REMOVED_FILE` / `PREPARE_FAILED_FILE`、`readMarker` / `writeMarker` / `clearMarker`、`prepareEnabled`、`backoffMsFromEnv`、`markDefaultRemoved` / `markPrepareFailed`、`scheduleBackgroundPrepare`。
 - `test/openwiki-install.test.mjs`、`test/ensure-default.test.mjs`。
 
 **修改**
@@ -174,7 +174,7 @@ export async function installVersion({ pkgRoot, version, runNpm, logger, priorit
 //       → 非 0：rmSync(tmp)、summarizeInstallFailure 逐行 logger.error、返回 { ok:false, stage:"install", reason }
 //       → verifyInstallTree 失败：rmSync(tmp)、返回 { ok:false, stage:"verify", reason }
 //       → promoteVersionDir → 写 install.meta.json → { ok: true, entryVersion: version }
-export async function installAndSnapshot({ pkgRoot, version, runNpm, logger, writeSnapshot, hostId })
+export async function installAndSnapshot({ pkgRoot, version, runNpm, logger, writeSnapshot, hostId, priority = "normal" })
 // 与现状语义一致（已安装则跳过下载），但走 withVersionLock 且安装失败时 stage 为 "install"|"verify"|"locked"
 ```
 
@@ -259,6 +259,8 @@ const entryCandidates = [
 
 - [ ] **步骤 4：运行测试验证通过**
 
+先适配既有桩：`test/ensure-bundle.test.mjs` 的 `buildKernelWrites`（:74-80）现在必须返回 `{ ok: true, entryVersion: <请求版本>, bytes }`，否则新契约会把它判成失败、打红既有用例。
+
 运行：`npx vitest run test/bundle-backend.test.mjs test/ensure-bundle.test.mjs test/mcp-command.test.mjs test/paths.test.mjs`
 预期：PASS
 
@@ -325,7 +327,7 @@ export async function ensureDefaultVersion({
   runNpm, priority = "normal",
   deps = { installVersionFn, installAndSnapshotFn, ensureBundleFn, writeSnapshot, now },
 })
-// 步骤严格按规格 §5：读版本 → self-heal 查标记 → withVersionLock → 快照分流 → ensureBundle
+// 步骤严格按规格 §5：读版本 → self-heal 查标记 → 快照分流（加锁下沉到 install* 内部）→ ensureBundle
 // 快照存在性用 existsSync(manifestFilePath(v, pkgRoot))
 // 失败时 mode === "self-heal" 且 backoffMs > 0 → markPrepareFailed；mode === "explicit" 成功 → clearMarker(PREPARE_FAILED_FILE)
 ```
