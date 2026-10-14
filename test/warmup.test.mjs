@@ -53,15 +53,33 @@ describe("runWarmupCommand", () => {
     expect(code).toBe(1);
     expect(lines.some((l) => l.includes("无法拉起"))).toBe(true);
   });
+
+  it("prepares the default version before touching the holder", async () => {
+    const order = [];
+    const { code } = await captureAndRun({
+      hostId: "warmup-dead-host",
+      holderDeps: { connectFn: async () => null, spawnFn: () => {} },
+      env: {},
+      ensureDefaultVersionFn: async (options) => {
+        order.push(options.mode);
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    // 登录启动项是"当天第一个会话别付全款冷启动"的通道：默认版本没就绪时先补上。
+    expect(order).toEqual(["explicit"]);
+    expect(code).toBe(1);
+  });
 });
 
-async function captureAndRun({ hostId, holderDeps }) {
+async function captureAndRun({ hostId, holderDeps, env, ensureDefaultVersionFn }) {
   const { logger, lines } = captureLogger();
   const code = await runWarmupCommand({
     hostId,
     logger,
-    env: { LAUNCHER_BACKEND_CLI: FAKE_BACKEND },
+    env: env ?? { LAUNCHER_BACKEND_CLI: FAKE_BACKEND },
     timeoutMs: 15000,
+    ensureDefaultVersionFn,
     deps: { holderDeps },
   });
   return { code, lines };

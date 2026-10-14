@@ -174,3 +174,126 @@ describe("runSwitchCommand", () => {
     expect(text()).toContain("无法解析");
   });
 });
+
+describe("切回默认版本", () => {
+  const roots = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  function freshRoot() {
+    const root = tempRoot();
+    roots.push(root);
+    return root;
+  }
+
+  const runtimeAt = (version, source = "versions") => async () => ({ version, source, cliJs: "/fake/cli.js" });
+
+  /** 种一个出厂依赖（node_modules/openwiki）。 */
+  function plantBundled(root, version) {
+    const dir = path.join(root, "node_modules", "openwiki");
+    mkdirSync(path.join(dir, "dist", "cli"), { recursive: true });
+    writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "openwiki", version }));
+    writeFileSync(path.join(dir, "dist", "cli", "cli.js"), "// entry");
+  }
+
+  it("就地物化默认版本，不重新下载", async () => {
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    const { runNpm, calls } = fakeNpm();
+    const { text, logger } = collectLogger();
+    const prepared = [];
+
+    const code = await runSwitchCommand({
+      logger, pkgRoot: root, version: "0.6.0", runNpm,
+      resolveRuntime: runtimeAt("0.7.0"),
+      ensureDefaultVersionFn: async (options) => {
+        prepared.push(options);
+        plantVersion(root, "0.6.0");
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(prepared).toHaveLength(1);
+    expect(prepared[0]).toMatchObject({ mode: "explicit", pkgRoot: root });
+    expect(calls.filter((args) => args[0] === "install")).toEqual([]);
+    expect(readActive(root).version).toBe("0.6.0");
+    expect(text()).toContain("已切换");
+  });
+
+  it("物化失败就拒绝切换，指针不动", async () => {
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    const { runNpm } = fakeNpm();
+    const { text, logger } = collectLogger();
+
+    const code = await runSwitchCommand({
+      logger, pkgRoot: root, version: "0.6.0", runNpm,
+      resolveRuntime: runtimeAt("0.7.0"),
+      ensureDefaultVersionFn: async () => ({ ok: false, stage: "install", reason: "network down" }),
+    });
+
+    // 指针只允许指向真实条目（规格 I3）：失败时照常写指针会让默认版本"生效"却不可解析。
+    expect(code).toBe(1);
+    expect(readActive(root).version).toBe("0.7.0");
+    expect(text()).toContain("network down");
+  });
+
+  it("就绪动作被关闭时拒绝切换", async () => {
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    const { runNpm } = fakeNpm();
+    const { text, logger } = collectLogger();
+    let called = false;
+
+    const code = await runSwitchCommand({
+      logger, pkgRoot: root, version: "0.6.0", runNpm,
+      env: { LAUNCHER_PREPARE: "0" },
+      resolveRuntime: runtimeAt("0.7.0"),
+      ensureDefaultVersionFn: async () => {
+        called = true;
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    expect(code).toBe(1);
+    expect(called).toBe(false);
+    expect(text()).toContain("LAUNCHER_PREPARE=0");
+    expect(readActive(root).version).toBe("0.7.0");
+  });
+
+  it("历史遗留的 bundle-only 目录不再触发畸形目录守卫", async () => {
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    mkdirSync(versionDir(root, "0.6.0"), { recursive: true });
+    writeFileSync(
+      path.join(versionDir(root, "0.6.0"), "bundle.meta.json"),
+      JSON.stringify({ file: "bundle-x.mjs" }),
+    );
+    const { runNpm } = fakeNpm();
+    const { text, logger } = collectLogger();
+
+    const code = await runSwitchCommand({
+      logger, pkgRoot: root, version: "0.6.0", runNpm,
+      resolveRuntime: runtimeAt("0.7.0"),
+      ensureDefaultVersionFn: async () => {
+        plantVersion(root, "0.6.0");
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(text()).not.toContain("无法解析");
+    expect(existsSync(path.join(versionDir(root, "0.6.0"), "bundle.meta.json"))).toBe(true);
+    expect(readActive(root).version).toBe("0.6.0");
+  });
+});

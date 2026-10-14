@@ -138,7 +138,14 @@ export async function runInstallCommand(flags, deps) {
   // 规格 5：安装成功后自动预热一次，让第一次工具调用不用等 openwiki 的导入。
   // 预热是优化不是安装的一部分 —— 失败只告警，退出码仍然是安装的结果。
   if (result.exitCode === 0 && !flags.uninstall && !flags.noWarm) {
-    await warmAfterInstall({ logger, env, ensureBundleFn: deps.ensureBundleFn, warmFn: deps.warmFn });
+    await warmAfterInstall({
+      logger,
+      env,
+      ensureBundleFn: deps.ensureBundleFn,
+      ensureDefaultVersionFn: deps.ensureDefaultVersionFn,
+      warmFn: deps.warmFn,
+      skipPrepare: flags.noPrepare,
+    });
   }
 
   return result.exitCode;
@@ -189,7 +196,7 @@ export async function prepareDefaultVersion({ logger, env = process.env, runNpm,
  * @param {{ logger: object, env?: object, ensureBundleFn?: Function, warmFn?: Function }} options
  * @returns {Promise<number>} 预热退出码
  */
-export async function warmAfterInstall({ logger, env = process.env, ensureBundleFn, warmFn }) {
+export async function warmAfterInstall({ logger, env = process.env, ensureBundleFn, ensureDefaultVersionFn, warmFn, skipPrepare = false }) {
   const ensure = ensureBundleFn ?? ensureBundleForActive;
   const bundleResult = await ensure({ logger }).catch((error) => ({ ok: false, reason: error.message }));
   if (bundleResult.ok !== true) {
@@ -198,7 +205,15 @@ export async function warmAfterInstall({ logger, env = process.env, ensureBundle
   const warm = warmFn ?? runWarmCommand;
   // ensure 已解析过（注入桩或真实实现），透传给 warm：warm 自己也会先补一次
   // bundle（meta 有效时是毫秒级命中），传入同一实现避免双份安装/双份语义。
-  const warmCode = await warm({ logger, env, hostId: "warm", ensureBundleFn: ensure });
+  // skipPrepare 把 --no-prepare 的意图带进预热：warm 内部不再自行就绪。
+  const warmCode = await warm({
+    logger,
+    env,
+    hostId: "warm",
+    ensureBundleFn: ensure,
+    ensureDefaultVersionFn,
+    skipPrepare,
+  });
   if (warmCode !== 0) {
     logger.warn("预热未成功，不影响本次安装结果；可稍后单独运行 `openwiki-launcher warm`。");
   }

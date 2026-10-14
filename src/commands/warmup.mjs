@@ -1,6 +1,7 @@
 import { resolveHolderSession } from "../holder-client.mjs";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
 import { resolveSelfBin } from "../self-path.mjs";
+import { ensureDefaultVersion, prepareEnabled } from "../ensure-default.mjs";
 
 const DEFAULT_WARMUP_TIMEOUT_MS = 60000;
 const STATUS_POLL_MS = 500;
@@ -26,8 +27,22 @@ export async function runWarmupCommand({
   logger,
   env = process.env,
   timeoutMs = DEFAULT_WARMUP_TIMEOUT_MS,
+  ensureDefaultVersionFn = ensureDefaultVersion,
   deps = {},
 }) {
+  // 与 warm 同一顺序：就绪动作先行，再解析运行时。登录启动项是"让当天第一个
+  // 会话别付全款冷启动"的通道，默认版本没就绪时它也该把就绪补上。
+  if (!env.LAUNCHER_BACKEND_CLI && prepareEnabled(env)) {
+    try {
+      const prepared = await ensureDefaultVersionFn({ mode: "explicit", logger, env });
+      if (prepared?.ok !== true) {
+        logger.warn(`默认版本未就绪（${prepared?.reason ?? "未知原因"}）`);
+      }
+    } catch (error) {
+      logger.warn(`默认版本就绪失败：${error.message}`);
+    }
+  }
+
   let runtime;
   try {
     runtime = await resolveOpenwikiRuntime();

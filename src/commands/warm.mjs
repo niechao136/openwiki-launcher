@@ -1,6 +1,7 @@
 import { createBackendSupervisor } from "../backend.mjs";
 import { resolveOpenwikiRuntime } from "../paths.mjs";
 import { ensureBundleForActive } from "../ensure-bundle.mjs";
+import { ensureDefaultVersion, prepareEnabled } from "../ensure-default.mjs";
 
 /**
  * 预热等待上限。
@@ -49,9 +50,25 @@ export async function runWarmCommand({
   resolveRuntime = resolveOpenwikiRuntime,
   createSupervisor = createBackendSupervisor,
   ensureBundleFn = ensureBundleForActive,
+  ensureDefaultVersionFn = ensureDefaultVersion,
+  skipPrepare = false,
   hostId = "warm",
   timeoutMs = DEFAULT_WARM_TIMEOUT_MS,
 }) {
+  // 就绪动作先行：默认版本在版本仓库里没有实体条目时，下面的 ensureBundle 会把
+  // bundle 打进一个 bundle-only 的畸形目录。LAUNCHER_BACKEND_CLI 覆盖（排障路径）
+  // 与显式关闭（--no-prepare / LAUNCHER_PREPARE=0）都跳过。
+  if (!env.LAUNCHER_BACKEND_CLI && prepareEnabled(env) && !skipPrepare) {
+    try {
+      const prepared = await ensureDefaultVersionFn({ mode: "explicit", logger, env });
+      if (prepared?.ok !== true) {
+        logger.warn(`默认版本未就绪（${prepared?.reason ?? "未知原因"}），本次预热走当前运行时`);
+      }
+    } catch (error) {
+      logger.warn(`默认版本就绪失败：${error.message}，本次预热走当前运行时`);
+    }
+  }
+
   // §9：先补打当前生效版本的 bundle，再解析运行时——预热直接走 bundle 入口，
   // 顺带验证 bundle 可启动（与 install 收尾 warmAfterInstall 同一顺序）。
   // bundle 失败只警告：它是优化，预热仍以源码入口完成。LAUNCHER_BACKEND_CLI

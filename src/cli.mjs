@@ -126,6 +126,7 @@ export async function main(argv, deps = {}) {
       resolveRuntime: deps.resolveRuntime,
       createSupervisor: deps.createSupervisor,
       ensureBundleFn: deps.ensureBundleFn,
+      ensureDefaultVersionFn: deps.ensureDefaultVersionFn,
       env,
     });
   }
@@ -133,7 +134,7 @@ export async function main(argv, deps = {}) {
   if (command === "warmup") {
     const hostId = readHostId(rest, logger);
     if (hostId === null) return 1;
-    return runWarmupCommand({ hostId, logger, env });
+    return runWarmupCommand({ hostId, logger, env, ensureDefaultVersionFn: deps.ensureDefaultVersionFn });
   }
 
   if (command === "doctor") {
@@ -175,10 +176,12 @@ export async function main(argv, deps = {}) {
       logger,
       pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
       args: rest,
+      env,
       runNpm: deps.runNpm,
       confirm: deps.confirm,
       resolveRuntime: deps.resolveRuntime,
       writeSnapshot: deps.writeSnapshot,
+      ensureDefaultVersionFn: deps.ensureDefaultVersionFn,
     });
   }
 
@@ -187,10 +190,12 @@ export async function main(argv, deps = {}) {
       logger,
       pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
       version: rest[0],
+      env,
       runNpm: deps.runNpm,
       confirm: deps.confirm,
       resolveRuntime: deps.resolveRuntime,
       writeSnapshot: deps.writeSnapshot,
+      ensureDefaultVersionFn: deps.ensureDefaultVersionFn,
     });
   }
 

@@ -1,9 +1,10 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { resolveOpenwikiRuntime } from "../paths.mjs";
+import { bundledOpenwikiVersion, resolveOpenwikiRuntime } from "../paths.mjs";
 import { isValidVersion, isInstalled, versionDir, writeActiveAtomic } from "../versions.mjs";
 import { generateManifest } from "../gen-manifest.mjs";
 import { bundleStatus, ensureBundle } from "../ensure-bundle.mjs";
+import { ensureDefaultVersion, prepareEnabled } from "../ensure-default.mjs";
 import { defaultConfirm, defaultRunNpm, installAndSnapshot } from "./update.mjs";
 
 /**
@@ -31,12 +32,14 @@ export async function runSwitchCommand({
   logger,
   pkgRoot,
   version,
+  env = process.env,
   runNpm = defaultRunNpm,
   confirm = defaultConfirm,
   resolveRuntime = resolveOpenwikiRuntime,
   writeSnapshot = generateManifest,
   install = installAndSnapshot,
   ensureBundleFn = ensureBundle,
+  ensureDefaultVersionFn = ensureDefaultVersion,
 }) {
   if (version === undefined) {
     logger.error("switch 需要一个版本名（x.y.z），例如: openwiki-launcher switch 0.6.0");
@@ -60,9 +63,12 @@ export async function runSwitchCommand({
     return 0;
   }
 
+  const isBundledVersion = version === bundledOpenwikiVersion(pkgRoot);
+
   // 目录存在但入口不全：不是「没装」，是「装坏了」。在坏目录上重装只会合并出
-  // 更难诊断的状态——拒绝并指路清理。
-  if (existsSync(versionDir(pkgRoot, version)) && !isInstalled(pkgRoot, version)) {
+  // 更难诊断的状态——拒绝并指路清理。默认版本例外：它的目录里可能只剩历史
+  // bundle（物化之前的畸形状态），而就绪动作会在这个目录里补齐实体条目。
+  if (!isBundledVersion && existsSync(versionDir(pkgRoot, version)) && !isInstalled(pkgRoot, version)) {
     logger.error(
       `versions/${version} 目录存在但 openwiki 无法解析（缺 package.json 或 dist/cli/cli.js）；`
       + `请先 openwiki-launcher versions remove ${version} 清理后重试`,
@@ -71,13 +77,27 @@ export async function runSwitchCommand({
   }
 
   if (!isInstalled(pkgRoot, version)) {
-    const proceed = await confirm(`openwiki@${version} 未安装，是否现在安装？`);
-    if (!proceed) {
-      logger.error(`已取消：openwiki@${version} 未安装`);
-      return 1;
+    if (isBundledVersion) {
+      // 出厂依赖不在版本仓库里：就地物化它，绝不让「切回默认版本」变成一次重下载。
+      if (!prepareEnabled(env)) {
+        logger.error("就绪动作已被 LAUNCHER_PREPARE=0 关闭，无法就绪尚未物化的默认版本；移除该变量后重试");
+        return 1;
+      }
+      const prepared = await ensureDefaultVersionFn({ mode: "explicit", pkgRoot, logger, runNpm });
+      if (prepared?.ok !== true || !isInstalled(pkgRoot, version)) {
+        // 指针只允许指向真实条目（规格 I3）：物化失败就必须拒绝切换。
+        logger.error(`无法就绪默认版本 openwiki@${version}：${prepared?.reason ?? "未知原因"}`);
+        return 1;
+      }
+    } else {
+      const proceed = await confirm(`openwiki@${version} 未安装，是否现在安装？`);
+      if (!proceed) {
+        logger.error(`已取消：openwiki@${version} 未安装`);
+        return 1;
+      }
+      const outcome = await install({ pkgRoot, version, runNpm, logger, writeSnapshot, hostId: "switch" });
+      if (!outcome.ok) return 1;
     }
-    const outcome = await install({ pkgRoot, version, runNpm, logger, writeSnapshot, hostId: "switch" });
-    if (!outcome.ok) return 1;
   }
 
   try {

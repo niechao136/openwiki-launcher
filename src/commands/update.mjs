@@ -5,6 +5,7 @@ import { generateManifest } from "../gen-manifest.mjs";
 import { compareVersions, isValidVersion, writeActiveAtomic } from "../versions.mjs";
 import { pickLatestStable, runNpm } from "../npm-runner.mjs";
 import { installAndSnapshot, installVersion, summarizeInstallFailure } from "../openwiki-install.mjs";
+import { ensureDefaultVersion, prepareEnabled } from "../ensure-default.mjs";
 
 // 安装内核（锁 + 原子安装 + 完整性校验）住在 src/openwiki-install.mjs：它同时
 // 服务 update、switch 与默认版本就绪三个调用方，只修一处。这里保留同名再导出，
@@ -84,12 +85,14 @@ export async function runUpdateCommand({
   logger,
   pkgRoot,
   args = [],
+  env = process.env,
   runNpm = defaultRunNpm,
   confirm = defaultConfirm,
   resolveRuntime = resolveOpenwikiRuntime,
   writeSnapshot = generateManifest,
   install = installAndSnapshot,
   ensureBundleFn = ensureBundle,
+  ensureDefaultVersionFn = ensureDefaultVersion,
 }) {
   const parsed = parseUpdateArgs(args);
   if (parsed.error) {
@@ -111,6 +114,19 @@ export async function runUpdateCommand({
   }
   const current = runtime.version;
   const currentLabel = runtime.source === "versions" ? "versions 指针" : "出厂依赖";
+
+  // 升级前先把「当前版本」在版本仓库里就绪：出厂依赖没被物化时，指针一旦切走
+  // 就再也切不回来（switch 只认真实条目，会退化成一次重下载）。自愈模式：用户
+  // 显式删过、或上次失败还在退避期内，就安静跳过。失败不阻塞升级。
+  if (runtime.source === "bundled" && prepareEnabled(env)) {
+    const prepared = await ensureDefaultVersionFn({ mode: "self-heal", pkgRoot, logger, env, runNpm }).catch((error) => ({
+      ok: false,
+      reason: error.message,
+    }));
+    if (prepared?.ok !== true) {
+      logger.warn(`当前默认版本未就绪：${prepared?.reason ?? "未知原因"}（升级本身不受影响）`);
+    }
+  }
 
   // 目标版本：显式 --version 直接采用；否则查 registry 并列给用户选。
   let target = requested;

@@ -434,3 +434,81 @@ describe("runUpdateCommand", () => {
     expect(readActive(root).version).toBe("0.6.3");
   });
 });
+
+describe("升级前就绪当前版本", () => {
+  const roots = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  function freshRoot() {
+    const root = tempRoot();
+    roots.push(root);
+    return root;
+  }
+
+  it("当前跑出厂依赖时先物化它，好让升级之后还能切回来", async () => {
+    const root = freshRoot();
+    const { runNpm } = fakeNpm();
+    const { logger } = collectLogger();
+    const prepared = [];
+
+    const code = await runUpdateCommand({
+      logger, pkgRoot: root, args: ["--version", "0.6.3"],
+      runNpm,
+      resolveRuntime: async () => bundledRuntime,
+      writeSnapshot: async () => ({ ...okSnapshot, openwikiVersion: "0.6.3" }),
+      ensureDefaultVersionFn: async (options) => {
+        prepared.push(options);
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(prepared).toHaveLength(1);
+    expect(prepared[0]).toMatchObject({ mode: "self-heal", pkgRoot: root });
+  });
+
+  it("已经跑 versions 条目时不再重复就绪", async () => {
+    const root = freshRoot();
+    const { runNpm } = fakeNpm();
+    const { logger } = collectLogger();
+    let called = false;
+
+    const code = await runUpdateCommand({
+      logger, pkgRoot: root, args: ["--version", "0.6.3"],
+      runNpm,
+      resolveRuntime: async () => ({ version: "0.6.0", source: "versions", cliJs: "/fake/cli.js" }),
+      writeSnapshot: async () => ({ ...okSnapshot, openwikiVersion: "0.6.3" }),
+      ensureDefaultVersionFn: async () => {
+        called = true;
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(called).toBe(false);
+  });
+
+  it("LAUNCHER_PREPARE=0 时跳过就绪，升级照常成功", async () => {
+    const root = freshRoot();
+    const { runNpm } = fakeNpm();
+    const { logger } = collectLogger();
+    let called = false;
+
+    const code = await runUpdateCommand({
+      logger, pkgRoot: root, args: ["--version", "0.6.3"],
+      runNpm,
+      env: { LAUNCHER_PREPARE: "0" },
+      resolveRuntime: async () => bundledRuntime,
+      writeSnapshot: async () => ({ ...okSnapshot, openwikiVersion: "0.6.3" }),
+      ensureDefaultVersionFn: async () => {
+        called = true;
+        return { ok: true, version: "0.6.0" };
+      },
+    });
+
+    expect(code).toBe(0);
+    expect(called).toBe(false);
+  });
+});
