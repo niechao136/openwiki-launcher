@@ -27,6 +27,7 @@ const HELP = [
   "  openwiki-launcher --no-takeover          遇到 openwiki 原生安装时跳过而非接管",
   "  openwiki-launcher --bootstrap            额外写引导文件（0.2.0 未启用，仅提示）",
   "  openwiki-launcher --no-warm              安装后不自动预热（默认会预热一次）",
+  "  openwiki-launcher --no-prepare           跳过默认版本就绪（物化与 bundle），仍会预热",
   "  openwiki-launcher mcp [--host <id>]      作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
   "  openwiki-launcher warm                    预热 openwiki 后端后退出",
   "  openwiki-launcher warmup --host <id>      确保 holder 常驻且后端就绪（适合挂登录启动项）",
@@ -241,6 +242,9 @@ function cliDeps(deps, logger) {
     warmFn: deps.warmFn,
     // 同理：预热前的 ensureBundle（§9）也要可注入，否则安装用例会真去装 esbuild。
     ensureBundleFn: deps.ensureBundleFn,
+    // 就绪动作（物化默认版本）同理：不注入桩它会去 npm install 几百 MB。
+    ensureDefaultVersionFn: deps.ensureDefaultVersionFn,
+    runNpm: deps.runNpm,
     now: deps.now,
   };
 }

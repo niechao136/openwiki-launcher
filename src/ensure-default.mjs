@@ -4,7 +4,7 @@ import { ensureBundle } from "./ensure-bundle.mjs";
 import { manifestFilePath } from "./manifest.mjs";
 import { installAndSnapshot, installVersion } from "./openwiki-install.mjs";
 import { bundledOpenwikiVersion } from "./paths.mjs";
-import { isInstalled, versionsRoot } from "./versions.mjs";
+import { isInstalled, launcherPackageRoot, versionsRoot } from "./versions.mjs";
 
 /**
  * 「默认版本」（出厂依赖 `node_modules/openwiki`）的就绪动作。
@@ -156,7 +156,7 @@ export function markPrepareFailed(pkgRoot, version, reason, env = process.env, n
  * >}
  */
 export async function ensureDefaultVersion({
-  pkgRoot,
+  pkgRoot = launcherPackageRoot(),
   logger,
   mode = "explicit",
   hostId = "prepare",

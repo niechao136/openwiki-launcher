@@ -4,7 +4,9 @@ import { resolveSelfBin, resolveNodeCommand } from "../self-path.mjs";
 import { runInstall } from "../install.mjs";
 import { runUninstall } from "../uninstall.mjs";
 import { runWarmCommand } from "./warm.mjs";
+import { defaultRunNpm } from "./update.mjs";
 import { ensureBundleForActive } from "../ensure-bundle.mjs";
+import { ensureDefaultVersion, prepareEnabled } from "../ensure-default.mjs";
 
 /**
  * install / uninstall 的命令层：参数解析、路径解析、打印、预热。
@@ -17,7 +19,7 @@ import { ensureBundleForActive } from "../ensure-bundle.mjs";
 
 /** 会被接受的命令行标志。白名单外的以 - 开头的参数一律报错，不静默忽略。 */
 const BOOL_FLAGS = new Set([
-  "--global", "--uninstall", "--force", "--no-takeover", "--bootstrap", "--no-warm",
+  "--global", "--uninstall", "--force", "--no-takeover", "--bootstrap", "--no-warm", "--no-prepare",
 ]);
 
 /**
@@ -38,6 +40,7 @@ export function parseInstallArgs(args) {
     noTakeover: false,
     bootstrap: false,
     noWarm: false,
+    noPrepare: false,
   };
 
   for (let i = 0; i < args.length; i += 1) {
@@ -64,6 +67,7 @@ export function parseInstallArgs(args) {
       if (arg === "--no-takeover") flags.noTakeover = true;
       if (arg === "--bootstrap") flags.bootstrap = true;
       if (arg === "--no-warm") flags.noWarm = true;
+      if (arg === "--no-prepare") flags.noPrepare = true;
       continue;
     }
     return { error: `无法识别的参数: ${arg}` };
@@ -117,13 +121,65 @@ export async function runInstallCommand(flags, deps) {
     now: deps.now,
   });
 
+  const env = deps.env ?? process.env;
+
+  // 默认版本就绪（物化 + 快照 + bundle）与宿主安装的结果无关，所以判据不看
+  // report 里的 wrote：重跑安装器时配置已是"最新"、一个字节都没写，但用户正是
+  // 通过重跑来修复上一次失败的就绪。就绪是幂等的，已完成时近乎零成本。
+  if (!flags.uninstall && shouldPrepareAfterInstall({
+    exitCode: result.exitCode,
+    skippedNoHost: result.skippedNoHost,
+    env,
+    noPrepare: flags.noPrepare,
+  })) {
+    await prepareDefaultVersion({ logger, env, runNpm: deps.runNpm ?? defaultRunNpm, ensureDefaultVersionFn: deps.ensureDefaultVersionFn });
+  }
+
   // 规格 5：安装成功后自动预热一次，让第一次工具调用不用等 openwiki 的导入。
   // 预热是优化不是安装的一部分 —— 失败只告警，退出码仍然是安装的结果。
   if (result.exitCode === 0 && !flags.uninstall && !flags.noWarm) {
-    await warmAfterInstall({ logger, env: deps.env ?? process.env, ensureBundleFn: deps.ensureBundleFn, warmFn: deps.warmFn });
+    await warmAfterInstall({ logger, env, ensureBundleFn: deps.ensureBundleFn, warmFn: deps.warmFn });
   }
 
   return result.exitCode;
+}
+
+/**
+ * 安装收尾是否执行默认版本就绪。
+ *
+ * 四态（规格 §6）：成功安装（`exitCode === 0`）与「检测不到宿主」（`exitCode === 1`
+ * 且 `skippedNoHost`）都要做；失败回滚 / 未知宿主 / 不支持作用域（`exitCode === 1`
+ * 且非 `skippedNoHost`）与护栏拒绝（`exitCode === 2`）都不做。
+ *
+ * @param {{ exitCode: number, skippedNoHost?: boolean, env?: Record<string, string>, noPrepare?: boolean }} options
+ * @returns {boolean}
+ */
+export function shouldPrepareAfterInstall({
+  exitCode,
+  skippedNoHost = false,
+  env = process.env,
+  noPrepare = false,
+}) {
+  if (!prepareEnabled(env, { noPrepare })) return false;
+  return skippedNoHost === true || exitCode === 0;
+}
+
+/**
+ * 安装收尾的默认版本就绪。失败只告警：就绪是优化，不改变安装的退出码。
+ *
+ * @param {{ logger: object, env?: Record<string, string>, runNpm?: Function, ensureDefaultVersionFn?: Function }} options
+ * @returns {Promise<object>}
+ */
+export async function prepareDefaultVersion({ logger, env = process.env, runNpm, ensureDefaultVersionFn }) {
+  const ensure = ensureDefaultVersionFn ?? ensureDefaultVersion;
+  const result = await ensure({ mode: "explicit", logger, env, runNpm }).catch((error) => ({
+    ok: false,
+    reason: error.message,
+  }));
+  if (result?.ok !== true) {
+    logger.warn(`默认版本未就绪（${result?.reason ?? "未知原因"}）；可稍后运行 openwiki-launcher warm 重试。`);
+  }
+  return result;
 }
 
 /**

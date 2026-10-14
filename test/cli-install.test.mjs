@@ -2,15 +2,17 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { main } from "../src/cli.mjs";
+import { shouldPrepareAfterInstall } from "../src/commands/install.mjs";
 import { BUNDLE, NODE, SELF_BIN, makeTempDir, removeTempDir, collectLogger } from "./helpers.mjs";
 
-let home, proj, logs, warmCalls, bundleCalls;
+let home, proj, logs, warmCalls, bundleCalls, prepareCalls;
 beforeEach(() => {
   home = makeTempDir("ow-cli-home-");
   proj = makeTempDir("ow-cli-proj-");
   logs = collectLogger();
   warmCalls = [];
   bundleCalls = [];
+  prepareCalls = [];
 });
 afterEach(() => { removeTempDir(home); removeTempDir(proj); });
 
@@ -38,6 +40,11 @@ const deps = (over = {}) => ({
   ensureBundleFn: async () => {
     bundleCalls.push(true);
     return { ok: true, file: "bundle-x.mjs" };
+  },
+  // 就绪动作同理：不注入桩它会去 npm install 几百 MB。
+  ensureDefaultVersionFn: async (options) => {
+    prepareCalls.push(options);
+    return { ok: true, version: "0.6.0" };
   },
   ...over,
 });
@@ -165,5 +172,90 @@ describe("安装后的自动预热", () => {
     const r = await main(["--uninstall", "--tool", "claude"], deps());
     expect(r).toBe(0);
     expect(warmCalls).toHaveLength(0);
+  });
+});
+
+describe("默认版本就绪的接线", () => {
+  it("安装成功后执行就绪动作", async () => {
+    const r = await main(["--tool", "claude"], deps());
+
+    expect(r).toBe(0);
+    expect(prepareCalls).toHaveLength(1);
+    expect(prepareCalls[0]).toMatchObject({ mode: "explicit" });
+  });
+
+  it("配置已是最新（没有写入）时仍执行就绪动作，让重跑安装器能修复上一次失败的就绪", async () => {
+    await main(["--tool", "claude"], deps());
+    logs.lines.length = 0;
+
+    // 第二次运行：配置 unchanged、report 全为 wrote:false，但用户正是靠重跑修复。
+    const r = await main(["--tool", "claude"], deps());
+
+    expect(r).toBe(0);
+    expect(logs.text()).toContain("已是最新");
+    expect(prepareCalls).toHaveLength(2);
+  });
+
+  it("检测不到宿主（退出码 1）时仍执行就绪动作", async () => {
+    // 空 argv 走的是帮助分支；要走到"检测落空"必须给一个安装标志。
+    const r = await main(["--global"], deps());
+
+    expect(r).toBe(1);
+    expect(logs.text()).toContain("没有检测到已安装的宿主");
+    expect(prepareCalls).toHaveLength(1);
+  });
+
+  it("未知宿主时不执行就绪动作", async () => {
+    const r = await main(["--tool", "nope"], deps());
+
+    expect(r).toBe(1);
+    expect(prepareCalls).toHaveLength(0);
+  });
+
+  it("--no-prepare 跳过就绪动作但不跳过预热", async () => {
+    const r = await main(["--tool", "claude", "--no-prepare"], deps());
+
+    expect(r).toBe(0);
+    expect(prepareCalls).toHaveLength(0);
+    expect(warmCalls).toHaveLength(1);
+  });
+
+  it("LAUNCHER_PREPARE=0 与 --no-prepare 等价", async () => {
+    const r = await main(["--tool", "claude"], deps({ env: { PATH: "", LAUNCHER_PREPARE: "0" } }));
+
+    expect(r).toBe(0);
+    expect(prepareCalls).toHaveLength(0);
+    expect(warmCalls).toHaveLength(1);
+  });
+
+  it("--no-warm 只跳过预热，仍执行就绪动作", async () => {
+    const r = await main(["--tool", "claude", "--no-warm"], deps());
+
+    expect(r).toBe(0);
+    expect(prepareCalls).toHaveLength(1);
+    expect(warmCalls).toHaveLength(0);
+  });
+
+  it("卸载时不执行就绪动作", async () => {
+    await main(["--tool", "claude"], deps());
+    prepareCalls.length = 0;
+
+    await main(["--uninstall", "--tool", "claude"], deps());
+
+    expect(prepareCalls).toHaveLength(0);
+  });
+});
+
+describe("shouldPrepareAfterInstall", () => {
+  it("成功安装与检测落空都要就绪，其余都不要", () => {
+    expect(shouldPrepareAfterInstall({ exitCode: 0, skippedNoHost: false })).toBe(true);
+    expect(shouldPrepareAfterInstall({ exitCode: 1, skippedNoHost: true })).toBe(true);
+    expect(shouldPrepareAfterInstall({ exitCode: 1, skippedNoHost: false })).toBe(false);
+    expect(shouldPrepareAfterInstall({ exitCode: 2, skippedNoHost: false })).toBe(false);
+  });
+
+  it("被开关关掉时一律不就绪", () => {
+    expect(shouldPrepareAfterInstall({ exitCode: 0, skippedNoHost: true, noPrepare: true })).toBe(false);
+    expect(shouldPrepareAfterInstall({ exitCode: 0, skippedNoHost: true, env: { LAUNCHER_PREPARE: "0" } })).toBe(false);
   });
 });
