@@ -71,11 +71,11 @@ describe("ensureEsbuild", () => {
 });
 
 describe("ensureBundle", () => {
-  const buildKernelWrites = (contents = "// bundle v1") => {
-    const fn = async ({ outfile }) => {
+  const buildKernelWrites = (contents = "// bundle v1", { entryVersion = null } = {}) => {
+    const fn = async ({ outfile, version }) => {
       fn.calls += 1;
       writeFileSync(outfile, contents);
-      return { ok: true, bytes: contents.length };
+      return { ok: true, entryVersion: entryVersion ?? version, bytes: contents.length };
     };
     fn.calls = 0;
     return fn;
@@ -92,11 +92,50 @@ describe("ensureBundle", () => {
     expect(result.ok).toBe(true);
     const meta = JSON.parse(readFileSync(path.join(pkgRoot, "versions", "0.6.0", "bundle.meta.json"), "utf8"));
     expect(meta.openwikiVersion).toBe("0.6.0");
+    expect(meta.entryVersion).toBe("0.6.0");
     expect(meta.nodeMajor).toBe(process.versions.node.split(".")[0]);
     expect(meta.platform).toBe(process.platform);
     expect(typeof meta.scriptHash).toBe("string");
     expect(typeof meta.file).toBe("string");
     expect(existsSync(path.join(pkgRoot, "versions", "0.6.0", meta.file))).toBe(true);
+  });
+
+  it("refuses to record a bundle built out of another version's code", async () => {
+    const pkgRoot = tempDir();
+    const result = await ensureBundle({
+      version: "0.7.0",
+      pkgRoot,
+      logger: noopLogger,
+      deps: {
+        buildKernel: buildKernelWrites("// 出厂代码", { entryVersion: "0.6.0" }),
+        ensureEsbuildFn: async () => ({ ok: true, esbuildModule: {} }),
+      },
+    });
+
+    // meta 声明 0.7.0、内容是 0.6.0 的 bundle 会被后续校验永久复用：绝不入库。
+    expect(result.ok).toBe(false);
+    expect(existsSync(path.join(pkgRoot, "versions", "0.7.0", "bundle.meta.json"))).toBe(false);
+  });
+
+  it("treats a meta without entryVersion as stale and rebuilds", async () => {
+    const pkgRoot = tempDir();
+    const buildKernel = buildKernelWrites();
+    const options = {
+      version: "0.6.0",
+      pkgRoot,
+      logger: noopLogger,
+      deps: { buildKernel, ensureEsbuildFn: async () => ({ ok: true, esbuildModule: {} }) },
+    };
+    await ensureBundle(options);
+
+    // 升级前的历史 meta 没有 entryVersion：无法证明它打的是哪个版本的代码。
+    const metaPath = path.join(pkgRoot, "versions", "0.6.0", "bundle.meta.json");
+    const meta = JSON.parse(readFileSync(metaPath, "utf8"));
+    delete meta.entryVersion;
+    writeFileSync(metaPath, JSON.stringify(meta));
+
+    await ensureBundle(options);
+    expect(buildKernel.calls).toBe(2);
   });
 
   it("reuses a valid meta without rebuilding", async () => {

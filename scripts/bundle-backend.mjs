@@ -1,6 +1,7 @@
 import { mkdirSync, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { bundledOpenwikiVersion } from "../src/paths.mjs";
 import { launcherPackageRoot, readActive } from "../src/versions.mjs";
 
 // 注意：本文件**不得**静态 import esbuild。esbuild 不是本包的运行时依赖
@@ -41,9 +42,12 @@ const stubDevtools = {
  *   pkgRoot?: string,
  *   version?: string,
  *   outDir?: string,
+ *   outFile?: string,
  *   esbuildModule: object,
  * }} options
- * @returns {Promise<number>} Exit code.
+ * @returns {Promise<{ ok: true, entryVersion: string | null } | { ok: false, reason: string }>}
+ *   `entryVersion` 是实际被打包的入口包声明的版本，调用方必须拿它与请求版本
+ *   比对后才允许写 meta。
  */
 export async function runBundleBackend({
   logger,
@@ -54,8 +58,9 @@ export async function runBundleBackend({
   esbuildModule,
 }) {
   if (!esbuildModule) {
-    logger.error("esbuild 模块缺失：应由 ensureBundle 经 ensureEsbuild 注入（本脚本不静态引入 esbuild）");
-    return 1;
+    const reason = "esbuild 模块缺失：应由 ensureBundle 经 ensureEsbuild 注入（本脚本不静态引入 esbuild）";
+    logger.error(reason);
+    return { ok: false, reason };
   }
   let active;
   try {
@@ -79,11 +84,20 @@ export async function runBundleBackend({
   const targetDir = outDir ?? path.join(pkgRoot, "versions", targetVersion);
   // ensureBundle 走内容寻址：先构建到临时/指定路径，再由它 rename 到最终名
   const outfile = resolvedOutFile ?? path.join(targetDir, "bundle.mjs");
-  const entry = path.join(pkgRoot, "node_modules", "openwiki", "dist", "cli", "cli.js");
-  if (!existsSync(entry)) {
-    logger.error(`未找到 openwiki CLI 入口：${entry}`);
-    return 1;
+
+  // 入口必须来自**目标版本自己**的包目录。回退出厂依赖只在目标版本就是出厂
+  // 版本时成立——否则打出来的是"声称 v0.7.0、内容是 v0.6.0"的产物，而 meta
+  // 校验会把它当成合法产物永久复用。宁可失败，也要慢而正确。
+  const bundledEntry = path.join(pkgRoot, "node_modules", "openwiki", "dist", "cli", "cli.js");
+  const candidates = [path.join(pkgRoot, "versions", targetVersion, "node_modules", "openwiki", "dist", "cli", "cli.js")];
+  if (targetVersion === bundledOpenwikiVersion(pkgRoot)) candidates.push(bundledEntry);
+  const entry = candidates.find((candidate) => existsSync(candidate));
+  if (!entry) {
+    const reason = `versions/${targetVersion} 下找不到可解析的 openwiki 入口`;
+    logger.error(reason);
+    return { ok: false, reason };
   }
+  const entryVersion = readEntryVersion(entry);
 
   const started = Date.now();
   try {
@@ -109,10 +123,20 @@ export async function runBundleBackend({
     const key = Object.keys(result.metafile.outputs)[0];
     const bytes = result.metafile.outputs[key]?.bytes ?? 0;
     logger.info(`bundle 完成：${outfile}（${(bytes / 1024 / 1024).toFixed(1)}MB，${Date.now() - started}ms）`);
-    return 0;
+    return { ok: true, entryVersion };
   } catch (error) {
     logger.error(`bundle 构建失败：${error.message}`);
-    return 1;
+    return { ok: false, reason: error.message };
+  }
+}
+
+/** 入口包声明的版本号：dist/cli/cli.js 往上三级就是 openwiki 包目录。 */
+function readEntryVersion(entry) {
+  const packageJson = path.join(path.resolve(entry, "..", "..", ".."), "package.json");
+  try {
+    return JSON.parse(readFileSync(packageJson, "utf8")).version ?? null;
+  } catch {
+    return null;
   }
 }
 

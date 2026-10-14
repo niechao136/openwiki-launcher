@@ -28,6 +28,9 @@ function metaValid(meta, { version, scriptHash, bundleDir }) {
   return (
     meta &&
     meta.openwikiVersion === version &&
+    // entryVersion 缺失（升级前的历史 meta）一律视为过期：它无法证明这份产物
+    // 是用哪个版本的代码打出来的，而历史实现会拿出厂代码冒名非默认版本。
+    meta.entryVersion === version &&
     meta.scriptHash === scriptHash &&
     meta.nodeMajor === process.versions.node.split(".")[0] &&
     meta.platform === process.platform &&
@@ -49,7 +52,8 @@ function metaValid(meta, { version, scriptHash, bundleDir }) {
  *   pkgRoot: string,
  *   logger: { debug(m: string): void, info(m: string): void, warn(m: string): void, error(m: string): void },
  *   deps?: {
- *     buildKernel?: ({ outfile: string, esbuildModule: object }) => Promise<{ ok: boolean, bytes?: number }>,
+ *     buildKernel?: ({ outfile: string, esbuildModule: object, version: string }) =>
+ *       Promise<{ ok: boolean, entryVersion?: string, bytes?: number, reason?: string }>,
  *     ensureEsbuildFn?: (options: object) => Promise<{ ok: boolean, esbuildModule?: object, reason?: string }>,
  *   },
  * }} options
@@ -91,18 +95,17 @@ export async function ensureBundle({ version, pkgRoot, logger, deps = {} }) {
     const tmpOut = path.join(bundleDir, `bundle.mjs.tmp-${process.pid}`);
     let buildResult;
     if (buildKernel) {
-      buildResult = await buildKernel({ outfile: tmpOut, esbuildModule: esbuild.esbuildModule });
+      buildResult = await buildKernel({ outfile: tmpOut, esbuildModule: esbuild.esbuildModule, version });
     } else {
       const { runBundleBackend } = await import("../scripts/bundle-backend.mjs");
-      // runBundleBackend 返回退出码（0/1），适配为内核契约 { ok }
-      const code = await runBundleBackend({
+      buildResult = await runBundleBackend({
         logger,
         pkgRoot,
+        version,
         outDir: bundleDir,
         outFile: tmpOut,
         esbuildModule: esbuild.esbuildModule,
       });
-      buildResult = { ok: code === 0, reason: code === 0 ? undefined : "bundle 构建退出码非 0" };
     }
     if (!buildResult || buildResult.ok !== true || !existsSync(tmpOut)) {
       try {
@@ -111,6 +114,19 @@ export async function ensureBundle({ version, pkgRoot, logger, deps = {} }) {
         // 临时文件清理失败不影响结论
       }
       return { ok: false, reason: buildResult?.reason ?? "bundle 构建失败" };
+    }
+
+    // 产物入库前的最后一道闸：入口包声明的版本必须与请求版本一致。否则这份
+    // "声称 v0.7.0、内容是 v0.6.0" 的产物会被 meta 校验永久复用。
+    if (buildResult.entryVersion !== version) {
+      try {
+        unlinkSync(tmpOut);
+      } catch {
+        // 临时文件清理失败不影响结论
+      }
+      const reason = `bundle 的入口包版本是 ${buildResult.entryVersion ?? "未知"}，与请求的 ${version} 不一致`;
+      logger.error(reason);
+      return { ok: false, reason };
     }
 
     const contents = readFileSync(tmpOut);
@@ -122,6 +138,7 @@ export async function ensureBundle({ version, pkgRoot, logger, deps = {} }) {
 
     const meta = {
       openwikiVersion: version,
+      entryVersion: buildResult.entryVersion,
       scriptHash: sHash,
       nodeMajor: process.versions.node.split(".")[0],
       platform: process.platform,
