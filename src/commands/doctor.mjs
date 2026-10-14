@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { createBackendSupervisor } from "../backend.mjs";
 import { loadManifest } from "../manifest.mjs";
@@ -9,8 +9,9 @@ import { HOSTS } from "../registry.mjs";
 import { readJsonEntry, readTomlBlock } from "../mcp-config.mjs";
 import { collectMcpSnapshot } from "../targets.mjs";
 import { declaredOpenwikiRange, exactPinnedVersion } from "../pkg.mjs";
-import { isInstalled, launcherPackageRoot, listInstalled, readActive, versionsRoot } from "../versions.mjs";
+import { isInstalled, launcherPackageRoot, listInstalled, readActive, versionDir, versionsRoot } from "../versions.mjs";
 import { bundleStatus } from "../ensure-bundle.mjs";
+import { defaultVersionState, defaultVersionStateLabel } from "../ensure-default.mjs";
 import { runNpm } from "../npm-runner.mjs";
 
 const ENTRY_KEY = "openwiki";
@@ -299,7 +300,9 @@ export async function runDoctorCommand({
   // §9：各已装版本的 bundle 状态一目了然（ready/bad/missing）。
   const bundleStatusLabel = { ready: "✓ bundle 就绪", bad: "! bundle 被标记不可用（npm run bundle 重建后自动恢复）", missing: "! 无 bundle（冷启动较慢，npm run bundle 生成）" };
   try {
-    const installed = listInstalled(pkgRoot).filter((entry) => isInstalled(pkgRoot, entry.version));
+    // 不再用 isInstalled 过滤：bundle-only 的畸形目录正是最该被看见的状态，过滤掉
+    // 等于把它藏起来（旧实现让"默认版本没有 bundle"这件事在每个界面都不可见）。
+    const installed = listInstalled(pkgRoot);
     if (installed.length > 0) {
       for (const entry of installed) {
         logger.info(`${bundleStatusLabel[bundleStatus(pkgRoot, entry.version)] ?? "! bundle 状态未知"}：openwiki ${entry.version}`);
@@ -308,6 +311,9 @@ export async function runDoctorCommand({
   } catch (error) {
     logger.warn(`! bundle 状态枚举失败：${error.message}`);
   }
+
+  reportDefaultVersionState({ logger, pkgRoot });
+  reportInstallDrift({ logger, pkgRoot });
 
   // warmup 登录预热是可选优化（规格 §5.6）；只提示不代写。
   if (nodeCommand?.command && selfBin) {
@@ -340,5 +346,59 @@ export async function runDoctorCommand({
     return 1;
   } finally {
     supervisor.stop();
+  }
+}
+
+/**
+ * 默认版本状态的可见性。
+ *
+ * 默认版本没有实体条目时，它在 `versions/` 里只留下一份 bundle；旧实现用
+ * `isInstalled` 过滤，恰好把"默认版本未就绪"这件事在每个界面都藏了起来。
+ *
+ * @param {{ logger: object, pkgRoot: string }} options
+ * @returns {ReturnType<typeof defaultVersionState>}
+ */
+export function reportDefaultVersionState({ logger, pkgRoot }) {
+  const state = defaultVersionState(pkgRoot);
+  if (!state.version) return state;
+
+  logger.info(`默认版本（出厂依赖）${state.version}：${defaultVersionStateLabel(state)}`);
+  if (state.state === "missing") {
+    logger.info("  运行 openwiki-launcher warm 让它就绪；此后 switch 回默认版本是毫秒级、不再下载");
+  }
+  if (state.state === "removed") {
+    logger.info("  要重建它：openwiki-launcher warm（或 install / switch）");
+  }
+  return state;
+}
+
+/** 读某次安装记下的 Node 主版本。 */
+function readInstallMeta(pkgRoot, version) {
+  try {
+    return JSON.parse(readFileSync(path.join(versionDir(pkgRoot, version), "install.meta.json"), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Node 主版本漂移：原生模块与 ABI 绑死，换了 Node 就得重装（规格 §9.7）。
+ *
+ * @param {{ logger: object, pkgRoot: string, nodeMajor?: string }} options
+ */
+export function reportInstallDrift({ logger, pkgRoot, nodeMajor = process.versions.node.split(".")[0] }) {
+  let entries;
+  try {
+    entries = listInstalled(pkgRoot);
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    const meta = readInstallMeta(pkgRoot, entry.version);
+    if (!meta || typeof meta.nodeMajor !== "string" || meta.nodeMajor === nodeMajor) continue;
+    logger.info(
+      `! openwiki ${entry.version} 是在 Node ${meta.nodeMajor} 下安装的，当前是 Node ${nodeMajor}：原生模块可能需要重装`,
+    );
+    logger.info(`  重装：openwiki-launcher versions remove ${entry.version} 后 openwiki-launcher switch ${entry.version}`);
   }
 }

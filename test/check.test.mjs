@@ -196,3 +196,33 @@ describe("runCheckCommand", () => {
     expect(text()).toContain("未找到 openwiki");
   });
 });
+
+describe("默认版本状态", () => {
+  const roots = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  it("默认版本没进版本仓库时说清楚它还没就绪", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "openwiki-check-default-"));
+    roots.push(root);
+    mkdirSync(path.join(root, "node_modules", "openwiki"), { recursive: true });
+    writeFileSync(
+      path.join(root, "node_modules", "openwiki", "package.json"),
+      JSON.stringify({ name: "openwiki", version: "0.6.0" }),
+    );
+    const { text, logger } = collectLogger();
+
+    const code = await runCheckCommand({
+      logger,
+      pkgRoot: root,
+      resolveRuntime: async () => ({ version: "0.6.0", source: "bundled", cliJs: "/abs/cli.js" }),
+      // registryOk 是另一个 describe 的局部函数，这里自己给一份等价的。
+      runNpm: async () => ({ code: 0, stdout: '["0.6.0","0.7.0"]', stderr: "" }),
+    });
+
+    expect(code).toBe(0);
+    expect(text()).toContain("默认版本（出厂依赖）0.6.0");
+    expect(text()).toContain("未就绪");
+  });
+});

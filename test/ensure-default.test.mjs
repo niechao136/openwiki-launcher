@@ -7,11 +7,13 @@ import {
   PREPARE_FAILED_FILE,
   backoffMsFromEnv,
   clearMarker,
+  defaultVersionState,
   ensureDefaultVersion,
   markDefaultRemoved,
   prepareEnabled,
   readMarker,
   scheduleBackgroundPrepare,
+  writeMarker,
 } from "../src/ensure-default.mjs";
 import { versionsRoot } from "../src/versions.mjs";
 
@@ -272,6 +274,81 @@ describe("ensureDefaultVersion", () => {
     clearMarker(root, DEFAULT_REMOVED_FILE);
     clearMarker(root, DEFAULT_REMOVED_FILE);
     expect(readMarker(root, DEFAULT_REMOVED_FILE)).toBeNull();
+  });
+});
+
+describe("defaultVersionState", () => {
+  /** 种一个 bundle 产物与 meta。 */
+  function plantBundle(root, version) {
+    const dir = path.join(versionsRoot(root), version);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(path.join(dir, "bundle-abc.mjs"), "// bundle");
+    writeFileSync(path.join(dir, "bundle.meta.json"), JSON.stringify({ file: "bundle-abc.mjs" }));
+  }
+
+  it("unknown：读不到出厂依赖的版本", () => {
+    expect(defaultVersionState(freshRoot({ bundled: null, snapshot: false })).state).toBe("unknown");
+  });
+
+  it("missing：出厂依赖还没进版本仓库", () => {
+    const root = freshRoot();
+    expect(defaultVersionState(root)).toEqual({ version: "0.6.0", state: "missing" });
+  });
+
+  it("installed-no-bundle：物化了但还没有 bundle", () => {
+    const root = freshRoot();
+    plantInstalled(root, "0.6.0");
+    expect(defaultVersionState(root).state).toBe("installed-no-bundle");
+  });
+
+  it("ready：物化了且有 bundle", () => {
+    const root = freshRoot();
+    plantInstalled(root, "0.6.0");
+    plantBundle(root, "0.6.0");
+    expect(defaultVersionState(root).state).toBe("ready");
+  });
+
+  it("removed：用户删过且当前没装", () => {
+    const root = freshRoot();
+    markDefaultRemoved(root, "0.6.0");
+    expect(defaultVersionState(root).state).toBe("removed");
+  });
+
+  it("backoff：上次失败还在退避期内", () => {
+    const root = freshRoot();
+    writeMarker(root, PREPARE_FAILED_FILE, {
+      version: "0.6.0",
+      at: new Date().toISOString(),
+      nextRetryAt: Date.now() + 60 * 1000,
+      reason: "offline",
+    });
+    const state = defaultVersionState(root);
+    expect(state.state).toBe("backoff");
+    expect(state.reason).toBe("offline");
+  });
+
+  it("退避已过期就不再算退避", () => {
+    const root = freshRoot();
+    writeMarker(root, PREPARE_FAILED_FILE, {
+      version: "0.6.0",
+      at: new Date().toISOString(),
+      nextRetryAt: Date.now() - 1000,
+      reason: "offline",
+    });
+    expect(defaultVersionState(root).state).toBe("missing");
+  });
+
+  it("装好之后，陈旧的删除标记不再影响判定", () => {
+    const root = freshRoot();
+    plantInstalled(root, "0.6.0");
+    markDefaultRemoved(root, "0.6.0");
+    expect(defaultVersionState(root).state).toBe("installed-no-bundle");
+  });
+
+  it("另一个版本的标记不干扰", () => {
+    const root = freshRoot();
+    markDefaultRemoved(root, "0.9.9");
+    expect(defaultVersionState(root).state).toBe("missing");
   });
 });
 

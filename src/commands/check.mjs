@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { OpenwikiNotFoundError, resolveOpenwikiRuntime } from "../paths.mjs";
 import { pickLatestStable, runNpm } from "../npm-runner.mjs";
+import { defaultVersionState, defaultVersionStateLabel } from "../ensure-default.mjs";
 import { listInstalled, readActive, versionsRoot } from "../versions.mjs";
 
 /**
@@ -41,6 +42,12 @@ export async function runCheckCommand({
   }
   const sourceLabel = runtime.source === "versions" ? "versions 指针" : "出厂依赖";
   logger.info(`当前生效版本：${runtime.version}（${sourceLabel}）`);
+
+  // 默认版本在版本仓库里到底有没有实体条目，是"切回它要不要重新下载"的唯一依据。
+  const defaultState = defaultVersionState(pkgRoot);
+  if (defaultState.version) {
+    logger.info(`默认版本（出厂依赖）${defaultState.version}：${defaultVersionStateLabel(defaultState)}`);
+  }
 
   const active = readActive(pkgRoot);
   const pointerFile = path.join(versionsRoot(pkgRoot), "active.json");

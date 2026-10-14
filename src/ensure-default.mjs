@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ensureBundle } from "./ensure-bundle.mjs";
+import { bundleStatus, ensureBundle } from "./ensure-bundle.mjs";
 import { manifestFilePath } from "./manifest.mjs";
 import { installAndSnapshot, installVersion } from "./openwiki-install.mjs";
 import { bundledOpenwikiVersion } from "./paths.mjs";
@@ -135,6 +135,61 @@ export function markPrepareFailed(pkgRoot, version, reason, env = process.env, n
     reason,
   });
   return true;
+}
+
+/**
+ * 默认版本此刻处于哪一态。doctor 与 check 共用同一份判定，两个界面口径不会分叉。
+ *
+ * @param {string} [pkgRoot]
+ * @param {{ now?: number }} [options]
+ * @returns {{
+ *   version: string | null,
+ *   state: "unknown" | "removed" | "backoff" | "missing" | "installed-no-bundle" | "ready",
+ *   nextRetryAt?: number, reason?: string,
+ * }}
+ */
+export function defaultVersionState(pkgRoot = launcherPackageRoot(), { now = Date.now() } = {}) {
+  const version = bundledOpenwikiVersion(pkgRoot);
+  if (!version) return { version: null, state: "unknown" };
+
+  const installed = isInstalled(pkgRoot, version);
+  if (!installed) {
+    const removed = readMarker(pkgRoot, DEFAULT_REMOVED_FILE);
+    if (removed?.version === version) return { version, state: "removed" };
+    const failed = readMarker(pkgRoot, PREPARE_FAILED_FILE);
+    if (failed?.version === version && typeof failed.nextRetryAt === "number" && failed.nextRetryAt > now) {
+      return { version, state: "backoff", nextRetryAt: failed.nextRetryAt, reason: failed.reason };
+    }
+    return { version, state: "missing" };
+  }
+  return { version, state: bundleStatus(pkgRoot, version) === "ready" ? "ready" : "installed-no-bundle" };
+}
+
+/**
+ * 把 `defaultVersionState` 的结果翻成一行可读文案。
+ *
+ * @param {ReturnType<typeof defaultVersionState>} state
+ * @returns {string}
+ */
+export function defaultVersionStateLabel(state) {
+  switch (state.state) {
+    case "ready":
+      return "✓ 已就绪";
+    case "installed-no-bundle":
+      return "! 已物化但无 bundle（冷启动较慢）";
+    case "missing":
+      return "! 未就绪（还没进版本仓库）";
+    case "removed":
+      return "已删除（不会自动重建）";
+    case "backoff": {
+      const when = typeof state.nextRetryAt === "number" ? new Date(state.nextRetryAt).toISOString() : "稍后";
+      return `上次就绪失败，退避中（${when} 后重试）`;
+    }
+    case "unknown":
+      return "无法确定（node_modules/openwiki 不可读）";
+    default:
+      return "状态未知";
+  }
 }
 
 /**

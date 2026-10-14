@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -386,5 +386,102 @@ describe("doctor 的 Defender 排除提示（规格 §6.3）", () => {
 
     expect(code).toBe(0);
     expect(lines.join("\n")).not.toContain("Add-MpPreference");
+  });
+});
+
+describe("默认版本状态与安装漂移", () => {
+  const roots = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  function freshRoot() {
+    const root = mkdtempSync(join(tmpdir(), "ow-doctor-default-"));
+    roots.push(root);
+    return root;
+  }
+
+  function plantBundled(root, version) {
+    mkdirSync(join(root, "node_modules", "openwiki"), { recursive: true });
+    writeFileSync(join(root, "node_modules", "openwiki", "package.json"), JSON.stringify({ version }));
+  }
+
+  function plantVersion(root, version, { nodeMajor = null } = {}) {
+    const pkg = join(root, "versions", version, "node_modules", "openwiki");
+    mkdirSync(join(pkg, "dist", "cli"), { recursive: true });
+    writeFileSync(join(pkg, "package.json"), JSON.stringify({ version }));
+    writeFileSync(join(pkg, "dist", "cli", "cli.js"), "// entry");
+    if (nodeMajor !== null) {
+      writeFileSync(join(root, "versions", version, "install.meta.json"), JSON.stringify({ version, nodeMajor }));
+    }
+  }
+
+  const run = (root, logger) => runDoctorCommand({
+    logger,
+    pkgRoot: root,
+    nodeVersion: "24.21.0",
+    resolveRuntime: async () => RUNTIME,
+    createSupervisor: supervisorWith([]),
+    resolveGlobalRoot: async () => null,
+  });
+
+  it("默认版本没进版本仓库时明确说出来，并给出补救命令", async () => {
+    const { lines, logger } = capture();
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+
+    await run(root, logger);
+
+    const out = lines.join("\n");
+    expect(out).toContain("默认版本（出厂依赖）0.6.0");
+    expect(out).toContain("未就绪");
+    expect(out).toContain("openwiki-launcher warm");
+  });
+
+  it("默认版本已就绪时显示就绪", async () => {
+    const { lines, logger } = capture();
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    plantVersion(root, "0.6.0");
+    writeFileSync(join(root, "versions", "0.6.0", "bundle-abc.mjs"), "// bundle");
+    writeFileSync(join(root, "versions", "0.6.0", "bundle.meta.json"), JSON.stringify({ file: "bundle-abc.mjs" }));
+
+    await run(root, logger);
+
+    expect(lines.join("\n")).toContain("默认版本（出厂依赖）0.6.0：✓ 已就绪");
+  });
+
+  it("用户删过默认版本时说明不会自动重建", async () => {
+    const { lines, logger } = capture();
+    const root = freshRoot();
+    plantBundled(root, "0.6.0");
+    mkdirSync(join(root, "versions"), { recursive: true });
+    writeFileSync(join(root, "versions", "default-removed.json"), JSON.stringify({ version: "0.6.0" }));
+
+    await run(root, logger);
+
+    expect(lines.join("\n")).toContain("已删除（不会自动重建）");
+  });
+
+  it("Node 主版本漂移时提示原生模块可能需要重装", async () => {
+    const { lines, logger } = capture();
+    const root = freshRoot();
+    plantVersion(root, "0.7.0", { nodeMajor: "99" });
+
+    await run(root, logger);
+
+    const out = lines.join("\n");
+    expect(out).toContain("在 Node 99 下安装的");
+    expect(out).toContain("versions remove 0.7.0");
+  });
+
+  it("主版本一致时不提示漂移", async () => {
+    const { lines, logger } = capture();
+    const root = freshRoot();
+    plantVersion(root, "0.7.0", { nodeMajor: process.versions.node.split(".")[0] });
+
+    await run(root, logger);
+
+    expect(lines.join("\n")).not.toContain("可能需要重装");
   });
 });

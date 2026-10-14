@@ -86,7 +86,8 @@ MCP 条目要确认指向本包才删（指向别处的一律不碰）。备份�
 | `--force` | 允许在用户主目录里做项目级安装（系统目录护栏**没有**这个绕过） |
 | `--no-takeover` | 遇到 openwiki 原生安装时跳过而非接管 |
 | `--bootstrap` | 额外写引导文件（0.2.0 未启用，仅打印提示） |
-| `--no-warm` | 安装成功后不自动预热（默认会预热一次，上限 60 秒，失败不影响安装结果） |
+| `--no-warm` | 安装成功后不自动预热（默认会预热一次，上限 60 秒，失败不影响安装结果）；**仍会执行默认版本就绪** |
+| `--no-prepare` | 跳过"默认版本就绪"（把 openwiki 物化进 `versions/` 并生成 bundle）；物化与预热是两个正交的开关，`--no-prepare` 不会再顺带关掉预热 |
 
 自动检测基于各宿主的标记文件/目录。检测落空时会扫 PATH 给出可直接复制的
 `--tool <id>` 命令，只提示不自动安装 —— IDE 装在应用目录里，PATH 上探不到。
@@ -160,6 +161,18 @@ Holder 模式（`LAUNCHER_HOLDER=1`，可选）：默认每个宿主会话的 wr
 `versions/<版本>/` 下，`versions/active.json` 指针决定生效版本——`check` 看状态、
 `update` 交互确认式升级、`switch` 毫秒切换、`versions remove` 清理磁盘。解析顺序为
 指针优先，指针缺失或损坏时回退出厂依赖（package.json 里钉的那个）并告警；
+
+**默认版本也会被物化成一个真实条目**（0.4.1 起）：出厂依赖
+`node_modules/openwiki` 本身不在版本仓库里，所以在"就绪动作"发生时会用
+`npm install --prefer-offline` 把它装进 `versions/<默认版本>/`（优先命中 npm
+缓存、通常不联网），随后生成 bundle。就绪动作发生在：安装器收尾（检测不到宿主
+也算）、`warm` / `warmup`、以及首次 MCP 会话的后台自愈（延后到后端就绪之后，
+并降优先级，不与你的首次使用抢磁盘）。物化之后默认版本与其它版本平权：`switch`
+回它是毫秒级指针翻转、不再下载，`check` / `doctor` 的口径也一致。物化失败
+（离线、缓存未命中）只软着陆并告警，退避 24 小时内后台不再重试；显式跑
+`install` / `warm` / `switch` 不受退避限制。两条边界：`npm install -g` 之后
+若从不跑安装器、也不开宿主会话，默认版本不会有 bundle；`versions remove` 掉
+默认版本会写标记，后台自愈不会把它长回来。
 **全局安装的 openwiki 不参与解析**——launcher 只认自己包根下的 node_modules 与
 versions/，想换版本请用上面的命令而不是 `npm install -g openwiki@x`。
 
@@ -184,6 +197,9 @@ node_modules 是主因），0.4.0 用三招压缩它——排队上限降到 25s
 | 想保留 openwiki 原生安装 | 加 `--no-takeover`，安装器会跳过该宿主而不是接管 |
 | Windows 上后端起不来 / 冷启动慢 | 跑 `openwiki-launcher doctor`：它会打印可复制的 Defender 排除命令与 warmup 登录项模板；`npm run bundle` 生成单文件后端可显著缩短冷启动 |
 | `update` / `switch` 后提示 bundle 未就绪 | 跑 `openwiki-launcher warm`：它会先补打当前版本的 bundle 再预热（首次 MCP 会话也会在后台自动补打，下次会话生效）。bundle 缺失只影响冷启动速度，不影响的工具可用性 |
+| 默认版本（出厂依赖）没有 bundle | 默认版本要先"物化"进 `versions/<默认版本>/` 才有 bundle。跑 `openwiki-launcher warm`（或重跑安装器）即可；`openwiki-launcher doctor` / `check` 会直接告诉你它处于哪一态。若只做过 `npm install -g`、手配 MCP 而没跑过安装器，**首次 MCP 会话仍会偏慢**，会话结束后后台会把这一份补上，后续会话受益 |
+| `switch` 回默认版本时它又要下载 | 说明默认版本还没被物化。`openwiki-launcher warm` 一次即可（之后 `switch` 回默认版本是毫秒级指针翻转）。若你也装过别的版本、想让升级前自动准备好，`update` 会在升级前先把当前默认版本物化 |
+| 删掉默认版本后又被自动重建 | `openwiki-launcher versions remove <默认版本>` 会记一条标记，后台自愈不再重建它；只有显式命令（`install` / `warm` / `switch`）会重建并清掉标记 |
 | `update` 装版本时报 ECONNRESET / 缺 Python | openwiki 的新版本可能带原生模块（better-sqlite3），预编译二进制的下载源在 GitHub。用 npmmirror 镜像重试：`npm config set better_sqlite3_binary_host_mirror https://registry.npmmirror.com/-/binary/better-sqlite3`，然后重跑 `update` |
 
 环境变量：
@@ -197,6 +213,8 @@ node_modules 是主因），0.4.0 用三招压缩它——排队上限降到 25s
 | `LAUNCHER_HOLDER=1` | 启用 holder 模式：后端脱离宿主会话常驻（延迟回收，见下） |
 | `LAUNCHER_HOLDER_TTL_MINUTES` | holder 无活跃连接后的存活时长（分钟，默认 30） |
 | `LAUNCHER_EAGER_START=0` | 关闭连接时的后台预热，恢复懒启动（首个工具调用才启动后端） |
+| `LAUNCHER_PREPARE=0` | 关闭"默认版本就绪"（物化 + bundle），与 `--no-prepare` 等价；`mcp` 后台自愈与 `update` 前置就绪也受它约束 |
+| `LAUNCHER_PREPARE_BACKOFF_HOURS` | 自愈就绪失败后的退避时长（小时，默认 24；`0` 关闭退避）。退避期内后台不再重试，显式命令不受限 |
 
 ## 当前范围
 
