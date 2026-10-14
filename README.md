@@ -162,7 +162,7 @@ Holder 模式（`LAUNCHER_HOLDER=1`，可选）：默认每个宿主会话的 wr
 `update` 交互确认式升级、`switch` 毫秒切换、`versions remove` 清理磁盘。解析顺序为
 指针优先，指针缺失或损坏时回退出厂依赖（package.json 里钉的那个）并告警；
 
-**默认版本也会被物化成一个真实条目**（0.4.1 起）：出厂依赖
+**默认版本也会被物化成一个真实条目**（0.5.0 起）：出厂依赖
 `node_modules/openwiki` 本身不在版本仓库里，所以在"就绪动作"发生时会用
 `npm install --prefer-offline` 把它装进 `versions/<默认版本>/`（优先命中 npm
 缓存、通常不联网），随后生成 bundle。就绪动作发生在：安装器收尾（检测不到宿主
