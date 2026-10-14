@@ -33,11 +33,14 @@ export function resolveNpmInvocation({
  * spawn 的同步抛错与 `error` 事件都归到 `{ code: -1 }`：调用方（installVersion /
  * check 的 registry 查询）都只认退出码，让异常穿透到 bin 只会给用户一截栈。
  *
+ * `onSpawn(child)` 在子进程起来的那一刻被调用，给调用方一个改优先级的机会
+ * （后台自愈的安装不该和用户正在用的磁盘 IO 抢资源）。
+ *
  * @param {string[]} args npm 参数。
- * @param {{ onStderr?: (text: string) => void }} [options]
+ * @param {{ onStderr?: (text: string) => void, onSpawn?: (child: object) => void }} [options]
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>}
  */
-export function runNpm(args, { onStderr } = {}) {
+export function runNpm(args, { onStderr, onSpawn } = {}) {
   const invocation = resolveNpmInvocation();
   return new Promise((resolve) => {
     let child;
@@ -49,6 +52,13 @@ export function runNpm(args, { onStderr } = {}) {
     } catch (error) {
       resolve({ code: -1, stdout: "", stderr: error.message });
       return;
+    }
+    if (onSpawn) {
+      try {
+        onSpawn(child);
+      } catch {
+        // 改优先级失败不影响这次安装。
+      }
     }
     let stdout = "";
     let stderr = "";

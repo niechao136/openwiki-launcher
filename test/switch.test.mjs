@@ -16,12 +16,17 @@ function tempRoot() {
   return mkdtempSync(path.join(tmpdir(), "openwiki-switch-"));
 }
 
-/** 种一个可解析的已安装版本。 */
-function plantVersion(root, version) {
-  const pkg = path.join(versionDir(root, version), "node_modules", "openwiki");
+/** 在任意目录里种出可解析的 openwiki 入口树（`npm install --prefix` 的产物形状）。 */
+function plantOpenwikiAt(dir, version) {
+  const pkg = path.join(dir, "node_modules", "openwiki");
   mkdirSync(path.join(pkg, "dist", "cli"), { recursive: true });
   writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version }));
   writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
+}
+
+/** 种一个可解析的已安装版本。 */
+function plantVersion(root, version) {
+  plantOpenwikiAt(versionDir(root, version), version);
 }
 
 /** npm 执行器假件：install 按配置成败；记录全部调用。 */
@@ -30,9 +35,12 @@ function fakeNpm({ installCode = 0 } = {}) {
   const runNpm = async (args) => {
     calls.push(args);
     if (args[0] === "install") {
-      return installCode === 0
-        ? { code: 0, stdout: "", stderr: "" }
-        : { code: 1, stdout: "", stderr: "npm ERR! fake install failure" };
+      if (installCode !== 0) {
+        return { code: 1, stdout: "", stderr: "npm ERR! fake install failure" };
+      }
+      // 成功时必须把入口树种进 --prefix：安装内核会在入库前校验入口与版本号。
+      plantOpenwikiAt(args[args.indexOf("--prefix") + 1], args[1].replace(/^openwiki@/, ""));
+      return { code: 0, stdout: "", stderr: "" };
     }
     return { code: 1, stdout: "", stderr: `unexpected args: ${args.join(" ")}` };
   };

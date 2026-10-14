@@ -19,15 +19,18 @@ function fakeNpm({ installCode = 0, versions = REGISTRY_VERSIONS, plantPartial =
     calls.push(args);
     if (args[0] === "view") return { code: 0, stdout: versions, stderr: "" };
     if (args[0] === "install") {
-      // 模拟一个装了一半的版本目录：npm 退出非 0 时它必须被清掉。
-      if (plantPartial) {
-        const prefix = args[args.indexOf("--prefix") + 1];
-        mkdirSync(path.join(prefix, "node_modules", "openwiki"), { recursive: true });
-        writeFileSync(path.join(prefix, "node_modules", "openwiki", "partial.txt"), "half installed");
+      const prefix = args[args.indexOf("--prefix") + 1];
+      if (installCode !== 0) {
+        // 模拟一个装了一半的版本目录：npm 退出非 0 时它必须被清掉。
+        if (plantPartial) {
+          mkdirSync(path.join(prefix, "node_modules", "openwiki"), { recursive: true });
+          writeFileSync(path.join(prefix, "node_modules", "openwiki", "partial.txt"), "half installed");
+        }
+        return { code: 1, stdout: "", stderr: "npm ERR! fake install failure" };
       }
-      return installCode === 0
-        ? { code: 0, stdout: "", stderr: "" }
-        : { code: 1, stdout: "", stderr: "npm ERR! fake install failure" };
+      // 成功时必须种出可解析的入口树：安装内核会在入库前校验入口与版本号。
+      plantOpenwikiAt(prefix, args[1].replace(/^openwiki@/, ""));
+      return { code: 0, stdout: "", stderr: "" };
     }
     return { code: 1, stdout: "", stderr: `unexpected args: ${args.join(" ")}` };
   };
@@ -42,12 +45,17 @@ const okSnapshot = {
 
 const bundledRuntime = { version: "0.6.0", source: "bundled", cliJs: "/fake/cli.js" };
 
-/** 种一个「安装成功」的版本目录，让失败路径的目录断言有意义。 */
-function plantInstalled(root, version) {
-  const pkg = path.join(versionDir(root, version), "node_modules", "openwiki");
+/** 在任意目录里种出可解析的 openwiki 入口树（`npm install --prefix` 的产物形状）。 */
+function plantOpenwikiAt(dir, version) {
+  const pkg = path.join(dir, "node_modules", "openwiki");
   mkdirSync(path.join(pkg, "dist", "cli"), { recursive: true });
   writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version }));
   writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
+}
+
+/** 种一个「安装成功」的版本目录，让失败路径的目录断言有意义。 */
+function plantInstalled(root, version) {
+  plantOpenwikiAt(versionDir(root, version), version);
 }
 
 /** 真实失败的 stderr 形状：预编译下载被重置 → gyp 回退 → 上百行 find Python → notice 收尾。 */
@@ -129,7 +137,7 @@ describe("installVersion", () => {
       logger,
     });
 
-    expect(outcome).toEqual({ ok: false });
+    expect(outcome).toMatchObject({ ok: false, stage: "install" });
     expect(text()).toContain("better_sqlite3_binary_host_mirror");
     expect(text()).not.toContain("npm notice");
   });

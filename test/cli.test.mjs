@@ -110,6 +110,13 @@ describe("main", () => {
         pkgRoot: root,
         runNpm: async (args) => {
           calls.push(args);
+          // 成功时必须种出可解析的入口树：安装内核会在入库前校验入口与版本号。
+          if (args[0] === "install") {
+            const pkg = path.join(args[args.indexOf("--prefix") + 1], "node_modules", "openwiki");
+            mkdirSync(path.join(pkg, "dist", "cli"), { recursive: true });
+            writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ version: args[1].replace(/^openwiki@/, "") }));
+            writeFileSync(path.join(pkg, "dist", "cli", "cli.js"), "// entry");
+          }
           return { code: 0, stdout: "", stderr: "" };
         },
         confirm: async () => true,
