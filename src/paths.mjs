@@ -101,6 +101,20 @@ function readDeclaredVersion(packageJson) {
 }
 
 /**
+ * 出厂依赖（`<pkgRoot>/node_modules/openwiki`）声明的版本号。
+ *
+ * 「默认版本」的一切动作都要先知道它是哪个版本：就绪动作据此决定往
+ * `versions/<版本>/` 物化什么，bundle 入口解析据此判断允许不允许回退到出厂
+ * 依赖。读不出来返回 null——调用方明说「无法确定默认版本」，绝不猜。
+ *
+ * @param {string} [pkgRoot] launcher 包根。
+ * @returns {string | null}
+ */
+export function bundledOpenwikiVersion(pkgRoot = launcherPackageRoot()) {
+  return readDeclaredVersion(path.join(pkgRoot, "node_modules", "openwiki", "package.json"));
+}
+
+/**
  * Resolves the openwiki the launcher should run, and where it came from.
  *
  * Resolution order: an explicit version (used while recording a snapshot for a

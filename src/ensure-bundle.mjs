@@ -4,21 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { launcherPackageRoot, readActive, versionDir, versionsRoot } from "./versions.mjs";
 import { launcherDataDir } from "./paths.mjs";
-import { acquireLock, releaseLock } from "./lockfile.mjs";
+import { acquireLock, pidAlive, releaseLock } from "./lockfile.mjs";
 import { ensureEsbuild } from "./esbuild-tools.mjs";
 
 const PINNED = { esbuildVersion: "0.28.2" };
-
-// 探活一个 pid：进程存在返回 true。ESRCH/EPERM 都视为不存在（EPERM 是
-// 别人的进程，同样不该继续挡路——本场景锁只可能是本机本用户的构建进程）。
-function pidAlive(pid) {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    return error.code === "EPERM";
-  }
-}
 
 // 打包脚本相对本模块定位（同仓库），不随被测 pkgRoot 漂移
 const BUNDLE_SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "bundle-backend.mjs");
