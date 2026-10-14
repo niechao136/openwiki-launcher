@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { runVersionsCommand } from "../src/commands/versions.mjs";
+import { DEFAULT_REMOVED_FILE, readMarker } from "../src/ensure-default.mjs";
 import { versionDir, writeActiveAtomic } from "../src/versions.mjs";
 import { collectLogger } from "./helpers.mjs";
 
@@ -106,5 +107,67 @@ describe("runVersionsCommand", () => {
 
     expect(code).toBe(1);
     expect(text()).toContain("versions remove <version>");
+  });
+});
+
+describe("删除默认版本后的标记", () => {
+  const roots = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+
+  function freshRoot() {
+    const root = tempRoot();
+    roots.push(root);
+    return root;
+  }
+
+  /** 种一个出厂依赖，让 pkgRoot 知道自己"默认版本"是谁。 */
+  function plantBundled(root, version) {
+    const dir = path.join(root, "node_modules", "openwiki");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "openwiki", version }));
+  }
+
+  it("把默认版本标记为已删除，阻止自动就绪把它长回来", async () => {
+    const root = freshRoot();
+    plantVersion(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    plantBundled(root, "0.6.0");
+    const { text, logger } = collectLogger();
+
+    const code = await runVersionsCommand({ logger, pkgRoot: root, args: ["remove", "0.6.0"] });
+
+    expect(code).toBe(0);
+    expect(readMarker(root, DEFAULT_REMOVED_FILE)).toMatchObject({ version: "0.6.0" });
+    expect(text()).toContain("不再自动重建");
+  });
+
+  it("删除非默认版本不写标记", async () => {
+    const root = freshRoot();
+    plantVersion(root, "0.6.0");
+    plantVersion(root, "0.7.0");
+    writeActiveAtomic(root, "0.7.0");
+    plantBundled(root, "0.8.0");
+    const { logger } = collectLogger();
+
+    const code = await runVersionsCommand({ logger, pkgRoot: root, args: ["remove", "0.6.0"] });
+
+    expect(code).toBe(0);
+    expect(readMarker(root, DEFAULT_REMOVED_FILE)).toBeNull();
+  });
+
+  it("删除被拒绝时（当前激活）不写标记", async () => {
+    const root = freshRoot();
+    plantVersion(root, "0.6.0");
+    writeActiveAtomic(root, "0.6.0");
+    plantBundled(root, "0.6.0");
+    const { logger } = collectLogger();
+
+    const code = await runVersionsCommand({ logger, pkgRoot: root, args: ["remove", "0.6.0"] });
+
+    expect(code).toBe(1);
+    expect(readMarker(root, DEFAULT_REMOVED_FILE)).toBeNull();
   });
 });

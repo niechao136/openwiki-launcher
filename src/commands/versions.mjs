@@ -1,3 +1,5 @@
+import { markDefaultRemoved } from "../ensure-default.mjs";
+import { bundledOpenwikiVersion } from "../paths.mjs";
 import { removeVersion } from "../versions.mjs";
 
 /**
@@ -34,6 +36,12 @@ export async function runVersionsCommand({ logger, pkgRoot, args }) {
       return 1;
     default:
       logger.info(`已删除 openwiki@${version}（manifest/openwiki-${version}.json 快照保留）`);
+      // 删的是默认版本：记一笔，让后台自愈别再把它长回来（否则"删了又回来"）。
+      // 只有显式命令（install / warm / switch）会重建并清掉这个标记。
+      if (version === bundledOpenwikiVersion(pkgRoot)) {
+        markDefaultRemoved(pkgRoot, version);
+        logger.info(`已记录：openwiki@${version} 是默认版本，不再自动重建；需要时用 install / warm / switch 重建`);
+      }
       return 0;
   }
 }
