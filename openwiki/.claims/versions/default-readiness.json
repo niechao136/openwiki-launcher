@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4adece7aebf6dc0cac694fb87dc30cab2f37f7c1c10956b2e86ffa5786a0edfa",
+  "claims": [
+    {
+      "id": "claim_bfe8cfaa1191421f8a5b03f81563b359",
+      "statement": "defaultVersionState 把默认版本判成六态：unknown（node_modules/openwiki 不可读）、removed（删除标记还在）、backoff（上次失败仍在退避期内）、missing（未物化）、installed-no-bundle（实体条目在但无 bundle）、ready（实体 + bundle 都就绪）；check 与 doctor 共用同一份判定，界面口径不分叉。",
+      "evidence": [
+        {
+          "resource": "repo://src/ensure-default.mjs#L140-L166",
+          "version": "repo-lines-v1:sha256:841748da52f14f6bc9f951f188eb4c2b849f5499782f9e96bfde84f7cda46d2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlMDJhMTg2YWMxMWExY2MyMjkxZDE3MmU5OWYyNzkyZDUxOWY0NGE4ZGY1NzVkNGY1MDVlYTgxOWE5YjdkNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4MjRiMTdiZWI4MWI0MjUxZDU1YzE2ZjZlODgzYWM4OTRmM2Y5ZDIzMWY0NGE5NTE0NzJjZjI5YmVhNzUyZTMifQ"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L174-L193",
+          "version": "repo-lines-v1:sha256:7fb6189dc29282fe73c8014651ba9e7e4f9ef036c70376b34820f5598319009f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiNDliNWE2YjliYmE1Zjc0NTExN2E1ZjZjYzUxNTA1ZWZiZTMyYmRlNDEwYzk5MDE0ODg2YjY0NDFkYzM2ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3MDVjNjVhNzE0MjVlZDUzOTliYTMwODI4OTU0M2U4NjRhNTY5YjQzMmFkY2MyYzE0OGY0NmQ2M2UwYTVlNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0NGRkYTkzOTYyNTA1NDIzZDdiZWY5ODAwNzI4NzJiMDkwYWMyMzI4Nzk5MjVlZTcyNTViZmJkYzA4OTM3MDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_48df7f8a44c940e8bc56b663216476e0",
+      "statement": "ensureDefaultVersion 有 explicit 与 self-heal 两种模式：explicit（install/warm/warmup/switch）无视删除标记与失败退避、成功后清掉两者；self-heal（mcp 会话后台、update 前置就绪）尊重两个标记并安静跳过。",
+      "evidence": [
+        {
+          "resource": "repo://src/ensure-default.mjs#L16-L22",
+          "version": "repo-lines-v1:sha256:caab41b814201cafca05a7b849286e9f5c4a06667ceb7fc2f920499fa0b42e77:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFhMWMxMzM0NzNlMmU5ZTBjNDI1ZGRjNzYzYmFlZDUyMDZmMDEyMDE3YzU1NGMxMjExZmFmMGJkMzJjN2QzZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTZjZGIyZjhhMTE0YzA5NzNmOGQ2MmYzZTA3OWQ1MWMxZjkwOTllMWM1MjAyMGEzZThkYjJlODVlOTEyMmQwYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODA3OTgzMmEyNTY3OWU0MTY0Mzc1MDg4ODNlNzUzYzQ1NTNhY2FjMTNkYTdjYjI5MGNkY2FiNThmNTY1MjNkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDQ2NjVkNTg1ODhkODZkZTdlYjhmZmM3ZjgzMWM5NTJiMmJkZTc1MmZlN2NlOGVhZGU0ZmQyM2Q3NGY5OTA0MCJ9"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L238-L245",
+          "version": "repo-lines-v1:sha256:4083a705966e998cf982c19fcb7acd75547e7c096e6a16f10b3932ae5f30d475:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzU2ZDg0OTZlNWFjNDNlYWU1YmYwODRlOTViMjRkYzVkYjZhZmUzNGU3MWY2MjlkNmY3NDU1M2RiMjZlZjM2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWU2OTVkNGMxNjFlYjI5Nzk3YWEyYjhlZGM0MWQxMTQwZmU0MzYwZjVkNWZiZDEwNTFmM2UyZjhkZWNmZWJjNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWY4NTkzYmM0MGM4MjJjOWQxNTdlMmRhNTRlNWU5NDE1NjNjYTU0ODU1ZjhiZDZjNWMwYTBkOGI1NDNiM2Q3NiJ9"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L293-L296",
+          "version": "repo-lines-v1:sha256:5a7d4a45c4a717a9f8462d6c4022595da63360419214aa342d3e089a4920e171:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWYyYmFmMmIyZGJhNTVkYTY1MDEwNTVlNTFlOThjYTA5NjMxY2NiYjAyZWM2YTVmMDg4MTUzNjMwMjU2ZWRkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTg1MDhiNmNiMDU4OWFiYTc1MDMyMDJkZTJjOGY4N2VkOWIxOWNkNTg2NTNmZDAxYTNlNjc1ZTNhYjdiNTk2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2MyYTE3ZWEwMGNkYmExYWY0YmQ5MmM3NTlhZjEwODExODIzMjMyOTQ3MmVkYjdhYTdiOTA2OWNlNDk3MmZiMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_386e3a8158da49c6bc00cec47b97223c",
+      "statement": "就绪动作把出厂依赖用 npm install --prefer-offline 物化进 versions/<版本>/（优先命中 npm 缓存、通常不联网），出厂快照已在且 isInstalled 命中时连后端都不启；随后 ensureBundle 补 bundle，bundle 失败只 warn。",
+      "evidence": [
+        {
+          "resource": "repo://src/ensure-default.mjs#L254-L271",
+          "version": "repo-lines-v1:sha256:4879ab4cf1dfb9c86ca0334d7b20f581b7334622fcddb217ac82a78e4aadef83:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5MmI1YWI4YzMyMmE4NjFiNzIyZGVhY2FlNGU5ZTdlNWI5MGI0ODI4ZTM1ZjI1Zjg1ZjkzNzY0MDMxYzUwNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkOWVhZmEzNDZkZDI0MDZkYTBkMDM4ZjdiM2NiMGZlNjg5YjBlZGExNzAyOWZmMjEyYWY3NjZjZTQ0ZmJlZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyYzUzNjM2Y2I4MGM5ZTljNTVlZTBiMmM1YTM4NWQxMGZhYTM0YmE0YmQ0NjVhYWE0NTMxOTBmOTM4MDM4MjgifQ"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L298-L304",
+          "version": "repo-lines-v1:sha256:c4dbcc6e9a91e48a3aa77f99afb9668dfb6f4593a7c6708922864062491c4d60:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjFmZWIyMGIxMjQ1MjRiNGQ0NzVhMDMxN2Q3YWQ5MjUyNTc3MWFiMWZlM2NlODhkMzNmMDJhNGQzYTk5YjY3OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTUwZjA5NjI1YTQ3NjZkMDg0NjA1MjFiY2I4YmY5MjUxMWU5YmMxY2NkYzkxODQxMDRhYTM5NjNjY2Q5YjViYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWRkZjViOGJiYWUwZjEyOTUyZDA1MzhkYTA2ZDA4NTQ2Y2NkYzljYTM1OTZkM2Y4N2ZkMGIyM2EwYTEwM2IwYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_544020b93ada43028628572c64c8f50a",
+      "statement": "versions/default-removed.json 由 versions remove 删除默认版本时写入、让自愈不再重建；versions/prepare-failed.json 由 self-heal 就绪失败时写入（nextRetryAt = now + LAUNCHER_PREPARE_BACKOFF_HOURS 小时，默认 24，0 关闭退避）；只有 explicit 模式成功后清掉两个标记。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/versions.mjs#L40-L43",
+          "version": "repo-lines-v1:sha256:6e81b09c760462efae0f32c3e879eb12a810eb5f0b90de1e0f927e862b132325:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RkODdiN2M4Mzg5Y2Y4NjgxMGQ5MTU3MDY2OWU5NThiMmY4N2Q4YjRiNmI4MThkMjI2NTZjYmQ4YzlhMzk5YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNkNzMxMjg0MmY5NGJhNTEyYTMyOTljNzEwOGY0ZjliNjc3NzY0ODI5ZTE4ZjMyZGMxZmM5NzRiYTY4M2JiYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzAwMjc3ZGIyZWYxMzQzNDJiZTNmZWIxZDAzYTZkZjA2NzIwZThhNGQ1NzczNDU1OTY5OTgxYjQ3ODgxYTQ3NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGI3NjQwNmI1MmFhN2Y0NTQwODlhNGMyOTU4ZDhmNTY3YzgxOThmN2NkNWMyYThlMGY1YTMxOGMxMzU0ZTFkYyJ9"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L128-L138",
+          "version": "repo-lines-v1:sha256:644739f1ab541f0ff45c0597173b277492e031657628d329dae047b69c64462e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmZWQzOTBjZTk0YWU0MzE3ODA4ZjQ1N2JlNjVmN2Q3OGQwMjg0YjlhODhlYmI3YmFhMmE3MTA1ZDFlMDY4M2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5NDYzN2M4NjQ1MjIyMWI4Y2NkNDU4NzY4NDAyOGJmMmFjOTc3OTYxNWVkMzAyOGQ1ZTliNjBlNGI1YTJiNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3MDg1MTJkNWNmMzdlOTk2NjA2NzRiOWNjNTU3MDA2MzEwYzNkNWFlZjZmZGJhNmY2ZWRiMjQ1ZDVmZWExYTcifQ"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L25-L30",
+          "version": "repo-lines-v1:sha256:2e213ec12e4f34c32759234385886bf02be2d32d0ae93955c491fa949049c38f:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZhNjM1N2ViNTdjYWFlNjc0NWE0NTY3OTYzMWVjZGRhMjgzZjg5ZDRkMjAxMWFjMWY4ZDg0NDljODFhMmVjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTEwMzg1YzQ2NDNlMTYyZTk4ZDlmNzgyYTc2YjQ3OTUzZjRmYzc5NWMxZjE3MjdiZDkzNDI2ZjQwY2UzNWNjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGNiYzMyMjA2ZTgwMWMwOTgyZmJiYTVmYzZmMjlkMzExMzRhNTIzOThiNDIwZmU4MWUzNjNkMTA5NGJmMTNkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDNhZjZkZTdlMDg2NTQ1YTZlMTUxMDRiMDAxNDUwZmU4ZGU2ZDc0OGM1YTAzOWZkMTRiZTIxNTFjZjYyNmVjNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b29a3b9f7d6c4081860219e82bf53efc",
+      "statement": "scheduleBackgroundPrepare 在 mcp 会话里等后端就绪之后才干活（避免与冷启动抢 IO）并以 below-normal 优先级执行：runtime.source === bundled 时 self-heal 就绪默认版本，backend === source 时只补 bundle，prepareEnabled 关闭时直接不调度。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/mcp.mjs#L114-L126",
+          "version": "repo-lines-v1:sha256:3df8def8ff2385a460ecd7ea8818a4d179e819cb54a9bcb5f983cd8701f50169:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiNmIwMjQ3ZDU2ODNlYTcyMjBjMzJlN2JmMzZlZWNiNDA1M2JmMTBmODVmZjQ4ZmRmNGVjZWQyMjBlMTdmYmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNmI0YjRhZjhhNTQxYzM4MTlkNDdmYmEwOGUwOTU4ZjBhYWIzNTYyNzdlYWJiOGNjY2Q4NDUxMzdmY2ZkOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlOGExZTIwMDNhZWQ1NGRiZDk3MWYyYWFkNjA4MzQ0YzZmM2YyZTVkOGU0YzFhY2Q2M2Q0NTQ0ZDRjMWEwNDcifQ"
+        },
+        {
+          "resource": "repo://src/ensure-default.mjs#L310-L355",
+          "version": "repo-lines-v1:sha256:1916c2fc43aca6ba3e4a1c19953a2f3acb9ec909a713c2dec19a651778bb3174:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyMDM1MzI3ZjIyNzk5N2IzYmU1MGI3NTBhYTJhMjdkZDYwZDFiN2U2Njc3YzI2MmZlYWU2OWM2YmIwOWEyZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b86f2bd91f684b43b8b1b83c273a80f3",
+      "statement": "switch 切到未物化的默认版本时：就绪动作被 LAUNCHER_PREPARE=0 关闭、或 explicit 就绪后版本仍未安装，直接拒绝切换返回 1——指针只允许指向真实条目，不允许指向一个没装好的目录。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/switch.mjs#L79-L94",
+          "version": "repo-lines-v1:sha256:9acafd8e607beceafaf4e1c9828c3bdcbf3d55e1465c0fada60b1ca2733fa85d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlMmMwMDE0YmFhNGRlMGNjYzNiNmE2NzdhNTg0MjA5ZjhmY2M0MjRmZjdlMDQ0NjE4ZWE4M2ZlYTY2ODllYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMTIzNmYyYWVhMWNlNDJmYTJiMGNjYjI3ODMyYzc4ZjVkOGMxYzE5MjM4YTI0MDkyMjEwNjYzZDUzOWVkNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwNzhlM2MyYWIxYjhlZjI3NmQyNTY5YzU4NmM0YWNlZmYxNmZmNmU5YjQ0YTU0MGRkNDZkMDUzMTA5ZTllMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1N2I2Y2Y4YTg0ZGZlMDAxMzg4OGE0MWQ4M2M2NDE1Zjg1ODljMDA5NThmMDU4MjgxMDllMzIzNWEwYzczNjQifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
+  }
+}
