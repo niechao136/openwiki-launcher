@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -38,11 +39,17 @@ describe("published package contents", () => {
     }
   }, 120000);
 
-  it("keeps tests and dependencies out of the tarball", () => {
+  it("keeps tests, dependencies and runtime data out of the tarball", () => {
     const files = packedFiles();
 
     expect(files.some((file) => file.startsWith("test/"))).toBe(false);
     expect(files.some((file) => file.startsWith("node_modules/"))).toBe(false);
+    // versions/ 是运行时数据（本地版本仓库 + holder lockfile 都在里面）。
+    // 开发机上它常带残留（历史事故：holder-test-*.json 混进过发布包），
+    // 所以既断言产物内容、也断言配置本身不该列它。
+    expect(files.some((file) => file.startsWith("versions/"))).toBe(false);
+    const pkg = JSON.parse(readFileSync(path.join(ROOT, "package.json"), "utf8"));
+    expect(pkg.files).not.toContain("versions");
   }, 120000);
 
   it("ships every installer module the runtime needs", () => {

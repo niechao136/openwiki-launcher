@@ -13,8 +13,7 @@
     "bin",
     "src",
     "manifest",
-    "scripts",
-    "versions"
+    "scripts"
   ],
   "scripts": {
     "test": "vitest run",

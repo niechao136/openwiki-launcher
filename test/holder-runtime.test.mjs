@@ -141,7 +141,9 @@ describe("runHolder", () => {
   it("forceLaunch overwrites a stale lockfile (dead holder, file remains)", async () => {
     const options = baseOptions({ hostId: "test-host-5" });
     // 生产语义：旧 holder 已死、lockfile 残留（pid 指向不存在的进程）。
-    acquireLock(path.join(REPO_ROOT, "versions", "holder-test-host-5.json"), {
+    // 必须写在 options.pkgRoot 下——holder 的 lockPath 由它派生；写到仓库
+    // 根目录会既污染 repo（残留被 npm pack 带进包里），又让本用例失去意义。
+    acquireLock(path.join(options.pkgRoot, "versions", "holder-test-host-5.json"), {
       pid: 999999,
       pipeName: "\\\\.\\pipe\\openwiki-launcher-test-host-5-0.6.0",
       version: "0.6.0",
