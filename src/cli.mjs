@@ -14,30 +14,33 @@ import { resolveSelfBin } from "./self-path.mjs";
 import { nodeVersionSupported } from "./node-version.mjs";
 import { launcherVersion } from "./pkg.mjs";
 import { launcherPackageRoot } from "./versions.mjs";
+import { runOpenwikiCli } from "./openwiki-cli.mjs";
 
 const HOST_ID = /^[a-z0-9-]{1,64}$/u;
 
 const HELP = [
   "用法:",
-  "  openwiki-launcher [install]              安装到自动检测到的宿主（项目级）",
-  "  openwiki-launcher --global               用户级安装",
-  "  openwiki-launcher --tool <id>            指定宿主安装",
-  "  openwiki-launcher --uninstall [--global] 卸载",
-  "  openwiki-launcher --force                允许项目级安装落到用户主目录",
-  "  openwiki-launcher --no-takeover          遇到 openwiki 原生安装时跳过而非接管",
-  "  openwiki-launcher --bootstrap            额外写引导文件（0.2.0 未启用，仅提示）",
-  "  openwiki-launcher --no-warm              安装后不自动预热（默认会预热一次）",
-  "  openwiki-launcher --no-prepare           跳过默认版本就绪（物化与 bundle），仍会预热",
-  "  openwiki-launcher mcp [--host <id>]      作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
-  "  openwiki-launcher warm                    预热 openwiki 后端后退出",
-  "  openwiki-launcher warmup --host <id>      确保 holder 常驻且后端就绪（适合挂登录启动项）",
-  "  openwiki-launcher doctor                  检查环境、manifest 与已写入的 MCP 命令",
-  "  openwiki-launcher check                   查看本地 openwiki 版本状态（当前/已装/registry）",
-  "  openwiki-launcher update [--version <v>]  升级 openwiki（交互确认；--no-switch 只装不切）",
-  "  openwiki-launcher switch <version>        切换当前生效的 openwiki 版本",
-  "  openwiki-launcher versions remove <v>     删除一个已安装的 openwiki 版本",
-  "  openwiki-launcher help                    显示本帮助",
-  "  openwiki-launcher version                 显示版本",
+  "  （owl 与 openwiki-launcher 是同一个命令；ow 是 openwiki 的透传入口）",
+  "  owl [install]                 安装到自动检测到的宿主（项目级）",
+  "  owl --global                  用户级安装",
+  "  owl --tool <id>               指定宿主安装",
+  "  owl --uninstall [--global]    卸载",
+  "  owl --force                   允许项目级安装落到用户主目录",
+  "  owl --no-takeover             遇到 openwiki 原生安装时跳过而非接管",
+  "  owl --bootstrap               额外写引导文件（0.2.0 未启用，仅提示）",
+  "  owl --no-warm                 安装后不自动预热（默认会预热一次）",
+  "  owl --no-prepare              跳过默认版本就绪（物化与 bundle），仍会预热",
+  "  owl mcp [--host <id>]         作为 MCP 服务器运行（宿主 MCP 配置指向这里）",
+  "  owl warm                      预热 openwiki 后端后退出",
+  "  owl warmup --host <id>        确保 holder 常驻且后端就绪（适合挂登录启动项）",
+  "  owl doctor                    检查环境、manifest 与已写入的 MCP 命令",
+  "  owl check                     查看本地 openwiki 版本状态（当前/已装/registry）",
+  "  owl update [--version <v>]    升级 openwiki（交互确认；--no-switch 只装不切）",
+  "  owl switch <version>          切换当前生效的 openwiki 版本",
+  "  owl versions remove <v>       删除一个已安装的 openwiki 版本",
+  "  owl ow <参数…>  /  ow <参数…>  透传执行 openwiki CLI（visualize、link、workspace、auth、ingest…）",
+  "  owl help                      显示本帮助",
+  "  owl version                   显示版本",
 ].join("\n");
 
 /**
@@ -207,6 +210,18 @@ export async function main(argv, deps = {}) {
       logger,
       pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
       args: rest,
+    });
+  }
+
+  // `owl ow` 与独立 bin `ow` 走同一内核：launcher 自己的命令空间绝不与
+  // openwiki 的子命令混合，纯透传是唯一语义（含 `ow mcp`，不拦截）。
+  if (command === "ow") {
+    const runOpenwikiCliFn = deps.runOpenwikiCliFn ?? runOpenwikiCli;
+    return runOpenwikiCliFn({
+      args: rest,
+      logger,
+      pkgRoot: deps.pkgRoot ?? launcherPackageRoot(),
+      resolveRuntime: deps.resolveRuntime,
     });
   }
 

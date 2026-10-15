@@ -17,7 +17,7 @@ function createCapture() {
   return { lines, logger };
 }
 
-const HELP_LINE = "openwiki-launcher mcp [--host <id>]";
+const HELP_LINE = "owl mcp [--host <id>]";
 
 describe("main", () => {
   it("rejects an invalid host identifier", async () => {
@@ -85,6 +85,18 @@ describe("main", () => {
 
     expect(code).toBe(0);
     expect(lines.join("\n")).toContain(HELP_LINE);
+  });
+
+  it("help 说明别名与 ow 透传入口", async () => {
+    const { lines, logger } = createCapture();
+
+    const code = await main(["--help"], { logger });
+
+    expect(code).toBe(0);
+    const out = lines.join("\n");
+    expect(out).toContain("owl");
+    expect(out).toContain("ow");
+    expect(out).toContain("透传");
   });
 
   it("routes check to the check command", async () => {

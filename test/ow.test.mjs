@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { EventEmitter } from "node:events";
 import { runOpenwikiCli } from "../src/openwiki-cli.mjs";
+import { main } from "../src/cli.mjs";
 import { OpenwikiNotFoundError } from "../src/paths.mjs";
 import { collectLogger } from "./helpers.mjs";
 
@@ -111,5 +112,29 @@ describe("runOpenwikiCli 透传内核", () => {
     const d = deps({ resolveRuntime: async () => { throw new Error("unexpected"); } });
     expect(await runOpenwikiCli(d.base)).toBe(1);
     expect(d.logs.text()).toContain("unexpected");
+  });
+});
+
+describe("owl ow 子命令分发", () => {
+  it("main(['ow', ...]) 透传给 runOpenwikiCli，参数原样", async () => {
+    const logs = collectLogger();
+    const seen = [];
+    const code = await main(["ow", "visualize", "--no-open"], {
+      logger: logs.logger,
+      runOpenwikiCliFn: async ({ args }) => { seen.push(...args); return 0; },
+    });
+    expect(code).toBe(0);
+    expect(seen).toEqual(["visualize", "--no-open"]);
+  });
+
+  it("main(['ow']) 透传空参数（进入 openwiki 交互界面路径）", async () => {
+    const logs = collectLogger();
+    let called = false;
+    const code = await main(["ow"], {
+      logger: logs.logger,
+      runOpenwikiCliFn: async ({ args }) => { called = true; expect(args).toEqual([]); return 0; },
+    });
+    expect(code).toBe(0);
+    expect(called).toBe(true);
   });
 });
