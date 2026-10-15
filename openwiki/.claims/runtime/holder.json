@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:25e449422858fa817437bc6d14498370af75dc4172884abac6556af3926aa1ea",
+  "claims": [
+    {
+      "id": "claim_32f289d99bec4d8d8a74c772981bcf21",
+      "statement": "holder 模式默认关闭（LAUNCHER_HOLDER=1 才启用）：首个 wrapper 以 detached 方式拉起常驻 holder 进程，同宿主后续会话经 lockfile 与命名管道接入热后端；holder 空闲超过 TTL（默认 30 分钟）自动退出。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/mcp.mjs#L74-L93",
+          "version": "repo-lines-v1:sha256:1b5861ed275bd5ff39637e525eb0ad320975b4fa80c0d823a04cc288f24634ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlMjBhOWI0MWJhY2M2Mzc5ZWYyYWM2YWI3NGFjMThkNTcwZWI4Y2RkMDhmZjY5YzM0NDljOWI2NjFhODhiYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzYTNlYWM5ZGQ2Yzk5ZDJhMThlNDBiZTZiNTk1ZWNiNTQ5NDczOTE4YTcyMWVkYmEzZGRhN2E1NTliMDdiYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzNGI0NDQ0ODYxOWFlOTUwY2RlYzBkNjRhMmExYmQ1NWY4M2M0MmYxNTE5OThlYTM0YTE1Y2U4Mjg1NmM0ODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2ZWY0ZTlkOWIxYWFhODMzZWMzYjcyYzA2Mjc3NmYxMWQ4NzMyZWE0NTQwYmQ1ODg2MGI4OGQ4NzQ5ZmVlNTgifQ"
+        },
+        {
+          "resource": "repo://src/holder-client.mjs#L55-L64",
+          "version": "repo-lines-v1:sha256:eac4761264fad75c6197d182690c00676d16de27b499743687378adbc038f332:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2YTVkZDcwNjkyZDY1NWFhMmI2N2QyMTQ3ODUxMzAwMDdjZmE4OGY1ZWYxOTU5MWMzODllYjYxYTgyMDU1MWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5N2U4Y2QxOGZlMzJlMGIxMWY3ZDViMjM1N2M3YmNkZjNmMTNlZDRmZTc5OWFhYmRmNzhlNmZkMWQ3Yjc2YTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkNzliY2UwMjIyOWVlODI5MmUxZmVhOGUwNTIwODRhZjJiMTc5MDBiNDBjNjM5NzE5YzNmZThhYmU5ZmM0ZjIifQ"
+        },
+        {
+          "resource": "repo://src/holder-runtime.mjs#L127-L155",
+          "version": "repo-lines-v1:sha256:2004ee4b807ae81b2dab4162e8f5280404b76ffebd21fb38d3f8edb3918f674a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1NzAxNGU4ZTUyMTAzMTgzNGQ4OTRjNTBhYThmY2E5MmJlM2FkYTAxMWEzZjAzMmUxNDg1MzY0N2E0N2YzMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwODIxOTQ1NTJlZjhlYzE2YjNjY2Y1ZWRkOGNhOTI5YzRlYjI1ZjY4ZjYzYmU1NzAyYzhlNmY5N2NhNmZlZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzZWRkMzFjOTlkNjJmN2I1MDM0MzM5ZjBiZTk4ZTFjYzEzNzM1MjZmNWVmNmJjNzBkMDNlMDcxYjIyYzVjZjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a9927490b598439b9127a844df5add35",
+      "statement": "versions/holder-<hostId>.json 是「谁该拉起 holder」的仲裁：以 open(\\\"wx\\\") 独占创建，内容含 {pid, pipeName, version, startedAt}，残留锁按 pid 探活清理；命名管道名为 \\\\.\\pipe\\openwiki-launcher-<hostId>-<version>，版本号进管道名使不同版本天然隔离。",
+      "evidence": [
+        {
+          "resource": "repo://src/holder-runtime.mjs#L10-L12",
+          "version": "repo-lines-v1:sha256:ae490551acf2fa6226e4d6343ca6863a2b3c2bd0dbdf623a2488463bab0884d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmM5OTdkNGY2YTkyOTgzOWYxOWIyODlkY2UwMjExYWY5YjU1ZTlmNTUzZTJiNDc3MDM3MWI2NWM3MzM0NzVkZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjBiZWU3NmJmMjJmNzE2YjY5YTc3ZjhmMDJhZGM5NWY0Mjc4OTlhYjE1MzBkYWMzNGZjNjFmNDUxMTM5MzllOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzAxOThiNWM0NDQ5MjUzMDU4NGQwZjNkMDA1M2MzNmQwZTQ3OTk5NjQ0MzI1NDJlMDBhZGZkNTEwY2E5ZDcwZSJ9"
+        },
+        {
+          "resource": "repo://src/lockfile.mjs#L39-L57",
+          "version": "repo-lines-v1:sha256:b22e9b110f37a434fcd88d75b6e58406d123505b98111b9e8b5a5b4a3c4c4c8f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzYzBlZjBjZmI2OTljNDlkOWU4MjBiMDYyNjY5ZjA3YTExNThhNjVkZTM2MWNhMDBmYWFjN2NmMmI4N2QxZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0Y2E0ZTZmNzdhZWJlZjE2Y2U1NjM0NjNkZGE4NWYyMjM1ZWI2NDI4ZTAwMDk2ZDkxYTUxNTdmZjYyYjBkNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3YzZjMGMxNzhkY2E4YTA0YWY5NDUzNjI1MzUzN2IyNjk0YzM5M2FiNmI3Njc1MWM3OTBlZWVjYTAwOWE3MzIifQ"
+        },
+        {
+          "resource": "repo://src/paths.mjs#L41-L48",
+          "version": "repo-lines-v1:sha256:582e42c849cc8c66cff8520fbd3ed36710975d5338f5c678bd45721eb7c7e4a8:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2I0ZTY5NmUwYzUyMTYwMWQ0NjAyNjlmMTgxYzhlMjFmNDU4MzRjYzg0Yzk5MTE5MWJiNmYyZGJjMzkyZWI0NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmRlMzZlYmM3YTgwYTI4YmM3ZjQzYmZjMWVjNGE2ZDZmNDgyMzE4NTEwNGUyZDA0YTcxZmEyM2JhMmMxYjhhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGZjM2U4MDcwNmRiMzU2NzEzZmIzYWQ5ODY3NTExYjg1ODEyMGUzZTIxYWRiYTc5NGZhNDcwNzUyMzkyMGFlMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_50b9eff4179d4465ad9c0bbc376b3f4d",
+      "statement": "holder 对上游只做一次 initialize 并缓存（initCache）供所有连接共享；tools/call 按连接做 id 重映射并剥离 _meta；holder/status 返回 { backeendReady, version } 探针，holder/shutdown 同时支持请求与通知两种形态。",
+      "evidence": [
+        {
+          "resource": "repo://src/holder-server.mjs#L109-L131",
+          "version": "repo-lines-v1:sha256:ca61c8cf69df6854c71f79b3f0cab2c65467abaa995848318626303f7be97db2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4ZDEzNTA2ZWJmMmRjZDllMDA2YTE4YjY1NzZmMTEzYmY1NTlmZTY3YWZhMzhmNDQyNjI1OGEyZmY0MjQ3YjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4NTA4YjZjYjA1ODlhYmE3NTAzMjAyZGUyYzhmODdlZDliMTljZDU4NjUzZmQwMWEzZTY3NWUzYWI3YjU5NjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlM2E2NzIxYTEwYTQyZWRkYWUxZDhlZjAyODQ4OTc5NGYyYjYzOWFiNTBiYWQ1YmE3ODY1ODlkZWZmY2I5ZDYifQ"
+        },
+        {
+          "resource": "repo://src/holder-server.mjs#L150-L166",
+          "version": "repo-lines-v1:sha256:90ad31d9069fb8739c7218a09ca3b9439a86f88a4a947d0c45fece30e72f2942:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYjgwZjJkMjYxMmI0MTg1YmU2ODk5NDdmMmZkYzQyMzE3Y2VmYTNjZTVjZTZjZTc0YjdlODkxODE3NjVjMGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMjg4ZDQ0N2I0YjcxYTIzN2U4OTRiM2NhOTQ4OTgyNjRjYmQ0N2MzMDI0OTBiNWFlYWYyOWM1YjU4ZWRlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0OWNjYTBmYzEwNDhjMGNjYzUxNGE3YTI3MmViNzViODFkN2IyYzcxZjcxZjZkNjEzZjUzYjY1MzE0MjgyNmMifQ"
+        },
+        {
+          "resource": "repo://src/holder-server.mjs#L86-L97",
+          "version": "repo-lines-v1:sha256:391fe5921c17e275fe2d51b6082ff929c086a899cf58e8adf46f4bf2350ffa9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3MDU1NWM0OTExZmJkOWM3YzI5ZWUwMzFmMTQ2MGQ0N2Q3ODMwZjkyM2EyMTEyNTExMTQxYzAzODUyNzQ3ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmMzU4NjYwZTYxMTY2YTNiNjcxZGJkYzllNDZjNWM1ZjMxZjdhOWU5YzE2NzE5ZDg2MjgxN2IwMWQ4NzMxNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmMzcxZjAzZGRjZjhiOTYzZjk3YjFlODE4ZTkwNDBlZTJiNWYxZjMxZDg0YWU4ZjliYWI4YTY0Y2IyYTQ1ZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhmNWYyYjQ0MzBiNDcyNDMwMThmNzUzMjhlYWNkMjZkYjRkZjkzZWQ5ZTc2ZTQxNDYxNjg3ZGI1NTg5N2Q1NWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6a5d55a72b8a4981b724d6afb1e12f0d",
+      "statement": "版本换血：resolveHolderSession 读到 lock.version 与当前版本不符时，先连旧管道发 holder/shutdown 并等 300ms，连不上才按 lock.pid 兜底击杀，然后释放锁重拉新版本的 holder。",
+      "evidence": [
+        {
+          "resource": "repo://src/holder-client.mjs#L119-L140",
+          "version": "repo-lines-v1:sha256:b6595440be175adf5c2c94ca3fda4f64671a2fe73ea5dcb6087fc27a96f353b7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NzQxZjQ0YWE5OGE0MmJkOGM5ZjQ1NzhlMjk3OGRhMGI5YjIxN2IzODlhNzYyOWI1NDNhYWE3OGQ0NTBjYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjYzYzNzE4MjhhZDdlMGNhZjMxMzQ2MzkyNGY4OGZjZDk2YWZhNjY5YzgzY2MxNDQ1N2Q1ODI3NjUyMGU0NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5OWI1Yjc3M2QyYWMwYWM3YmVmMzllN2JmNDEyY2ViOGNjZGNlODY4MDVlYzJjMGE3ZWY0YTMxNTc1Y2YwZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7fd675fba58840e29da2157a2b69f65d",
+      "statement": "holder 适配器的 stop() 只断开自己的连接而不杀 holder（宿主会话结束 holder 继续服务）；任何失败（探活失败、spawn 同步异常、拉后不可达）都回退进程内 supervisor——mcp 静默回退并 warn，warmup 硬失败返回 1。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/mcp.mjs#L77-L91",
+          "version": "repo-lines-v1:sha256:25d3c3b347b487a78144c8db47e164ec0064acb3c653e221dc28b4399bec0443:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2MjA3NjEwYjk5OTQ5MjNmNzdlZTliODYxMDVhMjJiYzg5YzEyMDAyNzc5Y2FmNmUzYjhkOTNlOTc2NWQ2MTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NTBkNTY5YTk4YzVjYjRmODAzYmU5NzE5YTcyMjNkYmMyMGQ5OTUyZDRkMmVmMDQ0NTU2NjA1MjUxYmM2N2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3N2FkNmEzMGU4ZjcxZTdkZDk5MmJiMDdiNmE4YjNhYjkzNzIwYzUyOWNiNDEwMzViNjAxZmViNmU1NTY1NDgifQ"
+        },
+        {
+          "resource": "repo://src/holder-client.mjs#L101-L114",
+          "version": "repo-lines-v1:sha256:0933e480f60f49fad5014ac1b7a6ddbc74dcf1685fc2e185644268450c3842cf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzViNGVhNTk0NzJmMGE1ZTU5ZGQzYmFmODBiMjA3ODgzMDQ2NDZmNmVmNDRhMmM5MzZkNDhkZDg0MzQ1ODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmI5M2VjY2ZhYzExNmZjN2Q4OGQ3OTk1ZGRkOTJiOTdiMmEyZDQ5YjMxZDM5NmU2ZWEyYjFhZmFlOGQ4MGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0NjRiZTJmOWZiMWNkZDhhMjYwOTI4OWJlNDdmMGRjYWE0MTg3MGExMjk4MjdjNDZjMDQ3MTI5NjliOTVlYzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzMTU2OGRlN2RiNzEzYzk1OGQ1ZDYyYjUzMzNmY2YwZmJlOTJjNWFhYzZjN2Q1NGJlZDMxNWNhMjQ0OWM3NjkifQ"
+        },
+        {
+          "resource": "repo://src/holder-session.mjs#L139-L152",
+          "version": "repo-lines-v1:sha256:35d3852ec0fcfbd55f7ad70cf40e7a2e9fb089685c557f412ff6a3fc76f868c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViN2I0YjVkMjM5MmQzN2NkZjMxYmM0ZDM1ZDQxNDZiYzNkNzA1MzQxOTMxNDc1ZjQwZGYwYWY4MTUzZGFkNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzZmI5M2VjY2ZhYzExNmZjN2Q4OGQ3OTk1ZGRkOTJiOTdiMmEyZDQ5YjMxZDM5NmU2ZWEyYjFhZmFlOGQ4MGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NGU3N2VmY2JhNzQ0Y2E4MzZiMjRhMDg5Yjk2MDA2NjA2ODQyNmMwMjhhNWE5N2NiZWNlZGViNGMxZGVjNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d7cd2817b01b406cb657fb08e425cbae",
+      "statement": "holder 进程的启动顺序：先监听命名管道（失败则释放 lockfile 并抛错），再独占 lockfile，最后后台预热上游（预热失败不退出，首次调用重试）；TTL 定时器只在没有活跃连接时武装，连接到达/关闭时重算。",
+      "evidence": [
+        {
+          "resource": "repo://src/holder-runtime.mjs#L127-L135",
+          "version": "repo-lines-v1:sha256:f5b279b961fa9dfef9543f736dcb4d82f2b15e85d53751429c87eefcdc0f2b2b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU3MDE0ZThlNTIxMDMxODM0ZDg5NGM1MGFhOGZjYTkyYmUzYWRhMDExYTNmMDMyZTE0ODUzNjQ3YTQ3ZjMxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNmYjkzZWNjZmFjMTE2ZmM3ZDg4ZDc5OTVkZGQ5MmI5N2IyYTJkNDliMzFkMzk2ZTZlYTJiMWFmYWU4ZDgwZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjA4MjE5NDU1MmVmOGVjMTZiM2NjZjVlZGQ4Y2E5MjljNGViMjVmNjhmNjNiZTU3MDJjOGU2Zjk3Y2E2ZmVlZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmJkNDE1YTBmYmQ3Mjg2ZjU0MjEzMjcyN2M4NjIxYWZmOTdiZTY2MTAzYmFhODNjOWE3MDg3YzU3ZTRjY2YzMSJ9"
+        },
+        {
+          "resource": "repo://src/holder-runtime.mjs#L162-L177",
+          "version": "repo-lines-v1:sha256:82ffc9e012cd64d964db6cc3dd5df0af3ba5a27f3e9e9a7c0cd1878920b115b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwN2I2NDhlNDQ4NTVmYjM1YTNjZGM4YzFjNmZlZTY2MjAwNDQ0NzAxYTU1ZDliZjc3YjUxNjVmNmEyZmRlZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4YWUyZTIzYmFkNTY1MTM1YzUxZDJlYzEzYjkzOWE3YmQ3NjFkMDhiMzM1Y2E4M2QxMTBjYzNhYjZkMGM5NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4NjI5ZGVlZDM1MjIzODA5YjRhMTA3MDA4ZGNiYzNlNzY0MjVkNDJlZDg1YjJmYjdjMzZkZDFiNGExYzdlNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhY2QyZjZlN2M1MWQ0MjI0NmY2MmE3ZGYzYzc4YjVjMzcyMjUzMWE5M2I1Y2RjMmUxMTMwNzUzZTVlNDRlNWUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
+  }
+}

@@ -1,28 +1,32 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:905f34b8467b1f01f8507a9be267d41893dc726ad2da65434e0932080383ac33",
+  "pageVersion": "sha256:8b7b27cbafc06595809ad58a38bb7463b6e240a62e767e2e60c58aab960392d5",
   "claims": [
     {
       "id": "claim_f451860d2cba4f2490fd7079582e0dc4",
-      "statement": "CLI 入口 bin/openwiki-launcher.mjs 只把 main() 的返回值赋给 process.exitCode，全部逻辑在 src/cli.mjs 的 main(argv, deps)；deps 中的 logger、node 版本、env、cwd、platform、spawnFn、resolveRuntime、createSupervisor 等均可注入，测试无需打桩全局对象。",
+      "statement": "CLI 入口 bin/openwiki-launcher.mjs 只把 main() 的返回值赋给 process.exitCode，全部逻辑在 src/cli.mjs 的 main(argv, deps)；deps 中的 logger、node 版本、env、cwd、platform、spawnFn、resolveRuntime、createSupervisor，以及 warmFn/ensureBundleFn/ensureDefaultVersionFn/runNpm/confirm/writeSnapshot/pkgRoot 等均可注入，测试无需打桩全局对象。",
       "evidence": [
         {
           "resource": "repo://bin/openwiki-launcher.mjs#L1-L4",
-          "version": "repo-lines-v1:sha256:3558251c9470b6305dc59a80d57107cf77d38a459db136e842589c08867e2caf:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU5YzQ3ODcyYjcxZjEyNTg5OTQyODkyNDY0ZTc2NGMwZGIzNTBjMjBiNzIyMjg2NDU2MTVjYzM2ZTBhMDcyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRiMzZmZDE4MjAxZTVhMWNiZjlkY2FiNTA5OTZjNDA5NWE4NTQzNmY0NDhlNzk4NzgxZWU2NGQwNTVlMTBjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+          "version": "repo-lines-v1:sha256:540179bca51bc188f9a9ac7d48ac5a76eaf1e46992057bc775016e9602aa4bf6:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTE4N2RkZTM1NDY2OTVhOTQzMjI3YWIyMmI2YjAzNjA5NDhhMDZhODVmZWMyNjFmZDU0NGY3MGY1ZDE4NTkyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRiMzZmZDE4MjAxZTVhMWNiZjlkY2FiNTA5OTZjNDA5NWE4NTQzNmY0NDhlNzk4NzgxZWU2NGQwNTVlMTBjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         },
         {
-          "resource": "repo://src/cli.mjs#L82-L90",
-          "version": "repo-lines-v1:sha256:e0ccd1dc24d0b98ea3f1fac04de4ee40efbcc94cbcc527c78e38ad8aa75bb3db:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjE3MzA0OWM5NTQyMTk1MTMwNjQ1MWY0MGRkOTE4ZTk1NGE3MjQwZGNhYTQyNmUxMzI0M2Y4NDFhNGEwN2IwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTNhZjI5OTYxN2E1YWEwMTIwNTBmNmQ3ZDM4MjkyYmYyYmEzZWRiZjc5MTdlNGQ5YWJkYTRlMDc5Y2UwNzQwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzM5MTg2NmVjZjUwOTc5YzkzOWNlYzk0OWQ0NWM2ZWUzZTdiZWRhOTlmMDViMTA2ZWVhNmIxNjE0MDQzNjAwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2UzOWQwN2I0Mjc5MmY1Zjc0NTBiMzUzNTkwZDYyMWQwMWYwYzBiZjNjODg2ZmRhMTUxMDk5NzRlZTE0ZjJlNCJ9"
+          "resource": "repo://src/cli.mjs#L250-L273",
+          "version": "repo-lines-v1:sha256:143e875f76b106a3076cb4a658f228f6bef18d39c55ec904649d82397912c087:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwNmZkZjhkMTU0NDI3ZDBlZGJlZTM2Y2U3YjdjYjE0NDBkMDc1MjcyZWZkYjUxNzllNWJiMGQxOGNlNDUxMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmNTgwZTQ1ZTdkNWFkZjNhMTdlNTdhMzhlYWJlZWEzMWU5OGY5YjY4MGIxODAzMTUyYWNkMTY0Yzg5YzY0ZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://src/cli.mjs#L89-L97",
+          "version": "repo-lines-v1:sha256:e0ccd1dc24d0b98ea3f1fac04de4ee40efbcc94cbcc527c78e38ad8aa75bb3db:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjE3MzA0OWM5NTQyMTk1MTMwNjQ1MWY0MGRkOTE4ZTk1NGE3MjQwZGNhYTQyNmUxMzI0M2Y4NDFhNGEwN2IwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTNhZjI5OTYxN2E1YWEwMTIwNTBmNmQ3ZDM4MjkyYmYyYmEzZWRiZjc5MTdlNGQ5YWJkYTRlMDc5Y2UwNzQwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzM5MTg2NmVjZjUwOTc5YzkzOWNlYzk0OWQ0NWM2ZWUzZTdiZWRhOTlmMDViMTA2ZWVhNmIxNjE0MDQzNjAwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2RmYWMyNDQzMDY1ZWEwODYwMTJlNGIxYzQxY2ViZTdhMDU0NTIzY2UwMzMwYjgxZDM5YjRhODQwMjY2ODZjNyJ9"
         }
       ]
     },
     {
       "id": "claim_c11c9bd93eb64175ab2e91c8206986e1",
-      "statement": "main 按固定顺序分发：help/version 先于 Node 版本闸门返回 0，随后 Node 版本闸门在任何子命令之前拦截并返回 1，再依次分派 mcp、warm、doctor、install/uninstall、check、update、switch、versions，裸用法（以 - 开头的任意参数）走安装，未知命令打印帮助并返回 1。",
+      "statement": "main 按固定顺序分发：help/version 先于 Node 版本闸门返回 0，随后 Node 版本闸门在任何子命令之前拦截并返回 1，再依次分派 mcp、holder、warm、warmup、doctor、install/uninstall、check、update、switch、versions、ow（透传），裸用法（无参数或以 - 开头的参数）走安装，未知命令打印帮助并返回 1。",
       "evidence": [
         {
-          "resource": "repo://src/cli.mjs#L90-L201",
-          "version": "repo-lines-v1:sha256:8240e99f922504a360ec0107602552660f325b1681e57b931a0ae3ec42f44df3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5M2FmMjk5NjE3YTVhYTAxMjA1MGY2ZDdkMzgyOTJiZjJiYTNlZGJmNzkxN2U0ZDlhYmRhNGUwNzljZTA3NDA3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlMjJmYWE1MzViZDJlYTNkNTJlNzQxZWQ0NTQ0MzViN2ZlNDllODM1ODZlOTQzZDk4ZDgyYmJmYjI0ZDFmNWM1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3ZDBhZDA2MzI2NGIzYmVmNzFhMDlkMmM3YjVlNzExYjNhNmI0YzE2NjgyN2Q1NTVjMTFkMjdhN2Y2ODY5OGRkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNjlmMGViYzcxMGY3M2FlNTkxNTZkZTZjM2RmOWJjMWI4ODYxZGEwZTE4NzlmN2E2Y2IzMGQ0MDJjYTcxYTAwIn0"
+          "resource": "repo://src/cli.mjs#L97-L241",
+          "version": "repo-lines-v1:sha256:258c504f0c6c4d6b6c79af59c4928228e8b466cf07203c5a768314a12226832e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5M2FmMjk5NjE3YTVhYTAxMjA1MGY2ZDdkMzgyOTJiZjJiYTNlZGJmNzkxN2U0ZDlhYmRhNGUwNzljZTA3NDA3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlMjJmYWE1MzViZDJlYTNkNTJlNzQxZWQ0NTQ0MzViN2ZlNDllODM1ODZlOTQzZDk4ZDgyYmJmYjI0ZDFmNWM1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3ZDBhZDA2MzI2NGIzYmVmNzFhMDlkMmM3YjVlNzExYjNhNmI0YzE2NjgyN2Q1NTVjMTFkMjdhN2Y2ODY5OGRkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNjlmMGViYzcxMGY3M2FlNTkxNTZkZTZjM2RmOWJjMWI4ODYxZGEwZTE4NzlmN2E2Y2IzMGQ0MDJjYTcxYTAwIn0"
         }
       ]
     },
@@ -42,11 +46,11 @@
     },
     {
       "id": "claim_ae4045f0268f44cc981774353fc2e7cd",
-      "statement": "install/uninstall 的参数解析采用白名单：仅接受 --global、--uninstall、--force、--no-takeover、--bootstrap、--no-warm 六个布尔标志与 --tool，任何其他以 - 开头的参数都返回错误而不是被静默忽略；uninstall 子命令被翻译成在参数尾部追加 --uninstall 后走同一套解析。",
+      "statement": "install/uninstall 的参数解析采用白名单：仅接受 --global、--uninstall、--force、--no-takeover、--bootstrap、--no-warm、--no-prepare 七个布尔标志与 --tool，任何其他以 - 开头的参数都返回错误而不是被静默忽略；uninstall 子命令被翻译成在参数尾部追加 --uninstall 后走同一套解析。",
       "evidence": [
         {
-          "resource": "repo://src/commands/install.mjs#L17-L72",
-          "version": "repo-lines-v1:sha256:a8394faa7fadda7fe39e4a39eeb16c3672365937287283550bb32e053ce5569f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NGMxZmY5MjZiOTE0MTMyZDkwNzc2ZmE1ZGUwNWM3ZDlhMTI3NzYwZGNlNWRlMzEwYzA2N2JhM2I2ZGZlMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkYjEwMWQ2NmI5ZDE5ODFkZTkwOTJjODRiZGY4NWVjZjJlODc0OGE1MTI2M2M2OGUwODljOWY1YjBjYTJiNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMmIyODY3ZmEyNDYyODBhMDI4OWRkODBjNTNmYjU4Nzk4MWVjYWVmY2RjOTcyZTU2YTk3OGI2ZWRkMGIyMTIifQ"
+          "resource": "repo://src/commands/install.mjs#L20-L77",
+          "version": "repo-lines-v1:sha256:13c623de16a1f740f816b7595ea28b0d18914e9aea66ce6d2fab03c9652b33da:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NGMxZmY5MjZiOTE0MTMyZDkwNzc2ZmE1ZGUwNWM3ZDlhMTI3NzYwZGNlNWRlMzEwYzA2N2JhM2I2ZGZlMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkYjEwMWQ2NmI5ZDE5ODFkZTkwOTJjODRiZGY4NWVjZjJlODc0OGE1MTI2M2M2OGUwODljOWY1YjBjYTJiNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMmIyODY3ZmEyNDYyODBhMDI4OWRkODBjNTNmYjU4Nzk4MWVjYWVmY2RjOTcyZTU2YTk3OGI2ZWRkMGIyMTIifQ"
         }
       ]
     },
@@ -69,8 +73,12 @@
       "statement": "doctor 采用严重性分级：manifest 缺失或工具清单漂移只 warn 并返回 0（因为 launcher 会降级为直通模式、安装仍可用），只有 Node 版本不达标、openwiki 依赖解析失败或与真实后端握手失败才返回 1；finally 中必定 supervisor.stop()。",
       "evidence": [
         {
-          "resource": "repo://src/commands/doctor.mjs#L254-L315",
-          "version": "repo-lines-v1:sha256:76f655f7794ad2c9504d1ae300b0a18df6e4785f02494cf086abfa7abd99196b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlOGIxZTAwZDRiZGU4MDBhZGJjZWM0OGMyYzFkNDUzN2VhZGM0NTc3ZmQ5ZWI0MzYxMWU0YjU3YTBiZmRiNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNDI0OTU2YWRjOWFlMzA5MGMzM2E2OTM4N2IzYjVmMDY2ZDRmY2EwNmY2NDA1ODg5YTcyNjMzNTk5YTU0NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://src/commands/doctor.mjs#L256-L271",
+          "version": "repo-lines-v1:sha256:2353c051f01b48b88de3c4cc4355a5a053a1be82942926d01d64eeacb1d01e46:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlOGIxZTAwZDRiZGU4MDBhZGJjZWM0OGMyYzFkNDUzN2VhZGM0NTc3ZmQ5ZWI0MzYxMWU0YjU3YTBiZmRiNjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNDI0OTU2YWRjOWFlMzA5MGMzM2E2OTM4N2IzYjVmMDY2ZDRmY2EwNmY2NDA1ODg5YTcyNjMzNTk5YTU0NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwZTY5NjVjODlhY2ZjNTFiZmYyMDg4MWQ2MzQxZjVkYzE1ZjQ0N2Y3Y2IzOTQzMmQ0NTAzYTBlMGMwZjBlMjMifQ"
+        },
+        {
+          "resource": "repo://src/commands/doctor.mjs#L330-L349",
+          "version": "repo-lines-v1:sha256:19ee25b0bd49525bfde627698df4a44be806cba38dfa2d607bbbe4cfdc13ae1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMGU0ZmZjNDMyOTdjNGIxMDI3NzQ0ODdhZmFhZTBiZWVmNDY3ODdiMWM3NmJiYWQyNTg0NzA1YjBkYzRjYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzOTBjZDUxMzE0OTc5NWRmOTNmZjZlNWE2OGQyZTlhMjYzYjk1ODk0OGQ4ZDE4ZDE4YzNhYmY0OTBkZjAyMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
         }
       ]
     },
@@ -133,12 +141,12 @@
       "statement": "warm 命令在 ensureReady 成功后立刻停止后端（finally 中确保停止，失败路径也停），把 openwiki 的冷导入代价挪到用户第一次工具调用之前；预热有 60 秒超时上限，超时或失败返回 1。",
       "evidence": [
         {
-          "resource": "repo://src/commands/warm.mjs#L4-L27",
-          "version": "repo-lines-v1:sha256:a258dc6873356de74ff7ee2e7d51cdd670b604102778eb4429d29a8be3b4df1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxMzNkMTMyNTZkMzQ1OGM3M2EwYTE2YjE1YTY2NTA5NzYyMjRlMWNkNTA2YzVkZWZhNWNlZGQwNWVmZmQ5ODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIwY2E5ZDQ3Njk3NzA4YWFlOGFhMTA4ZDI0YWIxMzJjODllYTU5Yjc1MzQyYjFiMzJiM2Y3MDRhYzBiODQwNmUifQ"
+          "resource": "repo://src/commands/warm.mjs#L105-L115",
+          "version": "repo-lines-v1:sha256:bbe9cc1f04dc9c74d17bc81798cc88d68911f198b86e97699393f3f1c3d7c90f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwMjYyMGU1N2UzZmUzOWJkNGI3NTk1YzM2OWJiNDhmYWU0OThkMjc2OWE4N2UzNTQ5N2E1MjVlNjk1Y2U0NmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZjcwYzc3ZDFkYmJlZjI2ZTE5NDViZTMzYWQ4ZDA1NzZjNzAyZWRkYmY0ZDk5ZjFjYzA5M2RhNTA4MDFkZDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUifQ"
         },
         {
-          "resource": "repo://src/commands/warm.mjs#L44-L79",
-          "version": "repo-lines-v1:sha256:610670c4117390b3270ab3411d813161a5fab857a3971d4e5f7158283fc984eb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OGYzOGI1YmY4NjBhMDJlYjg4MWI1NDhmM2M3MDcxMTUzZTliMGY4NWY4OWQ1NDQ0OGRlZDRkNTFmZjMzZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyNmRlNjFiYjJkOWVjYzZjMDMzZjE4YjMzYjE1ZTI1OGFmNWNiZTVhM2VjYTM5Njk5MmM3NDdlMmZiYzZiODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://src/commands/warm.mjs#L12-L12",
+          "version": "repo-lines-v1:sha256:2a5f92766a13643bce2f108d5a75f9303944614b60b15627d8b8f871b964faf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmE1ZjkyNzY2YTEzNjQzYmNlMmYxMDhkNWE3NWY5MzAzOTQ0NjE0YjYwYjE1NjI3ZDhiOGY4NzFiOTY0ZmFmOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmE1ZjkyNzY2YTEzNjQzYmNlMmYxMDhkNWE3NWY5MzAzOTQ0NjE0YjYwYjE1NjI3ZDhiOGY4NzFiOTY0ZmFmOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzJmN2M2YjY1NzYwZDFkMzI5OThlYzBlMTA5NzUzNjhlNDliZDc3MjlkMzcxMjU5ZmRmYjBlZDcyNDFiYWFiMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWI0YTIyZTkxOWU0MTU4YWUyODhiZDc2MDNhMjViYzRlYmNmNWJjM2MyMDU4YzUyYjU3MDU3ZGIyN2I2NDQwNyJ9"
         }
       ]
     },
@@ -201,14 +209,62 @@
       "statement": "LAUNCHER_EAGER_START=0 可关闭 mcp 连接建立时的后台预热，恢复懒启动；默认预热失败只告警，首个工具调用到达时会排队重试。",
       "evidence": [
         {
-          "resource": "repo://src/commands/mcp.mjs#L57-L71",
-          "version": "repo-lines-v1:sha256:dea1c11592aa2e67db68b115c124e0576193c0d8a43a7f4799e447a850fe570b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0NmRlZGQ1NDcwNmI2NzE3MTJkZWI3OGU1YzJjYzk3ZGIxNDA4YTdkNjExMWM2MzZkZDBjOGRhNTBjZGM1ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2Mjc3NWE5ZThlZGMzMmE3ZjA5MTcyY2YzYzE5ODk2ZTliNGFiMDU2Yzc3NzljY2E0YzRhYzlkNDMzOGM3ZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjNjRiMWZiNjczMmRjNzkyMWNlY2YxZGJkMjM0MTNmMDE4NjQyZTM3YjY4YzZlY2QxMzFiOGQxNjRhMGJlMWUifQ"
+          "resource": "repo://src/commands/mcp.mjs#L141-L153",
+          "version": "repo-lines-v1:sha256:841f3678735b5810e5e40ce07a98ed55c0271c2f4ae3d86e4589d70b0833f07f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMDU2YTEwNTAxOWQ2MWMzZDQ2NTgwMjY0Njc1MDlhOTViMTg2NmIwNmEzMjQyNWFkODU2N2QyMzQ4YjBlYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4MTE2MDhiNzYzMzAxZGE5MmE3NzZkNmFjNmRmZTRjZDk2MDFhZjA0ZWNhYzk2MGU0MDEzOTM4MGNjYjVlYjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjNjRiMWZiNjczMmRjNzkyMWNlY2YxZGJkMjM0MTNmMDE4NjQyZTM3YjY4YzZlY2QxMzFiOGQxNjRhMGJlMWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d22690282e084f19a0b670ad9966106b",
+      "statement": "CLI 的裸用法（无参数，或以 - 开头的任意参数）走安装分支而不是打印帮助：安装器常常是用户的第一条命令；帮助只由 help / --help / -h 触发。",
+      "evidence": [
+        {
+          "resource": "repo://src/cli.mjs#L228-L236",
+          "version": "repo-lines-v1:sha256:f7dcb21b93449826528e15f7b7a2156b07c5d29ed6e9328760e4fb2f113a6bc0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDg2MjA5YjRkZTIyODU5OGVjNDdjOTQ4NTBmMWUwNzhlY2QxODhiMmY5MjZkNzM5MjAxZDhhMDI5NmFkMmM2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDZlYzBjZGM2ZDc0YWFiZmJlZDMxYTQxOGY3OGZhNjFiZTAxM2JiN2NjODk0ZjA3YTg4Yzk2YTBlYzg5ODhmMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDBmMGYzZjA5ZTAyMjkyNjQ3OTBjNmRlMTlhMDM0ZmNkZmM3YjU3MTQwY2M2MmI0ZjBmNTc1ZGQ0OTljZDE0ZCJ9"
+        },
+        {
+          "resource": "repo://src/cli.mjs#L99-L105",
+          "version": "repo-lines-v1:sha256:8766e2b4a520483c048b46b135617e84e3fcdca439c8a0bd5c862b381750de40:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzE5YWRhMTJkMzlhOTllZDc0YzIzMWVkNzliZDU0NjY1ZDk1YWI3M2Y5NzM0NDRiOTU3NjAzZTIyZmQ3N2IzOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxN2ExMGQ5NjI3ZGY4M2QyZWMzYTdmNzllNzY2ZjY4Y2NlODRhYWNmZTVkZTBkZDg0MGUyODljMWYwZTc3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDYwZGJkOTEzODcyNjA3MjIyMGRmNWY0NjZkNzJmNjlmMjU5OTUwZWMwNTA0ZGE0ZDM5ZDhlZTNlZjkwNTRlYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a1a7426b7dc24c64971ad29e49387faf",
+      "statement": "warm 的顺序是先做默认版本 explicit 就绪、再补打当前版本 bundle、最后预热后端；两步就绪动作都受 --no-prepare / LAUNCHER_PREPARE=0 约束（跳过时也不打 bundle，避免造出 bundle-only 的畸形目录），失败只告警、预热仍以源码入口完成。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/warm.mjs#L58-L87",
+          "version": "repo-lines-v1:sha256:e180b2033a5ad8514bc4731626eb943f2bb97f95d60fdf208d76e1299eb44a60:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzYzdkNzM1OGE2NmZiN2M5MmFmYTM3ZjZkOTBiYmQ4MjI4MGJiM2QxYTM4MTljMDYwMGY1MzQ0ZmIzNjdiYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3OWNhNWQyMzVhZWI3NWE4ODVkY2ZjOWY5NThlOTRmM2MwMzU4OTg2MTk2ZmVjN2VlMDNkYzc3MWQwNWE1MTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjM2I3MjI4N2NlOTNiYzAzMmQ3MjBjM2ZiN2NkZjZiNzkwZmRlODQ1N2M2Y2ZmMGI2MTQyM2JlNDM5ZDc0YzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_41ced0b2cae84c8593ca1dab14c0c418",
+      "statement": "doctor 除握手与清单比对外还输出一组可见性检查：win32 的 Defender 排除提示、各已装版本的 bundle 状态（ready/bad/missing）、默认版本六态、Node 主版本漂移提示与 warmup 的 schtasks 登录项模板；全部只提示不代写。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/doctor.mjs#L292-L322",
+          "version": "repo-lines-v1:sha256:90950316d564c1cc1b48ff75f5a5fc07788ea61056971d35d26291161cad8129:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ODZmM2NmOGFjZmEyMzRkNTc1MDU3NTdmOTBkYTIzYWE1YWNkY2Y4ODY5YjU5NTYyNDY4YTRlYjA0Njk0ZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllNGJhNmQ2OGYzNTUyZGMwOWYwY2Q5MTY4MWE5ZjJkNjdjMjQzNzFiMjE5ODY2OTM4NDE4ZjVjMTQ2YWJiYzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3ZGUxY2MwNjYxNzljMTU1MmY0NzllNjRhYWNhYzgxNzAyMmExNWFlMzlhNzEzMmQ4ODhkYTQ0MjcyNmUzMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6cbd75a6c9114af18d00424da99149a6",
+      "statement": "warmup 拉起 holder 常驻进程并以 500ms 轮询 holder/status 直到后端就绪（默认 60 秒上限）；holder 拉不起来或接入失败时硬失败返回 1，与 mcp 命令的静默回退进程内 supervisor 不同。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/warmup.mjs#L56-L76",
+          "version": "repo-lines-v1:sha256:5d88b7fb4569b831e7f104b1586d89e7996f808236737556bbd1df45d86b75f3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkYTk5YWU3MGNiYjAyM2NiYmM4NzgxM2YzNjUyYWI0N2FlYmY1YjA4YWMzZjNlODQ5MDFkOTE5NTVhZjI4N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlZWNmODhhNzQwNDU0Y2I3MzMyNmQ3MmJlMzJmYzY1N2NiZGQ4MjYxOGU4ODI5NGJhOGRmMTEzZmJhZmUzZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5ZDI5NjVjM2Q5N2VlMWNkNmQ5NWI4N2FlNmViZDExODJhODhhMmM1MjgzZDEwNjEyYzYwZmFkMDFiNGRlNzAifQ"
+        },
+        {
+          "resource": "repo://src/commands/warmup.mjs#L78-L95",
+          "version": "repo-lines-v1:sha256:58f6570119c356a227c1e80f34324a78ff4988658db218745a4e649e5551f1be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwMjYyMGU1N2UzZmUzOWJkNGI3NTk1YzM2OWJiNDhmYWU0OThkMjc2OWE4N2UzNTQ5N2E1MjVlNjk1Y2U0NmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3NDdmNGQxY2NhNzY5ZGVjNjExZjIzOTdiYjE2NGRhZjYyYTZiMjQ5YjhjYjkwMTZmNWVkODAxN2EzMTkwMmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwNzhlM2MyYWIxYjhlZjI3NmQyNTY5YzU4NmM0YWNlZmYxNmZmNmU5YjQ0YTU0MGRkNDZkMDUzMTA5ZTllMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlZDQ5NDc4YzAyNWFlN2Y4Yzk4MjZkMGUwM2Y4NmE1NjEzOGE2Nzc5ODk0OTY4OGI3YmRjNmJkZTFmYjBmZDIifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-12T05:45:32.864Z"
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
   }
 }

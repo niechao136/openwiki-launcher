@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f4e3eb3535f167ba02dcb31f8c043a08e1121e08396b979aa0dfd9e74a460e8a",
+  "pageVersion": "sha256:9974b65ef5e122e5feb37d2d2e85eb08397494ffc75b13825cf8bcdcb469f07b",
   "claims": [
     {
       "id": "claim_2276e9005072471495bf3e07bbdbeaa5",
@@ -14,11 +14,15 @@
     },
     {
       "id": "claim_95db03dab1fa46caaa8838323e6e82f8",
-      "statement": "broker 有三个独立的时间预算：排队 120000ms、单次 tools/call 180000ms、后端启动失败熔断窗口 30000ms，三者独立才能区分「起得慢」「调用慢」「根本起不来」并给出可执行建议。",
+      "statement": "broker 有三个独立的时间预算：排队 25000ms（LAUNCHER_QUEUE_TIMEOUT_MS 可配、非法值回退默认）、单次 tools/call 180000ms、后端启动失败冷却 30000ms，另有 2000ms 的 progress 通知间隔；排队上限必须小于宿主对单个请求的超时（30~60 秒量级），宿主才能在放弃前收到可重试错误。",
       "evidence": [
         {
-          "resource": "repo://src/broker.mjs#L1-L7",
-          "version": "repo-lines-v1:sha256:da085354949c4cf0473185d04d01b3c6906105e3633ca00c952a2280459b3d2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGVlNjNiNGI5NzAxZjk1Y2JkNjdlNzBjMGZjN2I0YjUyMDk4ODI3YjM2NDU3ODVlYzAyNzQ0YTY1MjNlYmE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDc4Nzc1ODI3MjU5ZTZlNjhiMDE4NTEyM2Y1ZmQ5ZmZkYTJjYzkxNWYyYzMxYWJlNmQ5ODJhYzAwYjViNWY4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmQ0OWUyYzU1ZDNjNTQ0MTBjYWQ1NGRjMTk1NDRhMzE2MGZhZTg0N2ZiNTkwZDJlYTc2Nzg0YTc4NDU3NGM5MyJ9"
+          "resource": "repo://src/broker.mjs#L1-L4",
+          "version": "repo-lines-v1:sha256:8b0daec8470431c5b6fa105545fcd051e6084c44d7603b147a81bbf7f56ac0a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjJiMGI5M2Y5ZGJhM2Y4NWU1Mjc4Yjc4MDQ2MTAxYTRiMWUyNTM4MmRjZDM3MDZjZjNiNTRiYzk2YjdlNDEwZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmVhODI2YmNjOWMyNzYyMTI5NjY5YWRlNzEyM2U1ZGRkNDExMjk2ZGIyYzc4ODM3NGJkZTU3MzJkMjE2ZjBlNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTI0OTI1NWU2NmJmMjJjYTc2MzVhMTY3ZjMyNDQ5M2E4NGZiMTFiODY3M2U0YTU2MzBmMWZjZDhkNDJmODJmNyJ9"
+        },
+        {
+          "resource": "repo://src/commands/mcp.mjs#L13-L29",
+          "version": "repo-lines-v1:sha256:25b246a86eaa9245be390ca4389aec438925ef382f689908ded3965b1fd5f4d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYjBiOTNmOWRiYTNmODVlNTI3OGI3ODA0NjEwMWE0YjFlMjUzODJkY2QzNzA2Y2YzYjU0YmM5NmI3ZTQxMGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzMzNkZDc3NmM5MGI4MTcwOTgyNDgzMjdhNWNmYzQxZmY3ZDcyOTNlYmMwOTgzZWJiZmY5YTljNTY5OGQ1YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxMGM2MDFmMzhkN2VlZTY4MDdlNmFhMTM3MWU5NTVjOTJlNTc4NThiZDY2NTQyM2JmYWM1NTUyNzAyYWIxOTgifQ"
         }
       ]
     },
@@ -44,11 +48,15 @@
     },
     {
       "id": "claim_133970b9b57e4042bbc2249391296813",
-      "statement": "无 id 的通知被转发给当前后端会话，后端未就绪时只 debug 记录后丢弃；未知方法回 JSON-RPC -32601；被行解析器标记为 invalid 的非 JSON 行只 debug 后忽略。",
+      "statement": "无 id 的宿主消息先拦截 notifications/cancelled（按 requestId 找出对应在途请求并取消，找不到则 debug 忽略），其余通知转发给当前后端会话、后端未就绪时只 debug 丢弃；未知方法回 JSON-RPC -32601；被行解析器标记为 invalid 的非 JSON 行只 debug 后忽略。",
       "evidence": [
         {
-          "resource": "repo://src/broker.mjs#L221-L226",
-          "version": "repo-lines-v1:sha256:28fd4ed6defd8b304bb473f5aa892ed8a33d166f17e0f4fb7acb498765da4da2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZmNzMyMTIwYzY4NGI4NmZiYTliMzI3ZjJiNzk5OWFmNDE0MzdkZTgxZjVkN2RjMTc1NjgwOWVhODNiMGFjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM4YjU3MzA4NjViNjM4NzE1YjdlODY5OGU0NGI4YzBiYzJmY2FkYzhlY2U3NzhiZmUyYWU4YWRiOTIyN2RkNSJ9"
+          "resource": "repo://src/broker.mjs#L287-L299",
+          "version": "repo-lines-v1:sha256:534de077d1b6f9062b140dc30480f1d1f87bee95a55420b30b0a04a41995d84e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2ZjczMjEyMGM2ODRiODZmYmE5YjMyN2YyYjc5OTlhZjQxNDM3ZGU4MWY1ZDdkYzE3NTY4MDllYTgzYjBhYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMTIzNmYyYWVhMWNlNDJmYTJiMGNjYjI3ODMyYzc4ZjVkOGMxYzE5MjM4YTI0MDkyMjEwNjYzZDUzOWVkNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiN2Y3NGI1YmM3NjEwMmNkOTVlYTI5N2Q1MjU1NDQ3MGM4MTdiZjZmYjc1NWE1MGFkMWY2Yjg2ODk0NDgyN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjOGI1NzMwODY1YjYzODcxNWI3ZTg2OThlNDRiOGMwYmMyZmNhZGM4ZWNlNzc4YmZlMmFlOGFkYjkyMjdkZDUifQ"
+        },
+        {
+          "resource": "repo://src/broker.mjs#L328-L328",
+          "version": "repo-lines-v1:sha256:4f603babb6fd3ba658c8601d0cd54693c0b539cf90fa27f6470c4ae4f596629a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGY2MDNiYWJiNmZkM2JhNjU4Yzg2MDFkMGNkNTQ2OTNjMGI1MzljZjkwZmEyN2Y2NDcwYzRhZTRmNTk2NjI5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGY2MDNiYWJiNmZkM2JhNjU4Yzg2MDFkMGNkNTQ2OTNjMGI1MzljZjkwZmEyN2Y2NDcwYzRhZTRmNTk2NjI5YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTUzMGVhMzFmZTU5M2I3MDQ4ODcxMzBlZGNkODk1NTFjZTQ3NDkxMmQyNjdmMTU3ODMwYjdiZjU4ZTMwYjkyNCJ9"
         }
       ]
     },
@@ -67,12 +75,12 @@
       "statement": "broker 把所有失败映射为带 isError 的工具结果（content 文本）而非 JSON-RPC error，因为工具错误能被宿主直接展示给用户并据此重试，JSON-RPC error 通常只进宿主日志。",
       "evidence": [
         {
-          "resource": "repo://src/broker.mjs#L144-L194",
-          "version": "repo-lines-v1:sha256:0a02521059736ba987739e751b7fbcc5a9ab34d346e276985c563a0ba2ecdc7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzM1MzVlNmU2NjA1OWY0ZTVmZGIzM2I5MWYwZjA1ODA3YzA5MDJjYjU3Yzc2MGE3ODAxMzA5MmE4Y2UxYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1YjVlNjljYzQ3YzgzYWJhZmMzZmQyYmIzNWFjNWQ3YTMwNTY3NWUxNzAzYzk4MGY5ZGI5ODNmMDNhNjllNTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjZGVhOGJlODQzZjQzNDdmNzA1Zjc5ODA0ZDcxNDVkYWJiNjRhZmZmYzJhNjZjMTczYzZmZjhjNTVlMTMzZTcifQ"
+          "resource": "repo://src/broker.mjs#L196-L275",
+          "version": "repo-lines-v1:sha256:fb0708fa5dd091519de21889b54f22a299638c97af2ade399f37cb864db2db04:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzM1MzVlNmU2NjA1OWY0ZTVmZGIzM2I5MWYwZjA1ODA3YzA5MDJjYjU3Yzc2MGE3ODAxMzA5MmE4Y2UxYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkYmRhZmE2NjY5ZGE4NDNmZGQ2ZGEyZjBjNmI1MWZiNWZhZjExNWNlM2FiZWVmZjlhMjg2MGQ4ZmJhNjczZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3OWM4OTNmYTE1ZWE2MjU2YzhmMTBlN2IxNTYzYjczZDIyNDJkZGJkN2JjZmRmM2FiOWFhMzk5ZjhhYmJiYTIifQ"
         },
         {
-          "resource": "repo://src/broker.mjs#L50-L55",
-          "version": "repo-lines-v1:sha256:9ae12a6b0d652ca64f5d3dfa9afd02c7bc5e1109078e2c42be0ff0353e0bceca:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdhYjY0YWZmN2U2MmExNGE0MDFkYmY2ZWZlOWY3ODIwYTIyMDIxNzkzZGEwZWYyOWM2MjRjNjlhMjY3YThmNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTEwNTljOGNmYjVhMDcyYzZmNjRkZDNkMWJmZGJjMzU2ZmJlYzkzYWVlYzg4NzkxZGE3ZWRiYTg5YzA4ODVkZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTAzZGZkMmNmMWNhNDA4YTRmZjVhZDJiYjRhYTVhM2YzNTNjZjkzNzI2YTRiNWQyODkxNjliMTI1ZGNhYmQyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQ4NTg4MWIyMDI5M2I1ODViNDc2Yjc0NmQzNmRhYTk4MzZiZTQ0ZjM2ODYyOTVkNzNiZDBlODk1ZDFkNDIwMiJ9"
+          "resource": "repo://src/broker.mjs#L56-L63",
+          "version": "repo-lines-v1:sha256:0aba209fd3ff20e5443d7e0d384641ede95d2aaa8e053b40a4b9e81d545d5255:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjNjNzY5NTAwOTQwNmQxODRmNWRlOTFmOWRhZGVkMjVhN2ExNmZhNjk0ZjczNTYyNmRkZGNlYjJkMTgwNWJkZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTEwNTljOGNmYjVhMDcyYzZmNjRkZDNkMWJmZGJjMzU2ZmJlYzkzYWVlYzg4NzkxZGE3ZWRiYTg5YzA4ODVkZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTc4ZGI4ZGI0OGU2MjVhNzAyODAyZGVlZjU4MDJmMTA5OWFlMDBjMDlhOWRkYjUzN2ZlMDdkYTk3MzJlMGEzNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQ4NTg4MWIyMDI5M2I1ODViNDc2Yjc0NmQzNmRhYTk4MzZiZTQ0ZjM2ODYyOTVkNzNiZDBlODk1ZDFkNDIwMiJ9"
         }
       ]
     },
@@ -111,14 +119,38 @@
       "statement": "宿主断开时 handleClientEof 清空全部 deadline 定时器、取消所有在途请求并停止后端监管器，使等待中的 promise 立即以「宿主已断开」结算而不是吊到进程死亡。",
       "evidence": [
         {
-          "resource": "repo://src/broker.mjs#L254-L260",
-          "version": "repo-lines-v1:sha256:b684abe8c27a7cfe28cad8c85713a6c2d0d4a6a79a31adbb4fa371e96fe037b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGRhMmRkZmRiNGJiOTE0ZTgwNTgyYTY5NDg5ZDgzZWJiZGNkZDJhNjg3ZTM1YjYxNDllZDkxZGRiOGNiYjVhOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTg3NGYwNTUyZTg2ZjM3MmNmMjczNGU5ODFhMzRlZTNkZDVlODI1NzdlNzc2ZDc1YmQ3ZDQzYTkzNGU2NDdjZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmQzZDBjZmQ0NjNiMThiM2E2MmU1NjFiNTg0OGYwYWRjOTg1MWQ5ZjdhZDE4MjZmZTk2ZTkxZjFhNjBjZWM2YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGFlOTIyMTFmZGUxMzdiOTEyZGExOWJmZjc5Y2U4N2QxMzIyOWI0YjU1YTQ0Y2I3Yzk1MDMwZmRkOThhYjk4OCJ9"
+          "resource": "repo://src/broker.mjs#L331-L343",
+          "version": "repo-lines-v1:sha256:7babfabc62529c897b79bf567f05539629a6ba75fadc8f4ac6c636a3b750a65a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkYTJkZGZkYjRiYjkxNGU4MDU4MmE2OTQ4OWQ4M2ViYmRjZGQyYTY4N2UzNWI2MTQ5ZWQ5MWRkYjhjYmI1YTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4NzRmMDU1MmU4NmYzNzJjZjI3MzRlOTgxYTM0ZWUzZGQ1ZTgyNTc3ZTc3NmQ3NWJkN2Q0M2E5MzRlNjQ3Y2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkM2QwY2ZkNDYzYjE4YjNhNjJlNTYxYjU4NDhmMGFkYzk4NTFkOWY3YWQxODI2ZmU5NmU5MWYxYTYwY2VjNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhZTkyMjExZmRlMTM3YjkxMmRhMTliZmY3OWNlODdkMTMyMjliNGI1NWE0NGNiN2M5NTAzMGZkZDk4YWI5ODgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e64a9b302f234f3aa9a3b29cd7d4fad2",
+      "statement": "tools/call 等待后端就绪期间，broker 对带标量 _meta.progressToken 的请求每 2 秒发送一条 notifications/progress（message 为「等待 openwiki 后端启动」），让支持 resetTimeoutOnProgress 的宿主保活请求；promise 结算即停表，计时器登记在 timers 中随宿主断开清理。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L124-L153",
+          "version": "repo-lines-v1:sha256:3f78819ec00f62dfb40b29dac96a08c4d39239ce41fce8562b5ceab094dee302:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyMWVjODMzODlkMmQzOGU3Y2JlMmM0OGZlYmY1OGRhYzY5MzExOWZmNzUxNzcwZjBkMTg5ODcyMjMyZDlhMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZWMwY2RjNmQ3NGFhYmZiZWQzMWE0MThmNzhmYTYxYmUwMTNiYjdjYzg5NGYwN2E4OGM5NmEwZWM4OTg4ZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkODQzOTI0M2JiNTlkNDMwMzg0ZTVhZmQ3Mzk2M2QzNjU3NDQyODg5NGQxNDcxMDcxZTJhZjAxYWU1MDU1N2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa2816c498be4d7a93a65489f75303fd",
+      "statement": "notifications/cancelled 的取消语义按阶段不同：排队阶段的取消在工具结果层不回复宿主（仅 debug，HOST_CANCELLED），且不波及预热；调用阶段的取消在后端继续执行、结果被丢弃。",
+      "evidence": [
+        {
+          "resource": "repo://src/broker.mjs#L205-L211",
+          "version": "repo-lines-v1:sha256:85726af07c3a05a2ff0466f244a6216b395d202a72f5978d7474bc3a4e1f755f:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODc4Mzc4NDRjMWFmODBlNGM3MzJjNmE2MjA1ZDhiZDQzODhjYWZiMGY2YmY1YjNmNWNlM2JhMTc4MDk5MTFlZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWQ3MTY0OTkyMGE0ZjNkOWFhOTZmZWRjN2YxZTgyYTU2NjgwNGVhMmFmNTk1YzVmNWNhZTQ0MWRjNmI3ZjlkNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzUyNDEwZjlmNmU0Mjk4MDJjY2EwNjg3NjMyODk1NWJmODc0NTEzNjEyZDQ1MTRhZjY0N2E0OWIxNmVlOWYzZiJ9"
+        },
+        {
+          "resource": "repo://src/broker.mjs#L238-L243",
+          "version": "repo-lines-v1:sha256:6d68fa32e2b9108bee6c1ac9994d3d429eacd6045d83abf55f301127ebd756b5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODc4Mzc4NDRjMWFmODBlNGM3MzJjNmE2MjA1ZDhiZDQzODhjYWZiMGY2YmY1YjNmNWNlM2JhMTc4MDk5MTFlZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDFmY2UxNWExMjE3ZDU2ZGZhNTBmMTA0Y2UyMWRiMGQ1MThhZDhkOGUyYmZhNWE3OTM2MmUzY2FiNDYzNzlkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDFmZjQzMjhjYTA4YjMzZDE2MzhmYjY3ZDUwMDdkOWFkMjkzMjNjODVjMjUxYmZkMzhkMzZiNTI3MWNiNzRhYyJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.0",
-    "at": "2026-10-10T08:12:25.306Z"
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
   }
 }

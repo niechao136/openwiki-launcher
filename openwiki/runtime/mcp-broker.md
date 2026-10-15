@@ -1,36 +1,41 @@
 ---
 type: subsystem
 title: MCP 请求代理（broker）
-description: broker 如何应答宿主的 initialize / tools/list / tools/call：快照快路径的触发条件、排队与超时预算、错误映射为工具结果、冷却熔断与恢复、清单漂移告警与宿主断开时的清理。
-tags: [broker, mcp, queue, circuit-breaker, error-mapping]
+description: broker 如何应答宿主的 initialize / tools/list / tools/call：快照快路径的触发条件、排队与 progress 通知、取消语义、超时预算与错误映射、冷却熔断、清单漂移告警与宿主断开时的清理。
+tags: [broker, mcp, queue, progress, cancellation, circuit-breaker, error-mapping]
 verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 sources:
   - id: openwiki-source-28b2a16f94b60fe1e536f6c6
     resource: repo://src/broker.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+  - id: openwiki-source-322237c20df0e9b998d722ac
+    resource: repo://src/commands/mcp.mjs
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 ---
 
 # MCP 请求代理（broker）
 
 `createBroker` 是宿主与后端之间的全部中介。它的存在理由写在模块注释里：**能用录下来的清单回答时就用**，握手因此是毫秒级而不是 openwiki 的导入时间；需要真活儿的事情排队等后端起来；每一次失败都以宿主能据以行动的有界工具错误呈现。
 
-## 三个时间预算
+## 四个时间预算
 
 ```js
-DEFAULT_QUEUE_TIMEOUT_MS        = 120000;  // 等后端就绪
+DEFAULT_QUEUE_TIMEOUT_MS        = 25000;   // 等后端就绪（LAUNCHER_QUEUE_TIMEOUT_MS 可配）
 DEFAULT_CALL_DEADLINE_MS        = 180000;  // 单次 tools/call
-DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;   // 后端启动失败后的熔断窗口
+DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;   // 后端启动失败后的冷却窗口
+DEFAULT_PROGRESS_INTERVAL_MS    = 2000;    // 排队期间的 progress 通知间隔
 ```
 
-三者是独立的：排队超时说明后端起得太慢，调用超时说明后端太慢，熔断说明后端根本起不来。混成一个预算就没法给出可执行的建议。
+排队上限**必须小于宿主对单个请求的超时**（普遍 30~60 秒量级）：只有这样宿主才能在放弃前收到 wrapper 的可重试错误，而不是自己先超时。生产值由 `LAUNCHER_QUEUE_TIMEOUT_MS` 覆盖（非法值回退 25000）。四个预算互相独立：排队超时说明后端起得太慢，调用超时说明后端太慢，冷却说明后端根本起不来——混成一个预算就没法给出可执行的建议。
 
 ## 请求分派：什么时候走快照
 
 `handleClientMessage` 按消息形态分流。
 
-**通知（无 `id`）** 转发给当前会话；后端没就绪就 debug 记一句后丢弃——通知没有应答，丢弃不影响宿主状态机。
+**通知（无 `id`）**：先拦截 `notifications/cancelled`——按 `params.requestId` 找出对应的在途请求并取消；找不到对应就 debug 忽略。其余通知转发给当前会话；后端没就绪就 debug 记一句后丢弃——通知没有应答，丢弃不影响宿主状态机。
+
+**排队期间的 progress。** `tools/call` 等待后端就绪时，若请求的 `_meta.progressToken` 是字符串或数字（MCP 允许的标量形态），broker 每 2 秒向宿主发一条 `notifications/progress`（message 为「等待 openwiki 后端启动」）。这让支持 `resetTimeoutOnProgress` 的宿主把请求保活，而不是在冷启动中途判定超时。promise 结算（就绪、超时或失败）即停表。
 
 **`initialize`**：有 manifest 就直接用快照应答，**不起后端**。没有 manifest 才走 `dispatch`。
 
@@ -56,11 +61,13 @@ DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;   // 后端启动失败后的熔断窗�
 
 | 失败原因 | 判定依据 | 工具结果文案 |
 | --- | --- | --- |
-| 排队超时 | 消息等于 `QUEUE_TIMEOUT` | `openwiki 后端排队超时，请重试` |
+| 排队超时 | 消息等于 `QUEUE_TIMEOUT` | `openwiki 后端仍在启动（冷启动可能需要 30~120 秒），请等待约 30 秒后重试` |
 | 宿主断开 | 消息等于 `CANCELLED` | `宿主已断开，调用已取消` |
+| 宿主主动取消 | 消息等于 `HOST_CANCELLED` | 不回复（仅 debug）：MCP 语义下该请求已被放弃，后端继续执行、结果丢弃 |
 | 调用超时 | 消息等于 `CALL_DEADLINE` | `openwiki 后端调用超时，请重试` |
-| 其他启动失败 | 记 `unavailable` 与 `unavailableAt` | `openwiki 后端不可用：<detail>` |
-| 调用期其他失败 | `session.isRunning()` 判断是否崩过 | `已重启，请重试` / `调用失败：<message>` |
+| 其他启动失败 | 记 `unavailable` 与 `unavailableAt` 并进入 30 秒冷却 | `openwiki 后端不可用：<detail>` |
+| 调用期其他失败 | `session.isRunning()` 判断是否崩过 | `openwiki 后端已重启，请重试` / `openwiki 后端调用失败：<message>` |
+| 内部异常兜底 | `dispatchSafely` 捕获 | `openwiki-launcher 内部错误，请查看 stderr` |
 
 **所有失败都包成带 `isError: true` 的工具结果，而不是 JSON-RPC error。** 这是一个有意的选择：工具错误宿主能直接展示给用户并据此重试或改参数，JSON-RPC error 往往只被记进宿主日志，用户看不到。
 
@@ -89,5 +96,8 @@ DEFAULT_UNAVAILABLE_COOLDOWN_MS = 30000;   // 后端启动失败后的熔断窗�
 ## 相关页面
 
 - [openwiki 后端会话与监管](./backend-supervisor.md)
+- [常驻后端（holder）与延迟回收](./holder.md)
+- [后端单文件打包（bundle）](./backend-bundle.md)
 - [工具清单快照（manifest）](./tool-manifest.md)
 - [JSON-RPC 行传输与日志纪律](./protocol-and-logging.md)
+- [快速上手](../quickstart.md)

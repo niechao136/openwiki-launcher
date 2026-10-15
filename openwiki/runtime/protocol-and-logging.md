@@ -3,9 +3,6 @@ type: subsystem
 title: JSON-RPC 行传输与日志纪律
 description: stdio 上换行分隔 JSON 的分帧实现，以及 stdout 只属 MCP、诊断全走 stderr 的纪律。
 tags: [jsonrpc, stdio, framing, logging]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-0cd1bc275c3f60f8f2c8999c
     resource: repo://src/cli.mjs
@@ -15,7 +12,10 @@ sources:
     resource: repo://src/jsonrpc.mjs
   - id: openwiki-source-74a5034640883b216f98ee8d
     resource: repo://src/log.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
+verified:
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 ---
 
 # JSON-RPC 行传输与日志纪律

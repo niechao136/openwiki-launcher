@@ -1,21 +1,25 @@
 ---
 type: subsystem
 title: openwiki 后端会话与监管
-description: launcher 如何拉起并监管 openwiki 后端子进程：spawn 形式、就绪握手、请求 id 关联、单飞启动、重试退避、崩溃重启、stderr 诊断与孤儿进程防御。
-tags: [backend, supervisor, process, lifecycle]
+description: launcher 如何拉起并监管 openwiki 后端子进程：spawn 形式、就绪握手、请求 id 关联、单飞启动、重试退避、崩溃重启、stderr 诊断、孤儿进程防御，以及 bundle 兜底与 holder 接入的接线。
+tags: [backend, supervisor, process, lifecycle, bundle, holder]
+verified:
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 sources:
   - id: openwiki-source-814aeea6bc63a6d45d6c643a
     resource: repo://src/backend.mjs
+  - id: openwiki-source-b4ad9d6666f93bb20232315a
+    resource: repo://src/commands/doctor.mjs
   - id: openwiki-source-322237c20df0e9b998d722ac
     resource: repo://src/commands/mcp.mjs
   - id: openwiki-source-ae090dd614b550bc566d7b91
     resource: repo://src/commands/warm.mjs
+  - id: openwiki-source-c89a7c0255f3d83bec964d44
+    resource: repo://src/ensure-bundle.mjs
   - id: openwiki-source-5cde29df2913f42519f02937
     resource: repo://src/paths.mjs
-generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-12T05:45:32.864Z
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 ---
 
 # openwiki 后端会话与监管
@@ -95,9 +99,9 @@ if (starting) return starting;
 
 `BackendUnavailableError` 携带 `stderrTail`。这个字段是给调用方的诊断通道——`warm` 与 `doctor` 都会在报错时把它打出来。
 
-## 监管器的三个使用方
+## 监管器的使用方
 
-同一个 `createBackendSupervisor` 被三处复用，`cliJs` 都来自 `resolveOpenwikiRuntime`：
+`createBackendSupervisor` 被三个命令复用，`cliJs` 都来自 `resolveOpenwikiRuntime`：
 
 | 使用方 | 行为 |
 | --- | --- |
@@ -105,11 +109,23 @@ if (starting) return starting;
 | `warm` 命令 | `ensureReady()` 成功即 `stop()`，外面再包一层 60 秒超时（`withTimeout`），失败返回 1 |
 | `doctor` 命令 | `ensureReady()` 后请求 `tools/list` 与 manifest 比对，`finally` 中必定 `stop()` |
 
-`LAUNCHER_BACKEND_CLI` 可覆盖 `cliJs`，`mcp` 与 `warm` 两个命令都支持。它存在的意义是测试（`test/fixtures/fake-openwiki.mjs`）与排障，生产路径不应依赖它。
+`LAUNCHER_BACKEND_CLI` 可覆盖 `cliJs`，`mcp`、`warm`、`warmup` 都支持。它存在的意义是测试（`test/fixtures/fake-openwiki.mjs`）与排障，生产路径不应依赖它。
+
+### 接线：bundle 兜底与 holder
+
+`mcp` 命令在创建 supervisor 时按以下顺序选择后端形态（`src/commands/mcp.mjs`）：
+
+1. **`LAUNCHER_HOLDER=1`** 时先尝试 `resolveHolderSession`：接入或拉起 holder 成功则 supervisor 换成 **holder 适配器**（`src/holder-session.mjs`，把命名管道连接包装成同样的 `ensureReady / current / onSessionExit / stop` 形状）；失败则 warn 并回退进程内路径，原因进日志。holder 分支**不再包 bundle 兜底**——holder 内部自管后端，两种形态互斥。
+2. **默认（非 holder）**：创建进程内 `createBackendSupervisor`；若解析结果是 bundle 入口（`runtime.backend === "bundle"`）且没有 `LAUNCHER_BACKEND_CLI` override，再包一层 `createBundleFallbackSupervisor`（见[后端单文件打包](./backend-bundle.md)）——bundle 启动失败时换 `sourceCliJs` 重试一次，源码兜底成功才写 `bundle.bad`。
+3. **override 模式不掺和 bundle 语义**：测试/排障显式指定了入口，既不做 fallback 也不触发真构建（后台补打也会被跳过）。
+
+`warmup` 不使用 `createBackendSupervisor`：它经 `resolveHolderSession` 拉起 holder 后轮询 `holder/status`，holder 拉不起来时硬失败（与 mcp 的静默回退不同）。
 
 ## 相关页面
 
 - [MCP 请求代理（broker）](./mcp-broker.md)
+- [常驻后端（holder）与延迟回收](./holder.md)
+- [后端单文件打包（bundle）](./backend-bundle.md)
 - [openwiki 版本目录与生效指针](../versions/version-store.md)
 - [版本命令：check / update / switch / versions](../versions/version-commands.md)
 - [系统总览](../architecture/overview.md)

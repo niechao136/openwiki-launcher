@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:15b4d61b4996727feb8b815e778a72335c92a1c0fbbd83baf540c896f31a5ede",
+  "pageVersion": "sha256:0e6391c58c0743f3420bdd2df36f8d47ecdffee6d40392672fd49937376c3c8a",
   "claims": [
     {
       "id": "claim_b16b57b96e00412f90868b67650e4b70",
@@ -150,11 +150,15 @@
     },
     {
       "id": "claim_d806d96bc93c4990b0f0c29078354b23",
-      "statement": "安装成功后会自动预热一次后端：触发条件是退出码为 0、非卸载且未给 --no-warm；预热复用 warm 命令（60 秒超时），失败只告警不影响安装退出码，测试可用注入的 warmFn 替掉。",
+      "statement": "安装收尾在退出码为 0、非卸载且未给 --no-warm 时自动预热一次；顺序是先 ensureBundle 补打 bundle、再复用 warm 命令（60 秒超时）；--no-prepare 会跳过 bundle 补打但不跳过预热本身，失败只告警不影响安装退出码，测试可用注入的 warmFn / ensureBundleFn / ensureDefaultVersionFn 替掉。",
       "evidence": [
         {
-          "resource": "repo://src/commands/install.mjs#L119-L131",
-          "version": "repo-lines-v1:sha256:8238e5089ad304d8316a3241223f73ee9638e0b45efb019d0acae042ec767496:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNzZkMGEzY2U3MDA4NWExMTQ2ZGU1MjkzMTk3ZWU0YTRlNTMzOWYzMjI2NDI2MjJmODMwNDUxODFjN2M3MDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNGMzMzg4MTg4YzMyMmJkZThjYzViZDQ0ZmZkNDkxZjIzNTMwODY5MmUxMGYwMDM0NzBmZTY0NTEzOTNlMDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkYWI2OTIwZWE2ZmVmZjVlMGFkMzMzY2Q3MTk0MDA3YTc3OGE1OGVhNTBhMGRlNTc3YTQyNGNhZGU4MWYwMzAifQ"
+          "resource": "repo://src/commands/install.mjs#L126-L152",
+          "version": "repo-lines-v1:sha256:c9db465c3c4213ebcaf0beebf8b96656824906d65bd093009ac4f75401617adb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5OGRjMTMyNzIzMDRiNTUwYmY1M2Q2OWI4ZmYyMTNhZDc5ZGU5ZGE0YzdlODkyNDYxMGRiOTkwMTBjMDdmYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3NTVmZDY0ODEwODE1YTJlNjIyYmRmN2M3NjNmN2QzYWM4NzA4ODZiOWY0ZjAwNTFlNzA1MGE2MWRmNDg1YjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5NGE3ZTMxZDRjMTYzYmQ2YWI5MjY2NWQyYmY1MjE0YWVjYWRkMGUyYzNkZDQwODIxNjMzYzI1NjcwYjhjNDQifQ"
+        },
+        {
+          "resource": "repo://src/commands/install.mjs#L192-L225",
+          "version": "repo-lines-v1:sha256:826f812d2b022e086cb6eed59152925679bdc349ed38638a36dc81c11a1bef76:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0YzIyNGE2MTRmYjA3MjJkYjM1Njg0MjhjNjFlNzk3MGI0YzZkNmYxOWMzNzQ4ZGNiMmY1MGM2OWZmODNlZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -177,10 +181,30 @@
           "version": "repo-lines-v1:sha256:206ee05d26c3f26e498efd88ac278bb3444bc7c7f8eeddd62c77ecac8c926ddc:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmZhYmUwOTZmZmY2ZTFjMmZjNTRmMjExNTlmNWRiYWI5OGQ5YzU2N2E4YWNkNzNjMDYwMjA2ZTIxN2Y3OTM5NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkwOTA5ZTRkZDkyNWQ5M2VhNTUzMjAwZGZlMmM0YjY1MzUzOTJmMTQ0MzA0M2RhZDg0ZDFjNTk4NjlkZmNkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTg1MDhiNmNiMDU4OWFiYTc1MDMyMDJkZTJjOGY4N2VkOWIxOWNkNTg2NTNmZDAxYTNlNjc1ZTNhYjdiNTk2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWJmYzdiMDU0MDhjZmVjOTliOGRjZGJiY2RkNzZmMThjNDY5MDgzMzVjYzhkMjlkYzI0NWIwNGNmODY2MTEzMCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_7158d2f2fd8b47dd82720eeddfdcd629",
+      "statement": "安装收尾的默认版本就绪只在成功安装（exitCode 0）或「检测不到宿主」（skippedNoHost）时执行，护栏拒绝、失败回滚、未知宿主与作用域不支持都不执行；判据刻意不看报告是否真的写了字节，因为重跑安装器正是用户修复上一次失败就绪的通道。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/install.mjs#L154-L172",
+          "version": "repo-lines-v1:sha256:d7e0e9f7c614451d270194a8e0ea98d333f426fa2f532c9180c73fc8e1127d29:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlM2JjNmY0MWRhMWM5OWQ3ZGY4YzBhMzk3MjRjZjM4YzhjNDVkM2Y2OWRmNTJhZTU1MjM5ZjNmYjVjNjUwNjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczMDE1MTMyYjRhYWJhNDliODFjZDQ3YWJlMGU5Mzk5ZGU1N2JlOWU4ODMwMWY5MWRlMGRhODI5ODcxMTI5ZmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8988cf9cf49343fd91723ab55f54749e",
+      "statement": "install/uninstall 命令层先解析 openwiki 运行时并算出 bundleDir（bundleDirFor(runtime.packageRoot)）供 skill 安装使用，解析不到依赖直接报错退出 1，不会半途启动 skill 安装。",
+      "evidence": [
+        {
+          "resource": "repo://src/commands/install.mjs#L86-L101",
+          "version": "repo-lines-v1:sha256:13aa9d8259e60326a1e9e113e7e34dfd4125c271fc50b5b8e671f0611b2223f4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1ZWQyNjBhYTAxNmY4NzBlYjY2YWJkOWYxOTU1MDljYjVjYTU5MzE0YjBmZWQyYTgxZGY1ZjMwZTczNjY0ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwMzY5OWJhNzVmYTQwZjQ3YzUyZTE5YTAxMzMxMDg0ZjJjZjRjOGU3NDBmMDI2ODJjMDI2NWYxMzU1ZDdhOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlZDNhYWZmODc0ZjUwOWI0YmNlMjdmZTgwYzhiYmEwYTdjZjg0Nzg3M2JhOTQ0YWY5MzU1MjA4OGJiNThlZjEifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-12T05:45:32.864Z"
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
   }
 }

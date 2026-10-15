@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:181e386e4f405679dcd260eb3e74b58bc6e6d37b9a46dbbc79fc0b1ac38574dd",
+  "claims": [
+    {
+      "id": "claim_b67ef65bdcef4574a06dc396d6b9f2e2",
+      "statement": "package.json 的 bin 注册三个名字：openwiki-launcher 与 owl 指向同一入口 bin/openwiki-launcher.mjs（完全等价），ow 指向独立的透传入口 bin/ow.mjs；owl ow 与 ow 最终都调用同一个 runOpenwikiCli 内核。",
+      "evidence": [
+        {
+          "resource": "repo://bin/ow.mjs#L1-L6",
+          "version": "repo-lines-v1:sha256:c2abb845bfd26e96cfa11f4e61dd6f581a2a7558cc248e536fc92c38010a8efc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTE4N2RkZTM1NDY2OTVhOTQzMjI3YWIyMmI2YjAzNjA5NDhhMDZhODVmZWMyNjFmZDU0NGY3MGY1ZDE4NTkyYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjQ2ZTM4ZTVkMjcyYTg5ZTE4ZDYwYTBiMTgzNWE0ZWU3Y2FkYzBkODBiZGM1ZGFhNGEwMzBmYmE4YjU5MTNmMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://package.json#L6-L10",
+          "version": "repo-lines-v1:sha256:ecf72b99eeaa77abf2a7926b901999c09186b830ec012c20f9897061afccfd64:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmM0NGQwMzI4Nzc2OTQxZDU0MDhlYzViMTRlZmU0NmIzOWMzZmVmNzM0MDkzZjVmYTMwYTUyNDhlNzdkZDU0NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBjOTQ5ODU1MjZjMWM1N2VmMDBjMDBkM2Y0ZGM5MDYxNTY3N2EwYTM2YThiNzk1ZGZmOWFmZmQ1MGZlOWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDM3ZWE2M2I2NTJlZWRmMTkwOTcxZmFhYjBhZTYxYmM1Y2YyOGQ1MzJmMTAwMzhmOGRhYmE5OGE1MjdjOTY0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmUyY2M3ZTljYmZiMjk5MDg0ZDA5MWFkYmE2NWExNmQxYjBiYmIxNTRiNzQ5YzEwZDIzZjljZTY1OTY0NmQxMSJ9"
+        },
+        {
+          "resource": "repo://src/cli.mjs#L216-L226",
+          "version": "repo-lines-v1:sha256:63fd16befd2a1dd2583f81f823d0cfa3810656b26eeee0305b890dd6870b6de6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlODYxNjM5ZWQyYjE5MTgzOTM2NGQwMWVjNGJiNDYzZDdlYmQxNWQxNzA4YzIzMTJmNzkxNWRjMTMxNzI0ZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2ZWMwY2RjNmQ3NGFhYmZiZWQzMWE0MThmNzhmYTYxYmUwMTNiYjdjYzg5NGYwN2E4OGM5NmEwZWM4OTg4ZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzOTllMzQ1MWY4OGM4MzdjMzRjZTQ1N2E2ZTViNjJlMzdhMzg5NWNhODg5Nzg3Nzc4N2VlZTUwYzhhODM5MmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_35be2fdee9f44eaea99fceecce233106",
+      "statement": "ow 透传以 stdio 继承方式启动 openwiki CLI（spawn(process.execPath, [runtime.sourceCliJs, ...args], { stdio: 'inherit', cwd: process.cwd() })），并把 SIGINT/SIGTERM 转发给子进程、原样返回其退出码（被信号终结时为 1）——openwiki 的交互式 agent 与 visualize 需要真实 TTY。",
+      "evidence": [
+        {
+          "resource": "repo://src/openwiki-cli.mjs#L46-L65",
+          "version": "repo-lines-v1:sha256:1cfbc5594af3ba4e8acdde2ef90ecdfacdf0e4195ced020d1d914cd1f0f74976:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYjcwMjU3NTkzZGEwNmY2ODJhM2RkZGE1NGE5ZDI2MGQ0ZmM1MTRmNjQ1MjM3ZjVjYTc0YjA4ZjhkYTYxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZWY1YjNmY2E0Njk1OTI0Njk4NTMxNDQ4NDgwNjdjZjViNzI0NTM2NDE2MDA4NWM2NzE1YzdjODNiOTAxZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwZTQ5MWRmYWI5ZTY0YjA1Mjg2ZTc0ZDBiMzk4YmNlMjVlNWJlNDc0YWM2NDBmOGE4NmUxYmNlMTlkOWU0N2QifQ"
+        },
+        {
+          "resource": "repo://src/openwiki-cli.mjs#L67-L87",
+          "version": "repo-lines-v1:sha256:72d9b5ca24f0423b980ff504039211d3bcea95fb10cbac19ec8dd26b7c3dc868:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhOTZkM2E3ODU5MGViMWFjMmE4YjlhNjkzMjRhYzgyY2I2YTJjY2M0OGRiNzY2YWRjNTMyY2U0ODY5ZWViNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkNjU3ZTYyYzUxMDliOWQwYzU1MjNlNDgxZmYxNWI5ZTRiODA4OTJmZGRhNjc2NjdhZWE2NzZmZWQzM2M2YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY2YzgyOTNkODhhY2JiMGM0YTU4NWM0ZGQ5ZWQyMjU1MTRiMDA3MmJkM2NjN2RiN2RkNzExNGZhN2M1OWE4NTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_af5ec83636714dd39daa94fc0de652b9",
+      "statement": "透传必须使用 runtime.sourceCliJs 而不是 cliJs：bundle（cliJs）是 MCP 后端的单文件入口、没有 CLI 命令分发能力，拿它跑 visualize 会在参数解析处直接崩。",
+      "evidence": [
+        {
+          "resource": "repo://src/openwiki-cli.mjs#L9-L14",
+          "version": "repo-lines-v1:sha256:d162f9400f0adfa135f97e9f39ca30bceb08f964621995805d77537259a263de:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjM4YTRiNjYwMTliMzdjNzg2Mzc0ZmUyMDRiMDkxMGExYzAyY2JlM2Q1MDkxY2VhMjFkNDJhZWU1YjY5ODczMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQyZjIwZjA1NjA2NGNiYzg1MGJmMDE5NTRhY2ExMzEzZWRlNzBkNDBiM2RhZjllMThhNjU5NTk1MGE4NzE0YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODkyZjE4ZjRjOTBiYmI4NzZiNzk0NzE5MzlmMjBmMDUxNzVlOTJjNjk4ZWQ1YmMzODI4MDYwZDNkNjViMGE2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjNlMGFhMTA3MmZjZGM3MGM3MGQwNzFlMmQ4YjkwZmNlMjgyNGQ4OWVhYjVhZGIzN2ZlMDk2ZDExNTRiM2IxZiJ9"
+        },
+        {
+          "resource": "repo://src/paths.mjs#L63-L90",
+          "version": "repo-lines-v1:sha256:9d19a999deef982136e2ee49cb123fb3458d61121646d07134996f7176c81763:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjYzZkOTIxMjg5NWU2NzlmYzVmODYxYWY3Y2VjMWI1ZWQwZjBiMjkwMTU3NzBkYzk2ZmVmNjVhMmQ0MzYyODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2MGRmYWQ4ZWViN2U3ODNmNmFmYWM5ZDNjYzI1MDlmY2JmOTBiZTQ3MzQxMjliZTdmNzdhZDlmNjNhOTg5M2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b08a06413fd64e2ca2be63aec51e009b",
+      "statement": "ow 透传的解析失败（包内 openwiki 不可读）与 spawn 失败（入口被删/被锁）都软着陆为可操作的中文提示并返回 1（提示重跑 owl install 或 owl warm），不向用户抛异常栈。",
+      "evidence": [
+        {
+          "resource": "repo://src/openwiki-cli.mjs#L32-L45",
+          "version": "repo-lines-v1:sha256:788d28f22e8a0cda82f4a4dc4d71376e8e3f043102765ebb85ef64b461bf97ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiOTU1ODJlMGQ1MjYwMDUzMTM0M2I0N2RhNTgwNjgyM2IxMDRmMmU5MWZlZmRjYjZkZmNhOWIzZDE3ZTEyNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlZWZjNTE0Y2I5MzFhNzNhYzdiYjAwZWEyMDNiODBiODY1NjhmNTFmODNhMTA4YjMwOTE4Y2U5ZGM3MDk3ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxNzAzZmE1NzRkYWRkOGJjYWQyNzliYThiODE3NGE2ZjQ0ZjA4NTkwNDMwMGY0YzVmNjdhMmIzOWQzODk3MGYifQ"
+        },
+        {
+          "resource": "repo://src/openwiki-cli.mjs#L74-L82",
+          "version": "repo-lines-v1:sha256:59023203db15724bade7f5d3404145614f9fb1f07e663910909fd0890fe7fa99:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzdmNmRlZGE3YmJjMTAyYjgwYTc0YjUyNDZkMzI0ZDA4NGQ3ZjI1MWE0YjJhYWFhYjkwOGMwMjUyNzI3MWY1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjA4YjY5YjEyMzFlNzUwMzM1ZDlkZDFmNzlkNzg2ZWM4ZDMyMTNlNDYwNGYzNGEwYTEyZGNlNGMwMzRlMGVhMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWVhMDFkOGQzYzc5Nzk3OGZiOWFhYzFkYWJmMGI5YWQwYTI2OTg1MWQwYjYzZThiMGQzMTE2NDdiN2IwNTkzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzhmYWQ0NGI2ZjQ2ZWQ3YzYxNjMwMTVkODU0NWEyYjQ3NTVjNGQ4NTUyZTJmOTEwZjJjOTQ5Y2RmNjY2ZGE3NyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
+  }
+}

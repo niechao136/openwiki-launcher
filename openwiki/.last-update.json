@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-10-12T06:02:56.747Z",
+  "updatedAt": "2026-10-15T15:36:19.210Z",
   "command": "update",
-  "gitHead": "9bd06f9153896f88662f47c2c870eadb257b2310",
+  "gitHead": "7200cf37a8bb83529611a9d743bfad360360791b",
   "model": "host-agent/codebuddy",
   "status": "complete",
   "language": "zh-CN"

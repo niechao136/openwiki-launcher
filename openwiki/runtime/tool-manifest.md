@@ -1,8 +1,11 @@
 ---
 type: subsystem
 title: "工具清单快照（manifest）"
-description: manifest 快照的生成、按版本选取、缺失降级直通与漂移检测。
-tags: [manifest, snapshot, tools-list, drift]
+description: manifest 快照的生成（连接真实后端）、显式版本录制、按版本选取与缺失直通降级、漂移检测，以及随包发布的守护约束。
+tags: [manifest, snapshot, tools-list, drift, release]
+verified:
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 sources:
   - id: openwiki-source-ad4f149d1c4da0ecd886141d
     resource: repo://manifest/openwiki-0.6.0.json
@@ -14,18 +17,15 @@ sources:
     resource: repo://src/commands/doctor.mjs
   - id: openwiki-source-322237c20df0e9b998d722ac
     resource: repo://src/commands/mcp.mjs
-  - id: openwiki-source-ae3c8de10526e7697cd4507e
-    resource: repo://src/commands/update.mjs
   - id: openwiki-source-4ace6d5c885a3cfa1a8c5685
     resource: repo://src/gen-manifest.mjs
   - id: openwiki-source-841777335cd5bf0a6754a1d9
     resource: repo://src/manifest.mjs
+  - id: openwiki-source-086939609d4984ff8ba20658
+    resource: repo://src/openwiki-install.mjs
   - id: openwiki-source-5cde29df2913f42519f02937
     resource: repo://src/paths.mjs
-generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-12T05:45:32.864Z
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 ---
 
 # 工具清单快照（manifest）
@@ -52,7 +52,7 @@ verified:
 
 0.3.0 起 `generateManifest` 接受 `explicitVersion`：`update` 装好新版本后要**先录快照、后切指针**，此时新版本还不是生效版本。显式版本解析**解析不到就直接抛错，绝不回退出厂依赖**——否则录出的快照会自称 requested 版本、内容却是出厂版，一份对不上的工具清单正是快照机制要消灭的东西。
 
-落盘由 `update` / `switch` 代装共用的 `installAndSnapshot` 负责：装依赖（已装且可解析则跳过下载，只补录快照）→ 录快照 → 校验可用性（`tools` 非空且 `protocolVersion` 非空才算数）→ 建好父目录后写入 `manifest/openwiki-<version>.json`。任一步失败都带阶段名返回，由调用方决定下一步。
+落盘由 `update` / `switch` 代装共用的 `installAndSnapshot`（`src/openwiki-install.mjs`）负责，整段运行在同一把版本键控安装锁内：装依赖（已装且可解析则跳过下载，只补录快照）→ 录快照 → 校验可用性（`tools` 非空且 `protocolVersion` 非空才算数）→ 建好父目录后写入 `manifest/openwiki-<version>.json`。任一步失败都带阶段名返回（`locked` / `install` / `verify` / `snapshot`），由调用方决定下一步——`update` 在快照阶段失败时会询问用户是否仍然切换指针。
 
 ## 运行时选取
 
@@ -76,7 +76,11 @@ verified:
 
 ## 发布约束
 
-`manifest/openwiki-<版本>.json` 必须随 npm 包一起发布，否则用户装到的 launcher 永远走直通模式，快路径形同虚设。`test/release.test.mjs` 用 `npm pack --dry-run` 的文件清单把这一点钉住。
+`manifest/openwiki-<版本>.json` 必须随 npm 包一起发布，否则用户装到的 launcher 永远走直通模式，快路径形同虚设。`test/release.test.mjs` 用 `npm pack --dry-run` 的清单把三点钉住：
+
+- **运行时、快照与文档必须在包里**：`bin/openwiki-launcher.mjs`、`bin/ow.mjs`、`manifest/openwiki-0.6.0.json`、全部 installer 模块与 `README.md`、`LICENSE` 逐一断言；
+- **测试、依赖与运行时数据不许进包**：`test/` 与 `node_modules/` 一律排除；
+- **`versions/` 是运行时数据**（本地版本仓库 + holder lockfile 都在里面），既断言产物里没有它，也断言 package.json 的 `files` 配置本身不列它——开发机上的残留混进过发布包（历史事故），所以产物与配置两头都要查。
 
 ## 相关页面
 

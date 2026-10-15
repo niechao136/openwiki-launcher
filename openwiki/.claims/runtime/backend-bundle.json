@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e6a3bf8848f8fa1a195f03a98a9f22b5adaeb563c349dde11ef2df17f6129dec",
+  "claims": [
+    {
+      "id": "claim_29bc5f7bfc1841199f9bc9e0f55ab88d",
+      "statement": "bundle 是纯优化：解析层 preferBundle 在 bundle.bad 存在、meta 缺失/损坏/过期或产物文件不存在时静默降级源码入口，运行时不会因 bundle 的任何问题而失败。",
+      "evidence": [
+        {
+          "resource": "repo://src/paths.mjs#L63-L90",
+          "version": "repo-lines-v1:sha256:9d19a999deef982136e2ee49cb123fb3458d61121646d07134996f7176c81763:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjYzZkOTIxMjg5NWU2NzlmYzVmODYxYWY3Y2VjMWI1ZWQwZjBiMjkwMTU3NzBkYzk2ZmVmNjVhMmQ0MzYyODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2MGRmYWQ4ZWViN2U3ODNmNmFmYWM5ZDNjYzI1MDlmY2JmOTBiZTQ3MzQxMjliZTdmNzdhZDlmNjNhOTg5M2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8c2e1eaff8a0447cae02b1a64ddceda8",
+      "statement": "bundle.meta.json 必须 entryVersion === 请求版本（缺该字段的历史 meta 一律视为过期）且 scriptHash/nodeMajor/platform 等全部匹配当前环境才会被采用；构建产物入库前还有同样的 entryVersion 闸门，防止「声称 A 版本、内容是 B 版本」的产物被永久复用。",
+      "evidence": [
+        {
+          "resource": "repo://src/ensure-bundle.mjs#L119-L130",
+          "version": "repo-lines-v1:sha256:865c35e306bb33faca402a4cdc77fc8ddc17a495c26cab452a5ef139ee02fd2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxOTU5OGFhN2ZkOWQwZWFjZDVkNmNhMTkxNTkwYjNhNDM2Y2E0MWZhMjcxMzliMmFlOGFkNzUwNzIwZmZhNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4ODRlMjkzMTg2ZTBhZGUwNTIwNjgwMGE3N2RlYjNmZThiNzY0MGY4MzcxNjJiZDc3OTIwNDkwZGMzZTZkZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1M2JkMmJiYjM4NTVhMGVmMzNjYmY4N2RkNjE1ZDQyODY1OTQ0MDhmYmNjZjMzMzQ1OTVmNGViOTBkZTBhMWYifQ"
+        },
+        {
+          "resource": "repo://src/ensure-bundle.mjs#L27-L40",
+          "version": "repo-lines-v1:sha256:bcdd0e8d4f2c3aaff15bfaccb2a39122859446916a9e1deef5f77ec4826ce0b4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwOTYwZGI1NDA3MWUxYzZjZWY5NDdiNDExOTcxNDNmMDg5OGUwZWRjNDQ5NjA0YWFhMTU4YTUyYTBkZmZlOWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwNDE5M2Q1ZDNhMTIzYTc1OWYzOGI2ZjQzYjJhY2MxYTBmZjI2YmQ5MzEzNTQ1MTNkOWFlOTk1MWU3M2ViZDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5ded334978384f62b53ebfeb25cf49c3",
+      "statement": "bundle 启动失败的兜底由 createBundleFallbackSupervisor 提供：bundle 入口 ensureReady 失败时改用源码入口重试，只有源码随后成功才写 bundle.bad（与 bundle 无关的失败不污染标记，源码也失败则不写）；任何一次成功构建都会清除该标记。",
+      "evidence": [
+        {
+          "resource": "repo://src/ensure-bundle.mjs#L148-L155",
+          "version": "repo-lines-v1:sha256:704582e4848aebeb4453510c41b5d45a5522e6e6e34d153f024dcf15b0e3a9b5:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODEwYTVmYTQzYTE0MWI3Y2ZiMWE1MzYyOTIyYThkZDBiYTFkYWUyNmRhYTk4MWY1M2EyNzhiMTUxMTA3NDE5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWIyMWNmM2YyMDQ1Yjc5NjI2MTc4NDAwOGE0NGQ2OWFmNDc0NmEzYjA0MTJmM2IzN2VjNWJlNjYwYzdhM2Y3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODYzNjNiOTM4OWQ0YzY5NDU1NTZiN2MwZTRjZjE2OWM3ZmFiMWVkZTk5M2VmYmUxNmUyM2JkYzllMTFjY2E4NiJ9"
+        },
+        {
+          "resource": "repo://src/ensure-bundle.mjs#L238-L294",
+          "version": "repo-lines-v1:sha256:058671942074eaa0749975eafab822452bbd81b0a4e67f3ba85a5980b6c6581a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzNTJlNGVmNTAzMmUzNDlmODA3OWE4ODJkNDMwNDhjZTI4NGM2MWZlNTFlYWVhNDg5MjBiZGE4N2Y0OGNmMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiMTU2YmVjZTljMjg1MDg2Y2E5NjE1OWM3MjIxNmExOGVmZmU5MjEyYmViNTdiY2Y3YWNhNTFhMjNhNjg1OWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b28bd318e2944bbd90d4b0df46eb3395",
+      "statement": "bundle 构建取 versions/bundle.lock 独占锁并对残留锁做 pid 探活（持有者已死则强制重取，活着则软失败降级）；产物按内容哈希命名 bundle-<hash8>.mjs，同名已存在则丢弃临时文件，避免 rename 覆盖可能正被运行中后端占用的文件。",
+      "evidence": [
+        {
+          "resource": "repo://src/ensure-bundle.mjs#L132-L137",
+          "version": "repo-lines-v1:sha256:26fef8c34699a289927a170f3b9c1ecf0a1f39b62c5ef61c21fc08187c76b0a9:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWM1ZTNhMTI4NTVjYjBmYTE0YjRmY2RlOTNjNTE1YzhlZTFhOTFjNTc0Y2YwYjU4OWU4YWQwNWQwNDU2ZTNhMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjExZTcwMzI2N2NlMDg4YjU5Y2IwMjFmODhhMDNhMjhhNDVkZDg2ZGUzMmEwYzZmYzg4ZjEyYjVhMDYwOTc4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmQ4OTRjNGY1NDJjNDMzODM3ZTUwOGVhM2ViYzQ3M2U3M2Q1NGUzMzJhNWJlZTA0YjQxZjg1NDE3NzhiZmQyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjlmNjM2NmU2ZmIyODAwYjZmZGQ4OTFlOTQ2ZjU0YjAyOThiZjU1YzI0MmY0ZjlmODA2NmI1NTcyNzRkMTM3OCJ9"
+        },
+        {
+          "resource": "repo://src/ensure-bundle.mjs#L77-L91",
+          "version": "repo-lines-v1:sha256:29af48b79409c04dcb2336fb2d1961a86da4064d3b94fbbf617b0764a96a6960:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzZThhYjYxZDJmZDE4ZTFlMTc0MzEzYjE2ZjdlNjMxYTliMDI0NTFmYTU4MzM2ZGU1MmI0ZDI0MjdiMDIxNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlNjM0ZWY4ZDkyYzhkZWU4MjJmMjFiZGI2ZjYyMzM1NWVlZTY4MmM0NGE3NWNjMDdjMmJmNTRjMmQ5MDQ4NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkZDYzZDQwY2Y1ZDY1MzFjNmMzMzFjYzhhZGI3Zjg5ZjA5MzRkMTQ3MjBiYTM2MzNmMmMyNDYxYWNlYWRhMjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f4e8ebefec41497a8ac168a4aa68751c",
+      "statement": "esbuild 工具链按钉死版本（0.28.2）懒安装到用户级数据目录 <launcherDataDir>/tools/esbuild；scripts/bundle-backend.mjs 不得静态 import esbuild（由 ensureBundle 注入 esbuildModule），否则全局安装下的懒加载设计会被 ERR_MODULE_NOT_FOUND 击穿。",
+      "evidence": [
+        {
+          "resource": "repo://scripts/bundle-backend.mjs#L7-L12",
+          "version": "repo-lines-v1:sha256:206fef9fb8682f0e4b5639ef83098ff4dedc7531d43b4c89093192735a60a116:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTA4NzdkNTk2NDZjNjU5NjRiYzVkMDM1MGZjYjM0MTNlYzYyYjVlMDIwZjQ0YjY0YmI2NzNhMTBkOTQ2Yjk3OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTRjMjI1OWFlYjQ1MTNmODVkMDdiNTBlNWY3NTMwNDhmOTVhYWU4N2I3ODRlNTAxN2FiMmE4NTFhYWE0YTYyOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGJjNDQ1YTY1Y2NjZGU2ZmIxYzVhZTUwMGE4ZWVmOTMxNWMzYWIzZjdjZGJhZjgzYWVjNGM3MDEyZDgzMzFkMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzQyYzViMDk1MTgzMTE5ZWY0ZjAzNjg1YzU3ZGYyMTJkM2Y2NGM0MzcxNDQ5MTA1Njk4NzM0YTIxNDhmNTg3ZSJ9"
+        },
+        {
+          "resource": "repo://src/esbuild-tools.mjs#L6-L18",
+          "version": "repo-lines-v1:sha256:7e0379cb6316ad7a57e25f09037464d2dbd25c32b0294f8461564e48898a6ca8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4MWM4ZTFhOGY5NWU0NDRjNTE1YmM3MjAzMTBmYjlhZDQxODcwMzIzNDg2MzRjNTQ4NmEyMmE5NDYzM2NhMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5MDkzN2Y5YjYyY2EzNzA5Y2NjMDdlZTRiZGVhNjhmMTQ3NDYzYTNmYTQwMGUxY2RhMGVhNTNlNjJiOTA2YjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2ODA2OWEyNjNhNzVlZWQ3NWZmZTlhNThkNjJmZDU5NGZhY2IxY2ZmMGRmNWYzMjM1ZjEwYmM2NGQxNzk5ZTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e387d646633a4963ba3df174922c32f0",
+      "statement": "bundle 构建的入口必须来自目标版本自己的包目录（versions/<目标版本>/node_modules/openwiki），只有目标版本就是出厂版本时才允许回退到 node_modules/openwiki 的入口。",
+      "evidence": [
+        {
+          "resource": "repo://scripts/bundle-backend.mjs#L88-L99",
+          "version": "repo-lines-v1:sha256:1854bd2e3d23076a2c23cbdb7c73edcdce16bea196bbf50b1c465d4990c52b5b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzNzM3N2FhMWNmNzU0MzMzM2JhYTQwMTNiNjNmZWJjZGExNWFhNDViNjY2OTEyMTUwMzNkZTI3M2I3MjQ3YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkNjQ0OTU2NDMwNmQ4NDlhZjZhNDZhY2JjMDlkZjFmMzRlN2EzOWZjNWM2YzhlYTRkYTI2YWI2MDI5OTNiZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNTVlNmFkYzk3MjA3ZjA1ZGRiMDFmMmFkYTMxMDdkODExZjliZDJmM2IyOWYyNmQ2Y2JkY2IwNzcyZDRkMDkifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
+  }
+}

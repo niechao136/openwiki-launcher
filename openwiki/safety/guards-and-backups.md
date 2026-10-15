@@ -10,10 +10,10 @@ sources:
     resource: repo://src/guards.mjs
   - id: openwiki-source-b995d49faa81ab47b4496f9b
     resource: repo://src/install.mjs
-generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-12T05:45:32.864Z
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 ---
 
 # 安全护栏、备份与回滚

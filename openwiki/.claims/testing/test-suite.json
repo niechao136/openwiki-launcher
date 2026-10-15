@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0c9d6f68d4d304d0e5fe619dc64ad3dfdb1ef4ac65cc3670f13c965922e47a4f",
+  "pageVersion": "sha256:134a8c3ea2661bc507512ea40cd5dbe518e9c1e4dcc99124884c934bc4c09a66",
   "claims": [
     {
       "id": "claim_912bf95251804acaaf8504f5f5e07c82",
@@ -118,11 +118,11 @@
     },
     {
       "id": "claim_d119b9c727634eb48fea961bd53e893c",
-      "statement": "release 测试用 npm pack 的文件清单钉住发布边界：manifest 快照必须随包发布（否则用户装的 launcher 永远走直通模式），测试与依赖不得进入 tarball，安装器运行时需要的模块必须齐全。",
+      "statement": "release 测试用 npm pack --dry-run 的文件清单钉住发布边界：manifest 快照、运行时与文档必须随包发布（否则用户装的 launcher 永远走直通模式），测试与依赖不得进入 tarball，安装器运行时需要的模块必须齐全，且 versions/（运行时数据：本地版本仓库与 holder lockfile）既不出现在产物里也不出现在 package.json 的 files 配置中。",
       "evidence": [
         {
-          "resource": "repo://test/release.test.mjs#L23-L68",
-          "version": "repo-lines-v1:sha256:ca1b829f795c3c9a66580e9f00c7d5d181aae0ebe0250aea30e0fb8c35dbad4a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNzU5OTdmNGQ2NjQxMGI0ODBkNGQ1ZmMyYWM4MDkzNzE0Yjc2ZTliYTRmZDg5NDQ4YjBhMGNiOTY3MzI0ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmZmY3NWNjMTczNjI5NzU1ZmVkYjJkYTA2MDI4MTZmYTBiNDVmNzVkNzZkYWJlZmMxMTY4MGYxOGYyNWUwY2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmNGQ4ZTZhMGEwNDhmM2NhZThlMTdlOWI2ZDk3MDRhZTQzNzNkYzZhZTY1ZjY0MTRlMjkxODliZmM0MGUwZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzZGRlZjcyNDc4NmI0YWY0NWFiN2NhZDgxZDM3N2FlNTQzYmI3ODQxMjk2NTY4ZmI1MjI2OTk4YWVjMjE2MzQifQ"
+          "resource": "repo://test/release.test.mjs#L24-L77",
+          "version": "repo-lines-v1:sha256:fb0e101632187b136bd46c6e84471995a4e8305276f1bc3263368b717cb3e444:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlNzU5OTdmNGQ2NjQxMGI0ODBkNGQ1ZmMyYWM4MDkzNzE0Yjc2ZTliYTRmZDg5NDQ4YjBhMGNiOTY3MzI0ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZGRlZjcyNDc4NmI0YWY0NWFiN2NhZDgxZDM3N2FlNTQzYmI3ODQxMjk2NTY4ZmI1MjI2OTk4YWVjMjE2MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdmNGQ4ZTZhMGEwNDhmM2NhZThlMTdlOWI2ZDk3MDRhZTQzNzNkYzZhZTY1ZjY0MTRlMjkxODliZmM0MGUwZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -169,10 +169,56 @@
           "version": "repo-lines-v1:sha256:71cdcd9751b85078dc5379b2426e6c71517008ee2b3ce393f989fc8c6ffaa7c8:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlOWZhZjk1Nzg1MTkzYzM3OGJkZTY1ODRlZTlkZmI3NGRhYzc3YjYxNjRhODI3ZTJjMmUxYWMwZTVmMGYzNjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOWVmNzA1NDM1YjJmY2QzMGI1ODVkMzVkYzVhOWM3ODU1OWE2NzA4NWU2ZDZjZjU0ZTQwZTBkMjZjMGYwN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNGE5ZjVmMTJiYjI4MDcxZmI4ODcxNDIxZDJjOTE3OGZkMmU1NTk3MTI5NDViZWU1YzRhNTY0YzM5MDU1MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzOWQwNzYxMGZjMGM2ZjNmNThkMGM0MzhmNjhmYWVlNTBmMjJmMGZmZGU5ODZmYmU4NDI1YmEwZjFhMjBhZGEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_b40c97fb5d4746689f6db90f3b2a02bb",
+      "statement": "真实后端冒烟由 LAUNCHER_REAL_SMOKE=1 门控三处：real-openwiki.test.mjs 的整个 describe、real-holder.test.mjs 的整个文件、manifest.test.mjs 的 live 快照比对单条；npm run test:smoke（scripts/run-smoke.mjs）由脚本注入该变量（Windows shell 前置环境变量不是合法语法），默认跑 real-openwiki 与 manifest 两个文件。",
+      "evidence": [
+        {
+          "resource": "repo://scripts/run-smoke.mjs#L13-L29",
+          "version": "repo-lines-v1:sha256:1794524d5352919319a33b2f310c7d000e0e853d7c87f715247e67a1a82866cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1MjYwYjJkNmUzYWUwNGNlMDE0YTY4ODBmNDNlYjQwYjQ5NzU2Y2E4ZmQ2Mjg2MWQ3NzYwNDZjMWIzNzU4YjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4NmYwNWE0NTRmZTQyMzQ1MzJmNGUxODRiMzNkM2Q3YjMxMjcxZjA3MGYyOWUyODI4MTU5YzRjM2Q3Y2YyNzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkZTE0OGVlYzYxZGZhY2Q5MWNmMGJhNDFhNGNiZTBmZWRiYjMxNTA5OTg4OGExYjM4YTE0YjI1MGVlNzBiYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhMTQ1NWUzZTkxNDU5NTczZWI4MjE0YzRmZDQ2MDY4M2Y3NGM0YTMwNDUxZjY1ODI5N2NhZWY4Mjg0ZWYzYTIifQ"
+        },
+        {
+          "resource": "repo://test/manifest.test.mjs#L42-L44",
+          "version": "repo-lines-v1:sha256:3139ec8112aa397d893c2f7d45edcb9ac0e5971836cc74bc721ac9d7d3fbb3e2:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDRkNzE1ZTI0MjJlYTg0OTFmOTdmZWNkNDdhZjNlMjI3NmQxZjlhYTA0ZjM1ZTZhODVkNzA1NWI4OGZmNzI1ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWRjOTQ1OTM2YjNkZTYwMmNkZjY3MjRkZDMwYzVhM2I4NzgzOGFmZjgyN2FkMzRiYjczZGY2NThiN2E5ODM1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjQ5ODYzZjQzY2RlOGJmYjRjODIzYmE1NDIwOWFjOTgxMjZhODE4ZTlkY2Q0M2QzNDQ1NWIxNGZlM2IzOTdiZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzU2YzBjMmJiNzdiNzZlNmZiZWU4YmYyYzA0YTI3NzM2MzkwNmFhMjRmOGU4MjA4OGM4ZDA2MmNlYWVkYmYyMSJ9"
+        },
+        {
+          "resource": "repo://test/real-holder.test.mjs#L9-L12",
+          "version": "repo-lines-v1:sha256:57da9de0357bb7575fe05158c26954a9bb6b0065baeb9c6f9be7843e657535d1:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODVkYzRiZWYyODY5MDJhNzg5ZTA5NmUyMWU3ZDJmOWY2MzkyMmM3NjBmNDkyNDA5MGJlNzA4NDg0NDgyZmI3OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDQ2YWM5ODJkMzUwNDExNTliODMyYTUxNzdlZTQyZjJiMDY0ZDk0OGFkYjU3ZGQyYTE5MjhjZDZjYmFkODI0NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzRkMmE3N2E3NjBkYTQ1NjNmZmY5ODliN2RkYTQxMzgxNzAzZWVkODkxYTE0MmQ3MTAzOWIxNjk0ODViZTAwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjIzNDhhNzdjNTliMzY4MDMyZTMwNGYxNDU1NWI2MjNkYmU5OWRiMGQ1MGQwMTUyZDc5MTE1OTIwYWYxMjE4NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9247e3470f064652bacebbd0d0b8d186",
+      "statement": "bin-aliases.test.mjs 钉住 package.json bin 的三名字结构：openwiki-launcher 与 owl 指向同一入口 bin/openwiki-launcher.mjs，ow 指向独立透传入口 bin/ow.mjs，且 bin/ow.mjs 以 runOpenwikiCli 收尾并转发退出码。",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L6-L10",
+          "version": "repo-lines-v1:sha256:ecf72b99eeaa77abf2a7926b901999c09186b830ec012c20f9897061afccfd64:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmM0NGQwMzI4Nzc2OTQxZDU0MDhlYzViMTRlZmU0NmIzOWMzZmVmNzM0MDkzZjVmYTMwYTUyNDhlNzdkZDU0NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBjOTQ5ODU1MjZjMWM1N2VmMDBjMDBkM2Y0ZGM5MDYxNTY3N2EwYTM2YThiNzk1ZGZmOWFmZmQ1MGZlOWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDM3ZWE2M2I2NTJlZWRmMTkwOTcxZmFhYjBhZTYxYmM1Y2YyOGQ1MzJmMTAwMzhmOGRhYmE5OGE1MjdjOTY0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmUyY2M3ZTljYmZiMjk5MDg0ZDA5MWFkYmE2NWExNmQxYjBiYmIxNTRiNzQ5YzEwZDIzZjljZTY1OTY0NmQxMSJ9"
+        },
+        {
+          "resource": "repo://test/bin-aliases.test.mjs#L8-L25",
+          "version": "repo-lines-v1:sha256:ce5d308472cacffbb39cf32425ae38ac5d96f867ae28812a8d949ba641df7937:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhMTc3ZDIxODc1ZTBmZDQ2NzI5YWYzMzU2YmRmNzg4NWJlYjdkZThjNTYwYjJlYzVkNTk4N2UyYmFkYzc2ZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZGRlZjcyNDc4NmI0YWY0NWFiN2NhZDgxZDM3N2FlNTQzYmI3ODQxMjk2NTY4ZmI1MjI2OTk4YWVjMjE2MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyZGM0YjVmMzA1MDdjMmU0Yzg1ZGQyYTE3YzkyZDNhYWExMzJlNTg3MjdjMWUwNTEyZmEwYTMzMDk5MWQ0ZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_815146cbfe7d44bb9e9c88de0fc750b1",
+      "statement": "e2e-default-version.test.mjs 以「现象 A / 现象 B / 删除默认版本之后」三个 describe 端到端验收默认版本就绪：就绪后 versions/<版本>/ 同时有实体安装与 bundle、切回默认版本是零下载的指针翻转、删除后后台自愈不会把它长回来。",
+      "evidence": [
+        {
+          "resource": "repo://test/e2e-default-version.test.mjs#L13-L16",
+          "version": "repo-lines-v1:sha256:1a72dec11181b34d282ec3209439d532c208e29065e7419f679caa1eb4faf3a5:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGU0YzM2Yzk0NjE3ZDI2NDgxYWU4NGZkNWU5MmQxYTZiMTI4M2FiMTc5OTdlNGYzMDllZmZlM2QzYzE0MGVhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODA5NjY1YWJmZjQ5NzQxNjMyYmUxZTY2ZDYxNzNjYjE0ZWEzOTM5NmRjOTVjODgxYTg3MGNiMWQ2M2M0MTg5OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTA1MWVmNzA5NjFkMjUyYTE3MmYxODRjMTIwNjg0NTEwYWU0OWVlZDVlZjZmNGY2N2U4MmYyODNlNDU5ZmRlYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk2N2FmMjYwYzNjZjgwYWIyMmVkMzgwMjZmNjNlMTA3ZTI3NTA5OTZhMzVlYmY5YzNlMDJlNzk0YWEwZGZmYiJ9"
+        },
+        {
+          "resource": "repo://test/e2e-default-version.test.mjs#L90-L100",
+          "version": "repo-lines-v1:sha256:e4191211a69ffc501a87a3ba7d497f3820fae6a32c0ce6b3e115c89516d5e048:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNDRjOTI3N2Q1ZTI2NWM0ZDRhZWJiZjExM2NhMDNiYjI2MjE4YjU5NTNhODczZTllNzI3Y2VkOWEyZDk4MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkOTBhNjJmY2RhNDZjMDk5NDk3M2RlY2M4ZTdkN2FmNzQ1ZDI4ZDg1ZDUxZTQ0YTI5Mzc1ZjlkY2EyNTNhNGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4MTVkY2M5NTRjNTlhYjExYThjZGZjMDEwZWQ2NTk4NWQ0ODAzMDU5ZDQwNDllNDVjYzU1MzczNDQ1OGIxZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmMjFlMGU0NDE3MGQxZTVmMzczMjJjNDYwMmQ4MTQzM2ZhMDY1MjJmOTMyOGZjYWQ0NmUxYmUxMjM5OGNkZWYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-12T05:45:32.864Z"
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
   }
 }

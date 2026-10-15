@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e4748866fd183905ff10a3d83f6f00c1e833ad557edff932723d6d3f6b8aeccb",
+  "pageVersion": "sha256:56ee72c27af90ecfe3cc409345d59ef12178eb44eaf7583348714ce0cc0cbf99",
   "claims": [
     {
       "id": "claim_eba459b4449e468797978fea0d6565bc",
-      "statement": "update 与 switch 的代装流程共用 installAndSnapshot：装依赖（已装且可解析则跳过下载）→ 录快照（tools 非空且 protocolVersion 非空才算可用，落盘前建父目录）→ 写指针，任一步失败带阶段名返回由调用方决定下一步。",
+      "statement": "update 与 switch 的代装流程共用 installAndSnapshot（内核在 src/openwiki-install.mjs）：装依赖（已装且可解析则跳过下载）→ 录快照（tools 非空且 protocolVersion 非空才算可用，落盘前建父目录）→ 写指针，任一步失败带阶段名返回由调用方决定下一步；「装 + 录」整段在同一把版本键控安装锁内。",
       "evidence": [
         {
-          "resource": "repo://src/commands/update.mjs#L165-L199",
-          "version": "repo-lines-v1:sha256:4eecf7c4a058ff08f6f3610ebae5f3ccf6ddccd9966fff0c77ef293ac8d7aa26:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjhiYmE3M2VkMGU5NjhiYTE1OWVkNjRlZjQ1MmUxYmQ4N2M4MDVlNDkzOTI0YjIzZTUyZTk0MDkyZGE1MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMGIxOGE3NjBiMGE3MzRhYmNjMWNlYTM2NjYyYTM1ZTU0NTdmMWQxMTcwMzQwMjU4Yjc0YmMwZDg2NTM5NWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyNjJkYzE5NzIzMjJjYjQ5NTgwZGQyYmFkYzBmMTJmNmJiYTA0ZTM5ZGU2ZjRkMTcyMTdjMzhhN2JmNzhkYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+          "resource": "repo://src/openwiki-install.mjs#L424-L466",
+          "version": "repo-lines-v1:sha256:4ee90e6bd63291730567b856b7f518797575d447cc28d2b040b1fd709039def3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjhiYmE3M2VkMGU5NjhiYTE1OWVkNjRlZjQ1MmUxYmQ4N2M4MDVlNDkzOTI0YjIzZTUyZTk0MDkyZGE1MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyNjJkYzE5NzIzMjJjYjQ5NTgwZGQyYmFkYzBmMTJmNmJiYTA0ZTM5ZGU2ZjRkMTcyMTdjMzhhN2JmNzhkYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -17,8 +17,8 @@
       "statement": "npm install 失败时 installVersion 会删掉半成品版本目录：一个装了一半的目录会让 switch 的「已安装」判断说 yes，然后在 broker 启动时才爆炸。",
       "evidence": [
         {
-          "resource": "repo://src/commands/update.mjs#L133-L146",
-          "version": "repo-lines-v1:sha256:58019c4bb0eb973c48e89f8d12462d045dead7a64e4e6fb1dba617d4e6998223:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1YWQxYmUyNjM5NjI1ZTY5ZDc1ZDU1YzkzNmM2YWIzZmJkYzUwZjAxNTQwYmI2NWFlYmQ0YzFhMmY3OWQxMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxNzg3MTE0OTc1OTdkZGIzNDc2YWYwZWFmNzcwMTVhYzkxNTAyMGJjNDJlZWY1ZjQ2MWI0MTAwNTBmMDAzNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3NWVhOGQwOTBmOTYyNWZiMGE3NjcxNzE3NGYzZDJkM2NmZDk1YWExNmUyMGQ0YWNiMDUxMzU1NzhlZDhmNzEifQ"
+          "resource": "repo://src/openwiki-install.mjs#L351-L358",
+          "version": "repo-lines-v1:sha256:f13e95ef62d073225c72eee16faca7a08cc7a6e641e1b8c2153aa36cae03e6a6:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU4MTFhYjFkZGEwMGVkM2ZhZTZhY2Y4MjA4MzNkOTQxZWM3ZDZiOWJjN2UyNzFhYzkwZmNmYzQ3MjRlZmJjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzFiM2M4NTU2MzE5YWJmZjQ3ODYyMzYzYjhkNTExZThhODc2M2E0MjZkMWRlMGYxNDAzMjJlMmVlNzhjM2U5ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTEzNmM5ODBkNzYwMDZjZWNkNTE4MTdkNTdmOTc2Yjk4ODdiYmMyM2U1MTA5NTU1MjI3NmJjZTZkMGEwMmQ3MCJ9"
         }
       ]
     },
@@ -27,28 +27,36 @@
       "statement": "update 的目标版本默认交互确认，--version 显式指定时跳过选择且缺值直接报错而不是静默滑进交互模式（避免脚本调用卡在看不见的提示上）；快照录不到不阻塞升级，改为询问是否仍切换且默认否，--no-switch 只装不切。",
       "evidence": [
         {
-          "resource": "repo://src/commands/update.mjs#L244-L301",
-          "version": "repo-lines-v1:sha256:624d04b007d0386b11f47aea9a818d66722daceb4871a05d91e7b701e6f72735:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4NTIyMGJkMmNiOGRhM2VlNDI0ZGEwY2RlNDMwMWIyZjNhOTgyNmQwYzAwOGJmNDU4OTljMmY3NzZlNDM0N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkOTA3MTZmZDU2OTEzOTYzOTI1YmQwYmM5ODUyN2FiYzQ0OTI0OTI5YzRkNjE4MWYzMjBiYTkxYmU2YWQwOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiMGZlMDE1ZjcyN2QwMDdjNWRkYmE3NjIxNzhmMTZiZjhjZTg4YWMzZWEzZTJmYzI1NTQyYWM3OTUwOWNmMzcifQ"
+          "resource": "repo://src/commands/update.mjs#L170-L196",
+          "version": "repo-lines-v1:sha256:1bf693cdde468913cfdd9ebaad0fb2340b87c30b5be9d0725f47ecbdc6eb3ffa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmYTAxZWRiMTY4YTM4ZmU5ZWM2NjI3YzUyMDk5M2EyZGNkZmExMjA4ZmExNmYxMTFhMzBlMzRhYTA1YTcxMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE3YjkyYzAyODc1YTNiYWVlYjQyMjAxYzYzODk3ZWVkNTAyZDQ4YTg3YTg1MGZlNjNjNThhYTMzNmJjMzVjYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImViMDM1MzQzM2U2MTQ4M2RmZmM2YTBhMjllMTYzOTkwMTJkNjJlZTFhMzBlOWI4NjczZTg3MDE1ZGQ0Mjk3OGIifQ"
+        },
+        {
+          "resource": "repo://src/commands/update.mjs#L44-L66",
+          "version": "repo-lines-v1:sha256:ce3034d5129209145c00d227367d1d1ffba84792f78a85f5354bd6e3693445d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0NWExY2NjODExNWU0MDM0NzFmMGVhNzhmY2I1M2JkNDE5YTY4MjBkNDg5ZWNiODZkNjg0M2Y3ZjA3MWUyNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzOWMzMDgwMzRiNDRiYzhmY2VmYjU1MTE1NjA1NmZhZTY4MzNhYWQ3ZDhjMGQwZThkYzJhMDMwMDUyYTQ1NzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxNzQ1N2FlMDljMmZiZGY3YjA2ZmE3NDZmNjM4MzgwYjg5ZTFmNzFlYWExZmM4NTIyZTJhNTYxODNlNTNjYTkifQ"
         }
       ]
     },
     {
       "id": "claim_fe46a03a975640d9b4d98ebf1ae1a76f",
-      "statement": "switch 的语义是「现在就让 X 生效」：已装版本之间是毫秒级指针改写可反复横跳；未装版本可代装但装不好就原样放弃（没有 update 那句「仍要切换吗」，容不下无快照降级）；目录存在但入口不全时拒绝并指路 versions remove 清理。",
+      "statement": "switch 的语义是「现在就让 X 生效」：已装版本之间是毫秒级指针改写可反复横跳；未装版本可代装但装不好就原样放弃（没有 update 那句「仍要切换吗」，容不下无快照降级）；目录存在但入口不全时拒绝并指路 versions remove 清理（默认版本例外——它的目录可能只剩历史 bundle，就绪动作会在其中补齐实体条目）。",
       "evidence": [
         {
-          "resource": "repo://src/commands/switch.mjs#L8-L89",
-          "version": "repo-lines-v1:sha256:13cf5952b78befd941d4bc98efde537446f938766e3c2c63523e8ad7e7e9598a:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1MTBjMzJiMjZiMjJlY2I2ODI2YjQ1MzFiOTllNjgxZDliZDI4NjIzODgwZmRhN2UyNGJiNmI4MGYzODdlOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJjZjBiNTU2MDdlOTJkMDhjODA2YWM3OGYwNWExNDhlZGIzNzEyOGVlNzVjYjE4YTE2NmFjNjQ1YjdhY2MyN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUifQ"
+          "resource": "repo://src/commands/switch.mjs#L10-L16",
+          "version": "repo-lines-v1:sha256:a8821de251502061a6863ff66131df5209b2196756fba280fd2483f00915c48e:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWRiNTQ0YTU4ODYzNDM1MGMxOTE2OWE4MjQzYjUzMWJmMzA5NWViNTdjOGZiMDNlNDQ4MzY5NDNmMDgxNjg4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTc1ODdkOTQ3NGYwNDQ4NjdiMmI0MWQ5OTE4ZjY5ZTg3MmQzMzIyYTdiYTE5N2ZiM2VhZTZhYmJkZDk2OWI3NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTE3NDU3YWUwOWMyZmJkZjdiMDZmYTc0NmY2MzgzODBiODllMWY3MWVhYTFmYzg1MjJlMmE1NjE4M2U1M2NhOSJ9"
+        },
+        {
+          "resource": "repo://src/commands/switch.mjs#L68-L104",
+          "version": "repo-lines-v1:sha256:f976197de1939929dd0980803521abfc7cca9e15f26a48471ad2845009767867:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhNzRmMDk1ZGQ3MDdlNzRkZDYyMTYyOTk1OTk4ZDQ3NDcyZjc5MTI5ZGQyMTdjZTMyNTc2MjdkMzBlMDBiZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1YTc2ZjA4NDNmZTY4N2Q0NjI0MGNkMmQ5Nzc1MzcwYTA4Yjg0YmUzNzVjNTNjN2ZmNGFmZTY5NDc4NDFhOTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjOGVjY2E5MWUwYmM4MzExYjY1YjNkMzVhYzI5NzgzMWRkNDA2OWViZmVmZjIyZGI4ZTExMmQxMWFmODZkYjUifQ"
         }
       ]
     },
     {
       "id": "claim_c71794c7d5b84f0eb9d4d4856f86a430",
-      "statement": "versions remove 拒绝删除当前激活版本（先 switch 再删），且 manifest 快照保留不删——它只有几十 KB、随包发布的出厂快照重装即恢复，删了会丢掉「该版本曾录过快照」的记录。",
+      "statement": "versions remove 拒绝删除当前激活版本（先 switch 再删），且 manifest 快照保留不删——它只有几十 KB、随包发布的出厂快照重装即恢复，删了会丢掉「该版本曾录过快照」的记录；删除默认版本时还写 default-removed.json 标记让后台自愈不再重建。",
       "evidence": [
         {
-          "resource": "repo://src/commands/versions.mjs#L3-L38",
-          "version": "repo-lines-v1:sha256:789cfa5d9f34198ad2ba5d006652081e1583d377e0a2bb02afcb1c825743c288:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzYzRkMDRiMjFhMjY1Njg1MDBhNjY5NDlmNzE2NDc4ODEyOTRhNzk0MzdiMjM2YjYwOGI1Y2NiMThjMzMyMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUifQ"
+          "resource": "repo://src/commands/versions.mjs#L26-L45",
+          "version": "repo-lines-v1:sha256:3e94f28d8bb5b930af1e0b9e4dc3d876ad282dba87b24a4346a9e45c6274ad77:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkODZhOTAwMDkwY2MxMzU5ZDdmNzFkNjY2NDQ1ZTQzYmUwMTZhYmNiZThmZGUzZTAyYWRmMzJiOWQxNWI0NGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxOGFjNDc3N2YzZTNjNzQ4MTRkNTE3YmI0OTM0MWQ2NGNhMDRmMDUxMDQyOGEzYmY2YzAxYzc2ZDgwNjg3NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwNzhlM2MyYWIxYjhlZjI3NmQyNTY5YzU4NmM0YWNlZmYxNmZmNmU5YjQ0YTU0MGRkNDZkMDUzMTA5ZTllMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwNDJmNzRmOWIyNjk1NWQ2YWE3OTE5ZTg3MDYxMmU5ZTkyYjIxYTRjYWVlM2UzNzVkMTI2OGExYmI0MzkyZjQifQ"
         },
         {
           "resource": "repo://src/versions.mjs#L156-L172",
@@ -95,8 +103,8 @@
       "statement": "summarizeInstallFailure 从 npm stderr 提炼根因行（prebuild-install/ECONNRESET/EPERM 优先于泛化的 command failed），过滤日志路径与 gyp 扫描噪声，按根因给 npmmirror 镜像、工具链缺失或文件被占用的针对性提示，总量封顶 8 行。",
       "evidence": [
         {
-          "resource": "repo://src/commands/update.mjs#L91-L131",
-          "version": "repo-lines-v1:sha256:2b701fbaf8698c73c3096c03b74be12172b36c34f32a777783bdced5f04a9c92:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYzA2NzhlMTNjYTA1MDdmNWY1NDgwNTc5NTIyNDk2OWViMzFjY2QwMWUzNDJlOGZkMzRlN2RjOTQ0Mzc0YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmMjNmMTUyZDZmNTMxY2M0OTBhOTY1MzAzYzU3YmYxYjI3MzczMjdiYmNjMjNmMGVkYzFiZTFlMzE2YWVmNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmYjFiMDIwMjA0YWEwODQ0NjhlNWZiMDBiZDJkMzhmNzJhYWMxYTQxNzliOWY5OTFhN2JkZTY1MDc3NGJmNDMifQ"
+          "resource": "repo://src/openwiki-install.mjs#L154-L194",
+          "version": "repo-lines-v1:sha256:2b701fbaf8698c73c3096c03b74be12172b36c34f32a777783bdced5f04a9c92:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYzA2NzhlMTNjYTA1MDdmNWY1NDgwNTc5NTIyNDk2OWViMzFjY2QwMWUzNDJlOGZkMzRlN2RjOTQ0Mzc0YTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmMjNmMTUyZDZmNTMxY2M0OTBhOTY1MzAzYzU3YmYxYjI3MzczMjdiYmNjMjNmMGVkYzFiZTFlMzE2YWVmNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmMzNkNzUyNjQ3MjU3MjU1MDZlODM0NGQwODAyYmI5OWVlNjdjOWIzZTBkZDBjYWY5ZGU5ODIxNzBiODgyNzcifQ"
         }
       ]
     },
@@ -116,7 +124,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-12T05:45:32.864Z"
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
   }
 }

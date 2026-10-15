@@ -10,10 +10,10 @@ sources:
     resource: repo://src/targets.mjs
   - id: openwiki-source-94ff95c1f11b8b7df6ddb6c1
     resource: repo://src/uninstall.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-12T05:45:32.864Z
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 ---
 
 # 卸载与归属判定

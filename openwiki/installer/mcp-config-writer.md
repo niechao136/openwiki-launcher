@@ -3,15 +3,15 @@ type: subsystem
 title: MCP 配置文件读写（json / codex-toml / opencode-json）
 description: mcp-config.mjs 如何在保留用户注释、缩进与其他条目的前提下精确切片替换 openwiki 条目：注释掩码、结构检查、幂等判定与三种格式的差异。
 tags: [mcp-config, text-splice, jsonc, toml, idempotency]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-a30d02ce508a693ed6aed708
     resource: repo://src/mcp-config.mjs
   - id: openwiki-source-25b67ca644bd99d29a60497f
     resource: repo://src/plan.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
+verified:
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 ---
 
 # MCP 配置文件读写（json / codex-toml / opencode-json）

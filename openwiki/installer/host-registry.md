@@ -3,13 +3,13 @@ type: reference
 title: 宿主注册表：28 家 AI 编码宿主的统一描述
 description: src/registry.mjs 的条目字段语义、8 家可直写 / 18 家仅打印片段 / 2 家只装 skill 的分组判据、别名解析、PATH 探测与自校验规则。
 tags: [registry, hosts, detection, install-targets]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-10T08:12:25.306Z
 sources:
   - id: openwiki-source-f90d4cc4e5fe713bf843ecab
     resource: repo://src/registry.mjs
-generated: { by: "codebuddy", at: "2026-10-10T08:12:25.306Z" }
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
+verified:
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 ---
 
 # 宿主注册表：28 家 AI 编码宿主的统一描述

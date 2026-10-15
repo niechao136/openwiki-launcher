@@ -1,8 +1,11 @@
 ---
 type: subsystem
 title: 安装决策器与安装编排
-description: planInstall 作为纯函数决策器如何为每个宿主算出 skill 与 MCP 动作，以及 runInstall 的编排顺序、护栏一票否决、写入、备份与回滚。
-tags: [installer, plan, orchestration, rollback]
+description: planInstall 作为纯函数决策器如何为每个宿主算出 skill 与 MCP 动作，以及 runInstall 的编排顺序、护栏一票否决、写入、备份、回滚与安装收尾的默认版本就绪/预热判据。
+tags: [installer, plan, orchestration, rollback, default-version]
+verified:
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 sources:
   - id: openwiki-source-f2765e03ab3c44ffdd8995a7
     resource: repo://src/commands/install.mjs
@@ -12,10 +15,7 @@ sources:
     resource: repo://src/plan.mjs
   - id: openwiki-source-82ad0bac05d48ab1a24b4e91
     resource: repo://src/targets.mjs
-generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-12T05:45:32.864Z
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 ---
 
 # 安装决策器与安装编排
@@ -39,7 +39,7 @@ verified:
 {
   hostId, displayName,
   skill: { action, dir, skipKind?, reason? },   // install / skip
-  mcp:   { action, path, kind, containerKey?, entryJson?, tomlBlock?, newText?, reason? },
+  mcp:   { action, path, kind, containerKey?, entryJson?, tomlBlock?, newText?, removed?, reason? },
   takeover, takeoverReason,                     // native-receipt / foreign-entry
   guarded, guardReason,
 }
@@ -110,7 +110,7 @@ verified:
 8. **逐 entry 执行**：先 skill（`installSkill`），后 MCP 配置（先 `createBackup` 再写）。
 9. **任一失败 → 回滚**。
 10. 报告，并在 win32 上提示 Defender 排除项。
-11. **安装成功后自动预热一次。** 这一步在命令层（`src/commands/install.mjs`）完成，且只在 `exitCode === 0` 且不是卸载时触发；`--no-warm` 跳过并提示手动命令。预热是**优化不是安装的一部分**：失败只告警，退出码仍然是安装的结果；测试用注入的 `warmFn` 替掉真实预热。
+11. **安装收尾（命令层）：先默认版本就绪，再自动预热。** 就绪在成功安装或「检测不到宿主」时执行，预热只在成功安装时执行；两者都是优化，失败只告警、退出码仍然是安装的结果，测试可注入 `ensureDefaultVersionFn` / `ensureBundleFn` / `warmFn` 替掉真实动作。
 
 ### 为什么检测快照必须先算完
 
@@ -136,14 +136,21 @@ verified:
 
 `manual` 宿主会打印一段可直接粘贴到宿主 MCP 设置里的 JSON（`mcpServers.openwiki` 指向 `node <绝对路径>` 与本包 bin）。`none` 宿主明确说明「只安装 skill，openwiki 的 SKILL.md 自带降级路径」。
 
-## 安装后的自动预热
+## 安装收尾：默认版本就绪与自动预热
 
-预热挂在命令层而不是 `runInstall` 内部，原因写在 `src/commands/install.mjs` 的注释里：`runInstall` / `runUninstall` 是同步函数（28 家 e2e、回滚逻辑与纯函数决策面都依赖这个契约），不能为了一个 async 的预热改签名。
+收尾动作挂在命令层（`src/commands/install.mjs`）而不是 `runInstall` 内部，原因写在注释里：`runInstall` / `runUninstall` 是同步函数（28 家 e2e、回滚逻辑与纯函数决策面都依赖这个契约），不能为了 async 收尾改签名。同样在这一层，命令启动时会先解析运行时并算出 `bundleDir`（`bundleDirFor(runtime.packageRoot)`）供 skill 安装使用——解析不到 openwiki 依赖就直接报错退出 1，skill 安装不会半途启动。
 
-行为要点：
+### 默认版本就绪（0.5.0 起）
+
+`shouldPrepareAfterInstall` 的判据覆盖四态：成功安装（`exitCode === 0`）与「检测不到宿主」（`exitCode === 1` 且 `skippedNoHost`）都要做；失败回滚 / 未知宿主 / 作用域不支持（`exitCode === 1` 且非 `skippedNoHost`）与护栏拒绝（`exitCode === 2`）都不做。判据刻意不看报告里是否真的写了字节：重跑安装器时配置可能早已是最新，而用户正是通过重跑来修复上一次失败的就绪。
+
+就绪开关有两个等价来源：`--no-prepare` 与 `LAUNCHER_PREPARE=0`（`prepareEnabled`），任一关闭即跳过。就绪失败只告警，并提示可稍后运行 `openwiki-launcher warm` 重试；完整语义（六态、删除标记、失败退避）见[默认版本就绪：物化与自愈](../versions/default-readiness.md)。
+
+### 自动预热
 
 - 触发条件：安装退出码为 0、非卸载、未给 `--no-warm`；
-- 复用 `warm` 命令（60 秒超时上限），宿主标识为 `warm`；
+- 顺序：先 `ensureBundle`（补打当前版本 bundle，预热顺带验证它可启动），再复用 `warm` 命令（60 秒超时上限），宿主标识为 `warm`；
+- `--no-prepare` 同时跳过 bundle 补打（物化关了、bundle 还照打会造出 bundle-only 的畸形目录），但**不**跳过预热本身——物化与预热是两个正交开关；
 - 失败只打告警「不影响本次安装结果」，退出码不变；
 - 预热已自报耗时，成功时不再重复提示；只有 `--no-warm` 时才提示手动跑 `openwiki-launcher warm`。
 
@@ -153,4 +160,5 @@ verified:
 - [Skill 目录安装、收据与完整性校验](./skill-install.md)
 - [卸载与归属判定](./uninstall.md)
 - [安全护栏、备份与回滚](../safety/guards-and-backups.md)
+- [默认版本就绪：物化与自愈](../versions/default-readiness.md)
 - [命令行接口与 doctor 自检](../commands/cli-and-doctor.md)

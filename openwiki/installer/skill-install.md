@@ -10,10 +10,10 @@ sources:
     resource: repo://src/skill-install.mjs
   - id: openwiki-source-82ad0bac05d48ab1a24b4e91
     resource: repo://src/targets.mjs
-generated: { by: "codebuddy", at: "2026-10-12T05:45:32.864Z" }
+generated: { by: "codebuddy", at: "2026-10-15T15:06:21.524Z" }
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-12T05:45:32.864Z
+  - by: openwiki/0.0.0-unknown
+    at: 2026-10-15T15:06:21.524Z
 ---
 
 # Skill 目录安装、收据与完整性校验

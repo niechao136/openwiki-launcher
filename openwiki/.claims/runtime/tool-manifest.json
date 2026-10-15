@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c05490243cba38e986a8b4d37a4b42ff85b53c5e39e3149da5cee8d115936403",
+  "pageVersion": "sha256:022f1e3d73114cdc73fbf08a5baa94b1619ded76e52993ed37d2c90fbe0765bd",
   "claims": [
     {
       "id": "claim_d1990066cde74dc0b189d8a2728736ec",
@@ -93,22 +93,22 @@
       "statement": "generateManifest 接受 explicitVersion/pkgRoot/hostId：显式版本解析不到就直接抛错、绝不回退出厂依赖，避免给未激活版本录出自称 requested 版本、内容是出厂版的快照；这正是 update 先录快照后切指针所需的入口。",
       "evidence": [
         {
-          "resource": "repo://src/gen-manifest.mjs#L16-L30",
-          "version": "repo-lines-v1:sha256:7531b93ee309770827f8fd6577832d977ca88defcd39ab37a9e9f14b70c85da5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwNjNhODM4ZmQyZGUxMWI5OGRkM2MzOWJlZDBkZDM2NzkyZGU2NDhiZjM3NWI2NmU4OTQ4N2M0ZWMwMTIxODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0NzE4MWI5YWUyM2ZlMDRkNzlkZmUyOTU4ZjFhODA5NDNlYWMyOTcxMzQyMDEwZDE5YjRhZmYyZTA0Njg2MjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmZWQzNjkwMjg2Y2M1OTgyZDYyOWU1NzJmZjU3YmQzMzE3ZTVhMzhkZDRhODY0ZjE3YTE3NzIwM2IxNTY2YWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlNWIxZmI4ODA4OTM5YzVkNGM2NDhjMzFiZDUyNTcxYjM3NTczNGIxNWY4YTVhNjljNmIwNGJiYzU4N2QzNjEifQ"
+          "resource": "repo://src/gen-manifest.mjs#L13-L25",
+          "version": "repo-lines-v1:sha256:5afad9ebea5a7e7386f83d36279e580acfa2ed2a5d3a7532140dc655a42c2378:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3MTkzNjBkNmVlMmFjNjczZjE0ZjIwNzcwNDEzMGQ4YzIyMzQ2MzRjMDAwZDVmZmFiZmYxZTRhMTE0NTNlZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4MTA0ZWE4NGI0M2RhOWVmNjQ4NmUxNzQ2ZTI2MWJhNjU2ZjIzNTc0NTNjNjM3Y2VmYWZlY2QxYTg4NDg2ZDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiNjg0YmI3OWEzYWRjOTkwNzZiOTI3OWRlMjg3ZDkyOWFkMDhiOGQxMGI2NjZlYTg5ZTE4NzcwODU5OTU2MTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJiZjllODk2MTUxYjIyMGE2MzVkNDliZTk4OGRmMzZhZGIwMTFlZWQxNDk1NDEzMzNiNWU3ZWFmZWZkM2Y5OGEifQ"
         },
         {
-          "resource": "repo://src/paths.mjs#L85-L97",
-          "version": "repo-lines-v1:sha256:125ede62054fe2ea550ba8a4e6a5faf6f79ba11df84103bdfd92b001a9085951:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzNWJkZjkxYmRmMDEwNjkyODdmMzhjNGQzOTE3NzdiNTBmN2RkNjQyMjU3NDg1MjNiOTUwMGY4YjRmODk0MjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmNGZlNTkwNTY3ZDliZDk1NTEzNWExMTA5NWMzMjk4YjUxYjA0MmIyNWQyZmMwMzI4MmUyYjEyOGU2NjU3ZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0MzRhYjZmNTAyYzBhYjgwYTkwMWEwYjlkZTViNTVhYWIxNDQxMDZjZGVhMTJhMmRmNDAxZmIwNGJkMmUzOTkifQ"
+          "resource": "repo://src/paths.mjs#L145-L167",
+          "version": "repo-lines-v1:sha256:03ec196863558b2e1e154e06b99d9e6bc9d5674fc82bce78f74119df946984df:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1YmQyYThlNzdjMDNhZGE0ZDA2MjdhMzQyNWEzMzI4YTZhY2JmZGFhZjgwY2QyYjlkZDU4MGMxZjI3YjU2ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3YWJmNjk4MTBkMGNkYjIzNzJmYjMyOWZmYjU1ZTRkZGUwMzNkMzdlZWM2ZWE5ZTc5ZDQ5MWEwMGZhYjYyMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkNDY2ZDI1M2U4MGJlODU1ZjMwZWM1YWI0OGE5NGQ4ZGU2ZWE2YTkwMzRiNjdmZTJkODI0MmQ1NjE0ZmI2MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkODMwZGIyZTRjYjg2Y2Q4ZDU1ZDU0NGQ5ZWJlYzhiMjllYWQ2YzQ5ZThjMWI5NjcxODc0OTljOGFlYzVhNWQifQ"
         }
       ]
     },
     {
       "id": "claim_f7d4ed9f8980421a9b97c294195cfa64",
-      "statement": "update 与 switch 的代装流程共用 installAndSnapshot：装依赖 → 录快照 → 校验可用性（tools 非空且 protocolVersion 非空）→ 建父目录后写入 manifest/openwiki-<version>.json，任一步失败带阶段名返回由调用方决定下一步。",
+      "statement": "update 与 switch 的代装流程共用 installAndSnapshot（整段在同一把版本键控安装锁内）：装依赖 → 录快照 → 校验可用性（tools 非空且 protocolVersion 非空）→ 建父目录后写入 manifest/openwiki-<version>.json，任一步失败带阶段名（locked/install/verify/snapshot）返回由调用方决定下一步。",
       "evidence": [
         {
-          "resource": "repo://src/commands/update.mjs#L165-L199",
-          "version": "repo-lines-v1:sha256:4eecf7c4a058ff08f6f3610ebae5f3ccf6ddccd9966fff0c77ef293ac8d7aa26:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjhiYmE3M2VkMGU5NjhiYTE1OWVkNjRlZjQ1MmUxYmQ4N2M4MDVlNDkzOTI0YjIzZTUyZTk0MDkyZGE1MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMGIxOGE3NjBiMGE3MzRhYmNjMWNlYTM2NjYyYTM1ZTU0NTdmMWQxMTcwMzQwMjU4Yjc0YmMwZDg2NTM5NWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyNjJkYzE5NzIzMjJjYjQ5NTgwZGQyYmFkYzBmMTJmNmJiYTA0ZTM5ZGU2ZjRkMTcyMTdjMzhhN2JmNzhkYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+          "resource": "repo://src/openwiki-install.mjs#L424-L466",
+          "version": "repo-lines-v1:sha256:4ee90e6bd63291730567b856b7f518797575d447cc28d2b040b1fd709039def3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjhiYmE3M2VkMGU5NjhiYTE1OWVkNjRlZjQ1MmUxYmQ4N2M4MDVlNDkzOTI0YjIzZTUyZTk0MDkyZGE1MWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyNjJkYzE5NzIzMjJjYjQ5NTgwZGQyYmFkYzBmMTJmNmJiYTA0ZTM5ZGU2ZjRkMTcyMTdjMzhhN2JmNzhkYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -117,14 +117,14 @@
       "statement": "目标版本已安装且可解析时 installAndSnapshot 跳过下载只补录快照：几百 MB 白下载一次，网络失败还会把原本可以 switch 回去的完好版本删掉。",
       "evidence": [
         {
-          "resource": "repo://src/commands/update.mjs#L174-L180",
-          "version": "repo-lines-v1:sha256:d11c2b14d827463e8c806574e9e609de5fdf9bb09cb9fe678b2a9caa9f030693:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTQ4YTcyNjU1NTMzZTdmNGYzNDMyNjRlYzhmZTdjMjRlNWQ4NzFkOWIyMmMxYTMwMGVlZDJhNjQ3OWY1NDBiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEzNDUxODAxMDViMGM2NmE3N2RhZDUxYmIzNzkwMWEzNzMyYzk2NTRiYTRkZTM5ODFmODFlMTgxNzUyNDhiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzdhNzk0MGU3OWMxYzViNThhOWRlZDcyZGNmZDA4NmYwN2Y2NTE5YmI5ZmQ3MTBhM2QwYjJjYWQ4MTJiN2FlNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODJkNjg4YmI5M2JhZmJhN2VmZmRhMDA3ZWJiMWNjMDg1N2RhNThmYjg1M2EyZTUxYzdhYmM2ZGIxZTQxN2E4MiJ9"
+          "resource": "repo://src/openwiki-install.mjs#L437-L442",
+          "version": "repo-lines-v1:sha256:4efc885d82f6fd1596b05a8ef9206432b5b2edb8b08345a8ecaac7720767dfa0:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRlMGQ3MGIyMTNkZjhiNjY2YTVkZWZhYzM4M2Q5MmFmNTM4M2Q0Y2NiY2M3OWJjNjllNzMyMmJkYWY5ZDJkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWUxMjM2ZjJhZWExY2U0MmZhMmIwY2NiMjc4MzJjNzhmNWQ4YzFjMTkyMzhhMjQwOTIyMTA2NjNkNTM5ZWQ2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmM1YTljYjBjMGM1OWMwM2U2NGVmYzMzOTg2ZmRhMmMzOWY4YThlZGRlMDVjZGM1ZmMzOGFjMmZkYmFlYjFkZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjA2MDI3NjEwOTI2MDgzM2ZhYjRiZDViN2Q2NjQ1ZTJlMGI0MTVkYzcwZDMyYzRmZGM0YjZlYTYyZGMzY2ZhNyJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.7.2",
-    "at": "2026-10-12T05:45:32.864Z"
+    "by": "openwiki/0.0.0-unknown",
+    "at": "2026-10-15T15:06:21.524Z"
   }
 }
