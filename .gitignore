@@ -1,4 +1,4 @@
 ﻿.worktrees/
 node_modules/
-versions/
+/versions/
 *.log
