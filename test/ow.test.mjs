@@ -113,6 +113,18 @@ describe("runOpenwikiCli 透传内核", () => {
     expect(await runOpenwikiCli(d.base)).toBe(1);
     expect(d.logs.text()).toContain("unexpected");
   });
+
+  it("spawn 失败（error 事件）：返回 1 且打印可操作提示，不是裸栈", async () => {
+    // 入口文件在解析与 spawn 之间被删/被锁（并发 update、Defender 扫描）时
+    // Node 会 emit 'error'；无监听器就是未捕获异常，用户拿到栈而不是提示。
+    const d = deps();
+    const p = runOpenwikiCli(d.base);
+    await flushed();
+    d.child.emit("error", Object.assign(new Error("spawn openwiki ENOENT"), { code: "ENOENT" }));
+    expect(await p).toBe(1);
+    expect(d.logs.text()).toContain("启动 openwiki 失败");
+    expect(d.logs.text()).toContain("owl install");
+  });
 });
 
 describe("owl ow 子命令分发", () => {

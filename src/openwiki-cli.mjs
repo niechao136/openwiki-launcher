@@ -65,7 +65,20 @@ export async function runOpenwikiCli({
   }
 
   const code = await new Promise((resolve) => {
-    child.once("close", (exitCode) => resolve(exitCode ?? 1));
+    let settled = false;
+    const settle = (value) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+    child.once("close", (exitCode) => settle(exitCode ?? 1));
+    // spawn 本身失败（入口在解析与 spawn 之间被删/被锁：并发 update、Defender
+    // 扫描）时 Node emit 'error'——没有监听器就是未捕获异常，用户拿到裸栈，
+    // 而解析阶段承诺的是可操作提示。这里必须同样软着陆。
+    child.once("error", (error) => {
+      logger.error(`启动 openwiki 失败：${error.message}（可跑 owl install 修复）`);
+      settle(1);
+    });
   });
 
   for (const [signal, forward] of forwarders) {

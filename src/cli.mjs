@@ -38,7 +38,7 @@ const HELP = [
   "  owl update [--version <v>]    升级 openwiki（交互确认；--no-switch 只装不切）",
   "  owl switch <version>          切换当前生效的 openwiki 版本",
   "  owl versions remove <v>       删除一个已安装的 openwiki 版本",
-  "  owl ow <参数…>  /  ow <参数…>  透传执行 openwiki CLI（visualize、link、workspace、auth、ingest…）",
+  "  owl ow <参数…>  /  ow <参数…>  透传执行 openwiki CLI（visualize、link…；直连 mcp 慢，宿主请用 owl mcp）",
   "  owl help                      显示本帮助",
   "  owl version                   显示版本",
 ].join("\n");

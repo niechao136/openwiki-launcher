@@ -27,6 +27,7 @@ describe("published package contents", () => {
 
     for (const required of [
       "bin/openwiki-launcher.mjs",
+      "bin/ow.mjs",
       "src/broker.mjs",
       "src/backend.mjs",
       "manifest/openwiki-0.6.0.json",

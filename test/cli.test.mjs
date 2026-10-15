@@ -97,6 +97,8 @@ describe("main", () => {
     expect(out).toContain("owl");
     expect(out).toContain("ow");
     expect(out).toContain("透传");
+    // 规格 §7：短发现路径（--help）必须警示 ow mcp 是直连、宿主应配 owl mcp。
+    expect(out).toContain("宿主请用 owl mcp");
   });
 
   it("routes check to the check command", async () => {
