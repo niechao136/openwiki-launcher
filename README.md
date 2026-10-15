@@ -22,14 +22,17 @@ openwiki 后端在后台按需启动。宿主不再需要等待 openwiki 的导�
 
 ```sh
 npm install -g git+https://github.com/niechao136/openwiki-launcher.git
-openwiki-launcher warm        # 可选：预热后端，让第一次工具调用更快
+owl warm        # 可选：预热后端，让第一次工具调用更快
 ```
+
+> `owl` 与 `openwiki-launcher` 是同一个命令（后者是全名），两者完全等价；
+> `ow` 是 openwiki 命令的透传入口——见「短命令与 `ow` 透传」。
 
 不装到全局、只在当前项目使用：
 
 ```sh
 npm install git+https://github.com/niechao136/openwiki-launcher.git
-npx openwiki-launcher warm
+npx owl warm
 ```
 
 也可以先克隆再本地安装（需要开发或改代码时用）：
@@ -38,8 +41,8 @@ npx openwiki-launcher warm
 git clone https://github.com/niechao136/openwiki-launcher.git
 cd openwiki-launcher
 npm install                # 安装依赖（含 openwiki 后端）
-npm link                   # 注册全局 openwiki-launcher 命令
-openwiki-launcher doctor   # 自检
+npm link                   # 注册全局命令（openwiki-launcher / owl / ow）
+owl doctor                 # 自检
 ```
 
 ### 接入宿主
@@ -47,9 +50,9 @@ openwiki-launcher doctor   # 自检
 **用安装器一步装好**（推荐）：
 
 ```sh
-openwiki-launcher                    # 项目级：自动检测当前项目里装了哪些宿主
-openwiki-launcher --global           # 用户级：所有项目共享
-openwiki-launcher --tool codebuddy   # 显式指定宿主
+owl                    # 项目级：自动检测当前项目里装了哪些宿主
+owl --global           # 用户级：所有项目共享
+owl --tool codebuddy   # 显式指定宿主
 ```
 
 安装器做四件事：把 openwiki 的 skill 目录复制进该宿主的技能目录、把 MCP 配置写成指向本包的
@@ -64,8 +67,8 @@ IBM Bob、Antigravity）的 MCP 配置由安装器直接写入磁盘；CodeBuddy
 卸载：
 
 ```sh
-openwiki-launcher --uninstall            # 项目级
-openwiki-launcher --uninstall --global   # 用户级
+owl --uninstall            # 项目级
+owl --uninstall --global   # 用户级
 ```
 
 卸载只删自己写过的东西：skill 目录要收据与逐文件 sha256 全匹配才删（你手改过就跳过并说明），
@@ -123,17 +126,44 @@ Claude Code 填 `claude`），它只用于在 openwiki 侧标记宿主身份。
 
 | 命令 | 作用 |
 | --- | --- |
-| `openwiki-launcher [install]` | 安装到自动检测到的宿主（项目级） |
-| `openwiki-launcher --uninstall` | 卸载 |
-| `openwiki-launcher mcp [--host <id>]` | 作为 MCP 服务器运行，宿主配置指向这里 |
-| `openwiki-launcher warm` | 启动一次后端到就绪后退出，用于预热 |
-| `openwiki-launcher warmup --host <id>` | 确保 holder 常驻且后端就绪（适合挂登录启动项） |
-| `openwiki-launcher doctor` | 检查 Node、openwiki、快照、真实后端与已写入的 MCP 命令 |
-| `openwiki-launcher check` | 查看本地 openwiki 版本状态：当前生效版本、已装版本与快照、registry 最新版 |
-| `openwiki-launcher update [--version <v>]` | 升级 openwiki：列出可选版本交互确认后安装、生成快照并切换（`--no-switch` 只装不切） |
-| `openwiki-launcher switch <version>` | 切换当前生效的 openwiki 版本（已装版本间毫秒级，可秒回滚） |
-| `openwiki-launcher versions remove <v>` | 删除一个已安装的 openwiki 版本（快照保留，拒删当前激活版本） |
-| `openwiki-launcher help` / `version` | 帮助与版本 |
+| `owl [install]` | 安装到自动检测到的宿主（项目级） |
+| `owl --uninstall` | 卸载 |
+| `owl mcp [--host <id>]` | 作为 MCP 服务器运行，宿主配置指向这里 |
+| `owl warm` | 启动一次后端到就绪后退出，用于预热 |
+| `owl warmup --host <id>` | 确保 holder 常驻且后端就绪（适合挂登录启动项） |
+| `owl doctor` | 检查 Node、openwiki、快照、真实后端与已写入的 MCP 命令 |
+| `owl check` | 查看本地 openwiki 版本状态：当前生效版本、已装版本与快照、registry 最新版 |
+| `owl update [--version <v>]` | 升级 openwiki：列出可选版本交互确认后安装、生成快照并切换（`--no-switch` 只装不切） |
+| `owl switch <version>` | 切换当前生效的 openwiki 版本（已装版本间毫秒级，可秒回滚） |
+| `owl versions remove <v>` | 删除一个已安装的 openwiki 版本（快照保留，拒删当前激活版本） |
+| `owl ow <参数…>` / `ow <参数…>` | 透传执行 openwiki CLI（visualize、link、workspace、auth、ingest、cron…；裸跑进入交互式 agent） |
+| `owl help` / `version` | 帮助与版本 |
+
+（`openwiki-launcher` 是 `owl` 的全名，两者完全等价，上表命令均可用全名调用。）
+
+## 短命令与 `ow` 透传
+
+三个全局命令，职责清晰：
+
+| 命令 | 职责 |
+| --- | --- |
+| `owl` | 本 launcher 的全部命令（`owl doctor`、`owl mcp`…），主推的短命令 |
+| `openwiki-launcher` | `owl` 的全名，两者完全等价（同一入口文件） |
+| `ow` | **纯透传** openwiki CLI：`ow visualize` 就是 `openwiki visualize` |
+
+`owl ow <参数…>` 与 `ow <参数…>` 等价。透传用的 openwiki 就是 launcher 自己管理的那一份
+（当前激活版本优先，出厂依赖兜底）——**不需要另外 `npm install -g openwiki`**：
+
+```sh
+ow visualize --no-open --port 3939   # 本地可视化服务器，不自动开浏览器
+ow link ../another-repo              # 把另一个仓库链进来
+ow auth configure openai             # 配置 provider
+ow                                    # 裸跑进入 openwiki 交互式 agent
+```
+
+> **注意**：`ow mcp` 是 openwiki 的**直连** mcp（冷启动 30-50 秒，宿主可能超时）；
+> 宿主 MCP 配置请指向 `owl mcp`（broker，毫秒级握手）。`ow` 的退出码、信号、终端
+> （TTY）全部透明——`ow` 后面的参数只属于 openwiki，launcher 不做任何加工。
 
 ## 工作方式
 
@@ -201,6 +231,7 @@ node_modules 是主因），0.4.0 用三招压缩它——排队上限降到 25s
 | `switch` 回默认版本时它又要下载 | 说明默认版本还没被物化。`openwiki-launcher warm` 一次即可（之后 `switch` 回默认版本是毫秒级指针翻转）。若你也装过别的版本、想让升级前自动准备好，`update` 会在升级前先把当前默认版本物化 |
 | 删掉默认版本后又被自动重建 | `openwiki-launcher versions remove <默认版本>` 会记一条标记，后台自愈不再重建它；只有显式命令（`install` / `warm` / `switch`）会重建并清掉标记 |
 | `update` 装版本时报 ECONNRESET / 缺 Python | openwiki 的新版本可能带原生模块（better-sqlite3），预编译二进制的下载源在 GitHub。用 npmmirror 镜像重试：`npm config set better_sqlite3_binary_host_mirror https://registry.npmmirror.com/-/binary/better-sqlite3`，然后重跑 `update` |
+| `ow` 报「未找到可用的 openwiki」 | launcher 包内的 openwiki 不可读（安装不完整或被清理过）。重跑安装器（`owl install`）修复；只想物化默认版本也可以 `owl warm` |
 
 环境变量：
 
