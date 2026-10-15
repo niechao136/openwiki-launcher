@@ -93,7 +93,10 @@ export async function main(argv, deps = {}) {
 
   const [command, ...rest] = argv;
 
-  if (!command || command === "help" || command === "--help" || command === "-h") {
+  // 注意：这里**不能**把 `!command` 当"显示帮助"。裸跑（无参数）按下面的
+  // 「裸用法」分支走安装：安装器常常是用户第一条、也可能是唯一一条命令，
+  // 让 `openwiki-launcher` 直接干活而不是回一段说明书。
+  if (command === "help" || command === "--help" || command === "-h") {
     logger.info(HELP);
     return 0;
   }

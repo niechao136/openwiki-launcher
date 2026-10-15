@@ -63,6 +63,19 @@ describe("install / uninstall 的 CLI 接线", () => {
     expect(existsSync(join(proj, ".claude/skills/openwiki/SKILL.md"))).toBe(true);
   });
 
+  it("完全裸跑等价于 install（不回退成打印帮助）", async () => {
+    // 回归：历史实现里 `!command` 早退会打印帮助，把下面的「裸用法走安装」
+    // 分支变成死代码——README 与 HELP 都承诺裸跑即安装。
+    const bare = await main([], deps());
+    const bareText = logs.text();
+    expect(bareText).not.toContain("用法:");
+    expect(bareText).toContain("没有检测到已安装的宿主");
+    logs.lines.length = 0;
+
+    const explicit = await main(["install"], deps());
+    expect(bare).toBe(explicit);
+  });
+
   it("第二次运行报已是最新", async () => {
     await main(["--tool", "claude"], deps());
     logs.lines.length = 0;
