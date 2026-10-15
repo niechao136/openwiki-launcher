@@ -4,7 +4,9 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "openwiki-launcher": "./bin/openwiki-launcher.mjs"
+    "openwiki-launcher": "./bin/openwiki-launcher.mjs",
+    "owl": "./bin/openwiki-launcher.mjs",
+    "ow": "./bin/ow.mjs"
   },
   "engines": {
     "node": ">=22.22.0"
